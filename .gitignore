@@ -8,3 +8,35 @@ outputs/*
 !outputs/.gitkeep
 data/raw/
 data/cache/
+
+# Secrets and machine-local configuration
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Logs and experiment trackers
+*.log
+wandb/
+runs/
+tensorboard/
+
+# Model weights and checkpoints
+models/
+checkpoints/
+*.pt
+*.pth
+*.ckpt
+*.safetensors
+*.onnx
+
+# Local model and package caches
+.cache/
+huggingface/
+hf_cache/
+
+# Editors and operating-system metadata
+.DS_Store
+.idea/
+.vscode/
