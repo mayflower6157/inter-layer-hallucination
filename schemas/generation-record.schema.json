@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/dissertation/generation-record.schema.json",
+  "title": "Generation record",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "run_id", "record_id", "dataset_id", "split", "sample_id",
+    "generation_index", "seed", "modality", "model_id", "model_revision", "backend",
+    "decoding", "prompt_template", "rendered_prompt", "status", "token_ids",
+    "token_timestamps_ms", "latency_ms", "backend_metrics", "sample_metadata", "created_at"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "run_id": {"type": "string", "minLength": 1},
+    "record_id": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "dataset_id": {"type": "string", "minLength": 1},
+    "split": {"type": "string", "minLength": 1},
+    "sample_id": {"type": "string", "minLength": 1},
+    "group_id": {"type": ["string", "null"]},
+    "generation_index": {"type": "integer", "minimum": 0},
+    "seed": {"type": "integer"},
+    "modality": {"enum": ["text", "vision_language"]},
+    "model_id": {"type": "string"},
+    "model_revision": {"type": "string"},
+    "backend": {"type": "string"},
+    "decoding": {"type": "object"},
+    "prompt_template": {"type": "string"},
+    "rendered_prompt": {"type": "string"},
+    "image_path": {"type": ["string", "null"]},
+    "reference_answer": {"type": ["string", "null"]},
+    "status": {"enum": ["success", "error", "skipped"]},
+    "response_text": {"type": ["string", "null"]},
+    "finish_reason": {"type": ["string", "null"]},
+    "prompt_tokens": {"type": ["integer", "null"], "minimum": 0},
+    "generated_tokens": {"type": ["integer", "null"], "minimum": 0},
+    "token_ids": {"type": "array", "items": {"type": "integer"}},
+    "token_timestamps_ms": {"type": "array", "items": {"type": "number", "minimum": 0}},
+    "latency_ms": {"type": "number", "minimum": 0},
+    "peak_memory_bytes": {"type": ["integer", "null"], "minimum": 0},
+    "backend_metrics": {"type": "object"},
+    "sample_metadata": {"type": "object"},
+    "error": {
+      "oneOf": [
+        {"type": "null"},
+        {"type": "object", "required": ["type", "message", "traceback"],
+         "properties": {"type": {"type": "string"}, "message": {"type": "string"}, "traceback": {"type": "string"}}}
+      ]
+    },
+    "created_at": {"type": "string", "format": "date-time"}
+  }
+}

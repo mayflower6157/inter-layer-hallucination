@@ -1,0 +1,27 @@
+{
+  "schema_version": "1.0",
+  "dataset_id": "hallusionbench",
+  "display_name": "HallusionBench",
+  "modality": "vision_language",
+  "source_url": "https://github.com/tianyi-lab/HallusionBench",
+  "revision": "TODO_IMMUTABLE_COMMIT",
+  "license": "TODO_VERIFY_DATASET_LICENSE",
+  "fields": {
+    "id": "question_id",
+    "prompt": "question",
+    "reference_answer": "gt_answer",
+    "image": "filename",
+    "group_id": "set_id",
+    "metadata": ["category", "subcategory", "figure_id", "gt_answer_details"]
+  },
+  "splits": [
+    {
+      "name": "test",
+      "path": "../raw/hallusionbench/HallusionBench.json",
+      "format": "json",
+      "sha256": null,
+      "count": null
+    }
+  ],
+  "notes": "Pin commit, checksum, licence, and count before a final run."
+}

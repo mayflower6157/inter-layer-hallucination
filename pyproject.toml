@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dissertation-eval"
+version = "0.1.0"
+description = "Reproducible generation and evaluation pipeline for reasoning hallucination experiments."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.optional-dependencies]
+hf = ["torch>=2.2", "transformers>=4.51", "pillow>=10", "accelerate>=1.0"]
+dev = ["pytest>=8", "ruff>=0.8"]
+
+[project.scripts]
+dissertation-eval = "dissertation_eval.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
