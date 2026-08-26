@@ -1,0 +1,26 @@
+{
+  "schema_version": "1.0",
+  "dataset_id": "mock-retruthqa-fixture",
+  "display_name": "Mock ReTruthQA-compatible fixture",
+  "modality": "text",
+  "source_url": "local-test-fixture",
+  "revision": "v1",
+  "license": "CC0-1.0",
+  "fields": {
+    "id": "id",
+    "prompt": "question",
+    "reference_answer": "answer",
+    "group_id": "group_id",
+    "metadata": ["domain", "category"]
+  },
+  "splits": [
+    {
+      "name": "dev",
+      "path": "../fixtures/mock_retruthqa.dev.jsonl",
+      "format": "jsonl",
+      "sha256": "1d247f287a5284b68cd885f2b526e0e56a8e9e37d680c7d341b024b6acba1e1e",
+      "count": 3
+    }
+  ],
+  "notes": "Synthetic fixture for CPU/mock verification only; never report as experimental data."
+}

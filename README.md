@@ -10,6 +10,9 @@ code/
 ├── data/manifests/          Versioned dataset manifests (raw data are ignored)
 ├── outputs/                 Append-only JSONL generations (ignored)
 ├── schemas/                 Language-independent JSON Schema contracts
+├── scripts/
+│   ├── cpu/                 Dependency-light local validation and mock smoke tests
+│   └── slurm/               Cluster preflight, submission, and small GPU baseline
 ├── src/dissertation_eval/
 │   ├── backends/            Mock and optional Hugging Face backends
 │   ├── datasets/            Manifest validation and normalized loading
@@ -88,11 +91,43 @@ The adjacent `*.run.json` file fingerprints the run configuration and environmen
 The `mock` backend checks the complete data-to-output path without downloading a model:
 
 ```bash
-PYTHONPATH=src python -m unittest discover -s tests -v
-dissertation-eval generate configs/run.mock.example.json --limit 5
+bash scripts/cpu/test_all.sh
+RESET_SMOKE_OUTPUT=1 bash scripts/cpu/smoke_mock.sh
 ```
 
-The example mock command requires fixture data at the path declared by its manifest. For a real baseline, copy `configs/run.qwen3.template.json`, pin the exact model revision, and run:
+The committed synthetic fixture contains three small examples and is used only to validate infrastructure. Running `smoke_mock.sh` again without `RESET_SMOKE_OUTPUT=1` verifies resume behaviour: all three completed records should be skipped.
+
+### Small baseline on a Slurm GPU cluster
+
+Complete CPU/mock validation before submitting a GPU job. On the cluster:
+
+1. Clone the repository and create the Conda environment described above.
+2. Install the `hf` dependencies and the cluster-compatible PyTorch build.
+3. Copy the run template and replace all `TODO` values:
+
+```bash
+cp configs/run.qwen3.template.json configs/run.qwen3.json
+```
+
+4. Add and validate the real dataset manifest and raw files. Keep raw data outside Git.
+5. Request an interactive GPU allocation once and run the preflight script:
+
+```bash
+CONDA_ENV_NAME=dissertation-eval bash scripts/slurm/preflight.sh
+```
+
+6. Submit an eight-example baseline smoke test:
+
+```bash
+CONFIG_PATH=configs/run.qwen3.json \
+CONDA_ENV_NAME=dissertation-eval \
+SMOKE_LIMIT=8 \
+bash scripts/slurm/submit_baseline.sh
+```
+
+The generic Slurm resource requests in `scripts/slurm/baseline_qwen.sh` are intentionally conservative. Add the university-specific `--account`, `--partition`, module-loading, storage, and wall-time settings required by the cluster documentation before submission. Do not increase `SMOKE_LIMIT` until the JSONL records, GPU memory, parser output, and Slurm logs have been inspected.
+
+For a non-Slurm local GPU baseline, use the same run configuration directly:
 
 ```bash
 dissertation-eval generate configs/run.qwen3.json

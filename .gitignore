@@ -18,6 +18,8 @@ data/cache/
 
 # Logs and experiment trackers
 *.log
+slurm-*.out
+slurm-*.err
 wandb/
 runs/
 tensorboard/

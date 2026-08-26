@@ -1,0 +1,3 @@
+{"id":"mock-math-001","question":"A box contains two red balls and two blue balls. How many balls are in the box?","answer":"4","group_id":"mock-math","domain":"math","category":"arithmetic"}
+{"id":"mock-science-001","question":"Water freezes at what temperature in degrees Celsius under standard pressure?","answer":"0","group_id":"mock-science","domain":"science","category":"factual"}
+{"id":"mock-multihop-001","question":"If Ada is older than Ben and Ben is older than Chen, who is the oldest?","answer":"Ada","group_id":"mock-multihop","domain":"multihop","category":"ordering"}

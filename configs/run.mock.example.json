@@ -1,6 +1,6 @@
 {
   "run_id": "smoke-retruthqa-mock-v1",
-  "dataset_manifest": "../data/manifests/retruthqa.template.json",
+  "dataset_manifest": "../data/manifests/mock.fixture.json",
   "split": "dev",
   "backend": "mock",
   "model_id": "mock/model",
