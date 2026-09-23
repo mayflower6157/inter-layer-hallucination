@@ -7,7 +7,11 @@ This directory contains the reproducible input and generation layer for the diss
 ```text
 code/
 ├── configs/                 Run configurations
-├── data/manifests/          Versioned dataset manifests (raw data are ignored)
+├── data/
+│   ├── fixtures/            Committed synthetic test data
+│   ├── manifests/           Versioned raw dataset manifests
+│   ├── raw/                 Downloaded source data (ignored)
+│   └── processed/           Reproducible derived data (ignored)
 ├── outputs/                 Append-only JSONL generations (ignored)
 ├── schemas/                 Language-independent JSON Schema contracts
 ├── scripts/
@@ -62,17 +66,64 @@ conda deactivate
 conda env remove --name dissertation-eval
 ```
 
-## Dataset manifests
+## Dataset setup and manifests
 
-A manifest records the dataset source, immutable revision, licence, modality, field mapping, splits, expected row counts, and optional SHA-256 checksums. Paths are relative to the manifest file. Raw datasets belong under `data/raw/` and are intentionally excluded from version control.
+A manifest records the dataset source, immutable revision, licence, modality, field
+mapping, splits, expected row counts, and SHA-256 checksums. Paths are relative to the
+manifest file. Raw and processed datasets are intentionally excluded from version
+control; never commit downloaded benchmark data or generated outputs.
 
-Before a real run, copy a template, replace every `TODO`, add the dataset files, and validate them:
+Expected local layout:
+
+```text
+data/raw/
+├── hallusionbench/
+│   ├── HallusionBench.json
+│   ├── VD/
+│   └── VS/
+└── retruthqa/
+    ├── R1-7B/hallucination/*.jsonl
+    └── R1-14B/hallucination/*.jsonl
+```
+
+Obtain ReTruthQA from the data link in the official
+[Reasoning Hallucination repository](https://github.com/Jeryi-Sun/Reasoning_Hallucination).
+Obtain `HallusionBench.json` from the official
+[HallusionBench repository](https://github.com/tianyi-lab/HallusionBench) and place the
+corresponding `VD/` and `VS/` assets beside it. The committed manifests pin the exact
+JSON checksums and will reject a different or incomplete release.
+
+Validate the immutable raw inputs:
 
 ```bash
 dissertation-eval validate-manifest data/manifests/retruthqa.json
+dissertation-eval validate-manifest data/manifests/hallusionbench.json
 ```
 
-Do not run a final experiment with null checksums or mutable model/data revisions.
+The ReTruthQA raw release has an unusual mixed format: R1-7B files are JSONL, while
+R1-14B files are JSON arrays despite their `.jsonl` suffix. The manifest records the
+correct parser for every split. Do not reformat the raw files because that changes
+their checksums.
+
+### ReTruthQA preparation
+
+Generation uses a small, materialized dataset instead of extracting answers from large
+reasoning traces on every run:
+
+```bash
+dissertation-eval prepare-retruthqa data/manifests/retruthqa.json \
+  --output-dir data/processed/retruthqa/v1
+dissertation-eval validate-prepared data/processed/retruthqa/v1
+```
+
+The extractor reads the final balanced `\boxed{...}` answer from every positive path,
+normalizes it by domain, and accepts normalized consensus or a strict majority. Ties
+are marked ambiguous and fail validation. Candidate votes, confidence, checksums, and
+extractor version remain in the derived records and preparation manifest.
+
+Preparation is cached by source-manifest checksum and extractor version. An unchanged
+directory reports `"status": "reused"` without scanning the raw traces again. Use
+`--force` only when intentionally rebuilding derived files.
 
 ## Generation records
 
@@ -86,7 +137,7 @@ Every attempted generation produces one JSONL record, including failures. Import
 
 The adjacent `*.run.json` file fingerprints the run configuration and environment. A run can resume only when that fingerprint is unchanged. This prevents results from two configurations being silently mixed.
 
-## Smoke test and baseline run
+## Local CPU validation
 
 The `mock` backend checks the complete data-to-output path without downloading a model:
 
@@ -108,35 +159,15 @@ The real-data smoke sample deliberately includes both text-only control question
 image-conditioned questions. It validates composite sample IDs and local image paths
 without loading a model.
 
-The ReTruthQA release can be validated across all 12 provenance-preserving splits and
-smoke-tested on eight real questions with:
+Validate all 12 ReTruthQA splits, prepare/reuse the derived dataset, and smoke-test
+eight real questions with:
 
 ```bash
 RESET_SMOKE_OUTPUT=1 bash scripts/cpu/smoke_retruthqa.sh
 ```
 
-The adapter records reasoning-path counts and source provenance as metadata, but does
-not copy the large positive and negative reasoning traces into generation records.
-The release has no top-level answer field, so the adapter extracts the last balanced
-`\boxed{...}` value from every positive reasoning path. Preparation selects an answer
-when normalized candidates agree or one candidate has a strict majority; ties remain
-ambiguous and fail validation. Candidate votes, selection method, and confidence are
-retained for audit. Normalization is materialized once under
-`data/processed/retruthqa/v1/`.
-
-The smoke script runs these explicit preparation and validation commands before the
-mock generation step:
-
-```bash
-dissertation-eval prepare-retruthqa data/manifests/retruthqa.json \
-  --output-dir data/processed/retruthqa/v1
-dissertation-eval validate-prepared data/processed/retruthqa/v1
-```
-
-Preparation is content-addressed by the raw manifest checksum and extractor version.
-An unchanged prepared directory is reused without scanning the reasoning traces again.
-Use `--force` only when intentionally rebuilding the derived files. Generated processed
-data remain ignored by Git; the preparation code and raw manifest are versioned.
+The smoke scripts write ignored records under `outputs/`. Re-running without
+`RESET_SMOKE_OUTPUT=1` must report the records as skipped, confirming resumability.
 
 ### Small baseline on a Slurm GPU cluster
 
@@ -150,14 +181,24 @@ Complete CPU/mock validation before submitting a GPU job. On the cluster:
 cp configs/run.qwen3.template.json configs/run.qwen3.json
 ```
 
-4. Add and validate the real dataset manifest and raw files. Keep raw data outside Git.
-5. Request an interactive GPU allocation once and run the preflight script:
+4. Copy the raw dataset directories through the university-approved storage mechanism;
+   do not use Git for benchmark data.
+5. Validate the raw manifests and prepare ReTruthQA on the cluster:
+
+```bash
+dissertation-eval validate-manifest data/manifests/retruthqa.json
+dissertation-eval prepare-retruthqa data/manifests/retruthqa.json \
+  --output-dir data/processed/retruthqa/v1
+dissertation-eval validate-prepared data/processed/retruthqa/v1
+```
+
+6. Request an interactive GPU allocation once and run the preflight script:
 
 ```bash
 CONDA_ENV_NAME=dissertation-eval bash scripts/slurm/preflight.sh
 ```
 
-6. Submit an eight-example baseline smoke test:
+7. Submit an eight-example baseline smoke test:
 
 ```bash
 CONFIG_PATH=configs/run.qwen3.json \
