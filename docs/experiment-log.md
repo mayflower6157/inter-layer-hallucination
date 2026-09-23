@@ -88,7 +88,7 @@ records and summaries, `comparison.json`, `comparison.md`, and per-sample
 | Greedy | 44 | 44 | 86.4% | 13.6% | 100.0% | 68.4% | 59.1% | 487.0 | 16.1 | 7.68 |
 | Beam-4 | 44 | 44 | 93.2% | 6.8% | 100.0% | 53.7% | 50.0% | 463.4 | 18.1 | 8.22 |
 | Sampling-5, individual generations | 220 | 44 | 91.4% | 8.6% | 100.0% | 63.2% | 57.7% | 471.5 | 17.2 | 7.68 |
-| Sampling-5 self-consistency | — | 44 | — | — | 95.5% vote coverage | 59.5% of predicted | 56.8% | 2,357.4 total | pending refresh | 7.68 |
+| Sampling-5 self-consistency | — | 44 | — | — | 95.5% vote coverage | 59.5% of predicted | 56.8% | 2,357.4 total | 88.8 total | 7.68 |
 
 Raw counts were:
 
