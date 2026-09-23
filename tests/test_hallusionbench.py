@@ -61,6 +61,16 @@ class HallusionBenchAdapterTests(unittest.TestCase):
         with self.assertRaisesRegex(DataIntegrityError, "does not exist"):
             list(examples)
 
+    def test_official_uppercase_png_is_resolved(self):
+        original = self.root / "VS" / "chart" / "0_1.png"
+        uppercase = self.root / "VS" / "chart" / "case_mismatch.PNG"
+        original.rename(uppercase)
+        _, examples = load_split(
+            self._write_fixture("./VS/chart/case_mismatch.png"), "test"
+        )
+        image_row = list(examples)[1]
+        self.assertEqual(Path(image_row.image_path).name, "case_mismatch.PNG")
+
 
 if __name__ == "__main__":
     unittest.main()

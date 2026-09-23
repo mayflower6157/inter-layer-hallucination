@@ -27,16 +27,43 @@ def _image_path(row: dict[str, Any], data_path: Path) -> str | None:
         return None
 
     root = data_path.parent.resolve()
-    resolved = (root / str(filename)).resolve()
+    requested = root / str(filename)
+    resolved = requested.resolve()
     try:
         resolved.relative_to(root)
     except ValueError as exc:
         raise DataIntegrityError(
             f"HallusionBench image path escapes dataset directory: {filename!r}"
         ) from exc
-    if not resolved.is_file():
-        raise DataIntegrityError(f"HallusionBench image does not exist: {resolved}")
-    return str(resolved)
+    parent = resolved.parent
+    requested_name = requested.name
+    try:
+        entries = list(parent.iterdir())
+    except FileNotFoundError as exc:
+        raise DataIntegrityError(f"HallusionBench image does not exist: {resolved}") from exc
+
+    exact = [entry for entry in entries if entry.name == requested_name and entry.is_file()]
+    if exact:
+        return str(exact[0].resolve())
+
+    # The official JSON uses lowercase .png for a small number of images that
+    # are distributed with an uppercase .PNG suffix. This is invisible on the
+    # default macOS filesystem but fails on Linux clusters. Accept only a
+    # unique case-insensitive match so that a genuine ambiguity is never
+    # resolved silently.
+    folded = [
+        entry
+        for entry in entries
+        if entry.name.casefold() == requested_name.casefold() and entry.is_file()
+    ]
+    if len(folded) == 1:
+        return str(folded[0].resolve())
+    if len(folded) > 1:
+        matches = ", ".join(sorted(entry.name for entry in folded))
+        raise DataIntegrityError(
+            f"HallusionBench image path is ambiguous for {resolved}: {matches}"
+        )
+    raise DataIntegrityError(f"HallusionBench image does not exist: {resolved}")
 
 
 def normalize_hallusionbench(
