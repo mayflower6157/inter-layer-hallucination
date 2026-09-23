@@ -131,6 +131,30 @@ Preparation is cached by source-manifest checksum and extractor version. An unch
 directory reports `"status": "reused"` without scanning the raw traces again. Use
 `--force` only when intentionally rebuilding derived files.
 
+### Frozen dissertation selection
+
+The confirmatory text study uses the committed, deterministic 240-example selection in
+`data/selections/retruthqa-240-v1.json`. It contains 60 development examples and 180
+held-out test examples, with equal mathematics, science, and multi-hop counts in each
+role. The held-out test excludes every example from the previously observed
+`r1-7b_math_task1` pilot split.
+
+Materialize and validate it from the prepared ReTruthQA v1 data with:
+
+```bash
+dissertation-eval select-retruthqa \
+  data/processed/retruthqa/v1/manifest.json \
+  --selection-manifest data/selections/retruthqa-240-v1.json \
+  --output-dir data/processed/retruthqa/selection-240-v1
+dissertation-eval validate-manifest \
+  data/processed/retruthqa/selection-240-v1/manifest.json
+```
+
+If the prepared source checksum, deterministic policy, seed, or selected IDs differ
+from the committed manifest, selection fails instead of silently replacing it. Generated
+development/test JSONL files remain ignored because they contain benchmark prompts;
+the committed ID manifest is sufficient to reproduce them from the prepared data.
+
 ## Generation records
 
 Every attempted generation produces one JSONL record, including failures. Important fields include:

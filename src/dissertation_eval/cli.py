@@ -6,6 +6,7 @@ from pathlib import Path
 
 from .datasets import load_manifest, load_split
 from .datasets.prepare import prepare_retruthqa, validate_prepared_retruthqa
+from .datasets.selection import create_retruthqa_selection
 from .evaluation import compare_retruthqa_runs, evaluate_retruthqa_generations
 from .pipeline.runner import run_generation
 
@@ -46,6 +47,12 @@ def build_parser() -> argparse.ArgumentParser:
         "validate-prepared", help="Validate a prepared ReTruthQA directory or manifest"
     )
     validate_prepared.add_argument("path", type=Path)
+    select = subparsers.add_parser(
+        "select-retruthqa", help="Create the frozen 240-example dissertation selection"
+    )
+    select.add_argument("prepared_manifest", type=Path)
+    select.add_argument("--selection-manifest", type=Path, required=True)
+    select.add_argument("--output-dir", type=Path, required=True)
     evaluate = subparsers.add_parser(
         "evaluate-retruthqa", help="Extract and score answers from ReTruthQA generations"
     )
@@ -84,6 +91,12 @@ def main(argv: list[str] | None = None) -> int:
         return 0
     if args.command == "validate-prepared":
         result = validate_prepared_retruthqa(args.path)
+        print(json.dumps(result, indent=2, sort_keys=True))
+        return 0
+    if args.command == "select-retruthqa":
+        result = create_retruthqa_selection(
+            args.prepared_manifest, args.selection_manifest, args.output_dir
+        )
         print(json.dumps(result, indent=2, sort_keys=True))
         return 0
     if args.command == "evaluate-retruthqa":
