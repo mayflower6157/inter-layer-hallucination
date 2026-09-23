@@ -37,6 +37,12 @@ class TransformersBackend(GenerationBackend):
         self.torch = torch
         self.model_id = model_id
         self.processor = None
+        enable_thinking = options.get("enable_thinking")
+        if enable_thinking is not None and not isinstance(enable_thinking, bool):
+            raise ValueError("backend_options.enable_thinking must be true, false, or omitted")
+        self.chat_template_options = (
+            {"enable_thinking": enable_thinking} if enable_thinking is not None else {}
+        )
         common = {"revision": revision, "trust_remote_code": bool(options.get("trust_remote_code", False))}
         if options.get("multimodal", False):
             from transformers import AutoModelForImageTextToText
@@ -55,7 +61,12 @@ class TransformersBackend(GenerationBackend):
     def _inputs(self, prompt: str, image_path: str | None) -> dict[str, Any]:
         if self.processor is None:
             messages = [{"role": "user", "content": prompt}]
-            rendered = self.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+            rendered = self.tokenizer.apply_chat_template(
+                messages,
+                tokenize=False,
+                add_generation_prompt=True,
+                **self.chat_template_options,
+            )
             return self.tokenizer(rendered, return_tensors="pt").to(self.model.device)
         if image_path is None:
             raise ValueError("The multimodal backend requires image_path")
@@ -63,7 +74,12 @@ class TransformersBackend(GenerationBackend):
         image = Image.open(image_path).convert("RGB")
         messages = [{"role": "user", "content": [{"type": "image", "image": image},
                                                      {"type": "text", "text": prompt}]}]
-        rendered = self.processor.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+        rendered = self.processor.apply_chat_template(
+            messages,
+            tokenize=False,
+            add_generation_prompt=True,
+            **self.chat_template_options,
+        )
         return self.processor(text=[rendered], images=[image], padding=True, return_tensors="pt").to(self.model.device)
 
     def generate(self, prompt: str, image_path: str | None, config: DecodingConfig, seed: int) -> BackendOutput:

@@ -240,6 +240,16 @@ SMOKE_LIMIT=1 \
 bash scripts/slurm/submit_baseline.sh
 ```
 
+If the same example is still truncated at 2048 tokens, compare Qwen3's non-thinking
+mode on that exact example rather than increasing the budget again. This is a separate
+experimental condition with its own run ID and output:
+
+```bash
+CONFIG_PATH=configs/run.qwen3-4b.no-thinking-probe.json \
+SMOKE_LIMIT=1 \
+bash scripts/slurm/submit_baseline.sh
+```
+
 For a non-Slurm local GPU baseline, use the same run configuration directly:
 
 ```bash
