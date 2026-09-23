@@ -45,6 +45,13 @@ class ReTruthQAEvaluationTests(unittest.TestCase):
         self.assertEqual(result["evaluation_status"], "exact_match")
         self.assertTrue(result["exact_match"])
 
+    def test_full_math_text_wrapper_is_ignored(self):
+        result = evaluate_record(
+            generation(response_text=r"\boxed{Navin}", reference_answer=r"\text{Navin}")
+        )
+        self.assertEqual(result["evaluation_status"], "exact_match")
+        self.assertTrue(result["exact_match"])
+
     def test_truncated_record_is_not_scored(self):
         result = evaluate_record(generation(finish_reason="length"))
         self.assertEqual(result["evaluation_status"], "truncated")

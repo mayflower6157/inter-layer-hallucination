@@ -10,7 +10,7 @@ from ..datasets.prepare import normalize_reference_answer
 from ..io import atomic_write_json, atomic_write_jsonl, iter_jsonl, sha256_file
 
 
-EVALUATOR_VERSION = "1.0.0"
+EVALUATOR_VERSION = "1.0.1"
 _BOXED_START = re.compile(r"\\boxed\s*\{")
 _FINAL_MARKER = re.compile(
     r"(?:^|\n)\s*(?:#{1,6}\s*)?\*{0,2}final(?:\s+answer)?\*{0,2}\s*[:：]?\s*",
@@ -67,6 +67,15 @@ def extract_prediction(text: str) -> tuple[str | None, str | None]:
     return None, None
 
 
+def normalize_evaluation_answer(answer: str, domain: str) -> str:
+    value = normalize_reference_answer(answer, domain)
+    if domain.casefold() == "math":
+        wrapper = re.fullmatch(r"\\(?:text|mathrm)\{(.+)\}", value)
+        if wrapper:
+            return wrapper.group(1)
+    return value
+
+
 def _evaluation_id(record_id: str) -> str:
     return hashlib.sha256(f"{EVALUATOR_VERSION}\0{record_id}".encode()).hexdigest()
 
@@ -77,10 +86,10 @@ def evaluate_record(row: dict[str, Any]) -> dict[str, Any]:
     domain = str(row.get("sample_metadata", {}).get("domain", ""))
     prediction, prediction_source = extract_prediction(response)
     prediction_normalized = (
-        normalize_reference_answer(prediction, domain) if prediction is not None else None
+        normalize_evaluation_answer(prediction, domain) if prediction is not None else None
     )
     reference_normalized = (
-        normalize_reference_answer(str(reference), domain) if reference is not None else None
+        normalize_evaluation_answer(str(reference), domain) if reference is not None else None
     )
 
     if row.get("status") != "success":
