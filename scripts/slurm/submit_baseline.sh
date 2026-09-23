@@ -12,6 +12,7 @@ SAMPLE_SEED="${SAMPLE_SEED:-}"
 TIME_LIMIT="${TIME_LIMIT:-00:30:00}"
 JOB_NAME="${JOB_NAME:-qwen-baseline}"
 PYTHON_BIN="${PYTHON_BIN:-python3}"
+DEPENDENCY="${DEPENDENCY:-}"
 
 if ! command -v sbatch >/dev/null 2>&1; then
   echo "sbatch is unavailable; run this command on the cluster login node." >&2
@@ -40,7 +41,12 @@ if not manifest.is_file():
 print(f"Pre-submit dataset check passed: {manifest}")
 PY
 
-sbatch --chdir="$PROJECT_ROOT" \
+SBATCH_ARGS=(--chdir="$PROJECT_ROOT")
+if [[ -n "$DEPENDENCY" ]]; then
+  SBATCH_ARGS+=(--dependency="$DEPENDENCY")
+fi
+
+sbatch "${SBATCH_ARGS[@]}" \
   --job-name="$JOB_NAME" \
   --time="$TIME_LIMIT" \
   --export="ALL,PROJECT_ROOT=$PROJECT_ROOT,CONFIG_PATH=$CONFIG_PATH,MODULE_NAME=$MODULE_NAME,CONDA_ENV_NAME=$CONDA_ENV_NAME,SMOKE_LIMIT=$SMOKE_LIMIT,SAMPLE_SEED=$SAMPLE_SEED" \
