@@ -2,6 +2,11 @@
 
 This directory contains the reproducible input and generation layer for the dissertation experiments. It deliberately separates dataset identity, normalized examples, generation backends, and append-only outputs. Future DoLa, DeCo, RHD, and inter-layer-guided decoders should implement the same `GenerationBackend` interface.
 
+Run-level decisions, Slurm job identifiers, timings, failures, and result follow-ups are
+recorded in [`docs/experiment-log.md`](docs/experiment-log.md). Update that log before
+using a run in the dissertation so reported settings can be traced to a configuration,
+code commit, and immutable output.
+
 ## Layout
 
 ```text
