@@ -6,7 +6,7 @@ from pathlib import Path
 
 from .datasets import load_manifest, load_split
 from .datasets.prepare import prepare_retruthqa, validate_prepared_retruthqa
-from .evaluation import evaluate_retruthqa_generations
+from .evaluation import compare_retruthqa_runs, evaluate_retruthqa_generations
 from .pipeline.runner import run_generation
 
 
@@ -51,6 +51,18 @@ def build_parser() -> argparse.ArgumentParser:
     )
     evaluate.add_argument("generations", type=Path)
     evaluate.add_argument("--output-dir", type=Path, required=True)
+    compare = subparsers.add_parser(
+        "compare-retruthqa", help="Compare labelled ReTruthQA generation runs"
+    )
+    compare.add_argument(
+        "--run",
+        action="append",
+        required=True,
+        metavar="LABEL=PATH",
+        help="Labelled generation JSONL; repeat for each decoding strategy",
+    )
+    compare.add_argument("--self-consistency", metavar="LABEL")
+    compare.add_argument("--output-dir", type=Path, required=True)
     return parser
 
 
@@ -76,6 +88,20 @@ def main(argv: list[str] | None = None) -> int:
         return 0
     if args.command == "evaluate-retruthqa":
         result = evaluate_retruthqa_generations(args.generations, args.output_dir)
+        print(json.dumps(result, indent=2, sort_keys=True))
+        return 0
+    if args.command == "compare-retruthqa":
+        runs: dict[str, Path] = {}
+        for item in args.run:
+            if "=" not in item:
+                raise SystemExit(f"--run must use LABEL=PATH, received: {item!r}")
+            label, raw_path = item.split("=", 1)
+            if not label or not raw_path or label in runs:
+                raise SystemExit(f"Invalid or duplicate --run value: {item!r}")
+            runs[label] = Path(raw_path)
+        result = compare_retruthqa_runs(
+            runs, args.output_dir, self_consistency=args.self_consistency
+        )
         print(json.dumps(result, indent=2, sort_keys=True))
         return 0
     counters = run_generation(
