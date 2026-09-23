@@ -192,3 +192,33 @@ The first job started successfully on an NVIDIA A40. Preflight confirmed CUDA an
 pinned Qwen3-2B weights loaded correctly. Transformers reported reference-kernel
 fallbacks for optional `causal_conv1d` and `flash-linear-attention` packages; these are
 performance warnings rather than correctness failures and may increase runtime.
+
+All six jobs subsequently completed with exit code `0:0`. The server-side deferred
+submission watcher assigned job `168757` to 4B sampling-5. Output integrity checks found
+60 unique and successful questions for each greedy/beam condition and 300 successful
+records, comprising all five generation indices for every one of 60 questions, for each
+sampling condition.
+
+| Model | Strategy | Slurm job | Elapsed | Records |
+|---|---|---:|---:|---:|
+| Qwen3-2B | Greedy | `168729` | 00:23:17 | 60 |
+| Qwen3-2B | Beam-4 | `168730` | 00:24:22 | 60 |
+| Qwen3-2B | Sampling-5 | `168731` | 01:48:23 | 300 |
+| Qwen3-4B | Greedy | `168732` | 00:12:00 | 60 |
+| Qwen3-4B | Beam-4 | `168733` | 00:12:51 | 60 |
+| Qwen3-4B | Sampling-5 | `168757` | 00:53:57 | 300 |
+
+The automatic evaluator produced the consolidated development table in
+`docs/results/development-decoding-baseline-v1.md`. Qwen3-4B sampling-5
+self-consistency achieved the highest all-question exact match (55.0%). Qwen3-2B
+self-consistency reached 50.0%, but only 85.0% of questions had at least one valid
+completed vote because the 2B runs had substantially more 1,024-token truncations.
+Completed-output parse coverage was 100% for every individual strategy.
+
+The 2B comparison contains completed/exact counts of 47/24 (greedy), 48/23
+(beam-4), and 217/122 (300 individual samples); its self-consistency result contains
+51 predictions and 30 exact matches across 60 questions. The 4B counts are 57/30,
+59/29, and 294/146, with 60 self-consistency predictions and 33 exact matches. The
+SHA-256 checksums of the machine-readable `comparison.json` artifacts are
+`eb702c658e470f46f2efbffa04bfa8516b89abcd15cd590ca5696b2053518076` (2B) and
+`bd04789ac6e3c619c77095ee2c026e2512d014442c488118a2a5168dae128fcc` (4B).
