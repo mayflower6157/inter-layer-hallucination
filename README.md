@@ -250,6 +250,15 @@ SMOKE_LIMIT=1 \
 bash scripts/slurm/submit_baseline.sh
 ```
 
+If that response reaches its 512-token limit, repeat the same controlled condition at
+1024 tokens. The prompt and all other settings remain identical:
+
+```bash
+CONFIG_PATH=configs/run.qwen3-4b.no-thinking-1024-probe.json \
+SMOKE_LIMIT=1 \
+bash scripts/slurm/submit_baseline.sh
+```
+
 For a non-Slurm local GPU baseline, use the same run configuration directly:
 
 ```bash
