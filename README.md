@@ -220,6 +220,18 @@ JSONL records, GPU memory, parser output, and Slurm logs have been inspected. If
 requires an account or partition for your allocation, add the corresponding `#SBATCH`
 directive before submission.
 
+If the 256-token smoke run succeeds but reaches the limit on every record, run the
+separate three-example 1024-token pilot without modifying or mixing the smoke output:
+
+```bash
+CONFIG_PATH=configs/run.qwen3-4b.pilot.json \
+SMOKE_LIMIT=3 \
+bash scripts/slurm/submit_baseline.sh
+```
+
+Generation records report `finish_reason: "length"` when the model reaches
+`max_new_tokens`, and `finish_reason: "stop"` when an EOS token ends generation.
+
 For a non-Slurm local GPU baseline, use the same run configuration directly:
 
 ```bash

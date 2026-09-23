@@ -7,6 +7,24 @@ from ..schema import BackendOutput, DecodingConfig, DecodingStrategy
 from .base import GenerationBackend
 
 
+def infer_finish_reason(
+    token_ids: list[int], max_new_tokens: int, eos_token_id: int | list[int] | None
+) -> str:
+    """Classify whether generation stopped naturally or at the token limit."""
+
+    if eos_token_id is None:
+        eos_ids: set[int] = set()
+    elif isinstance(eos_token_id, int):
+        eos_ids = {eos_token_id}
+    else:
+        eos_ids = set(eos_token_id)
+    if token_ids and token_ids[-1] in eos_ids:
+        return "stop"
+    if len(token_ids) >= max_new_tokens:
+        return "length"
+    return "stop"
+
+
 class TransformersBackend(GenerationBackend):
     """Optional Hugging Face backend for text-only and vision-language baselines."""
 
@@ -69,7 +87,9 @@ class TransformersBackend(GenerationBackend):
         prompt_length = int(inputs["input_ids"].shape[-1])
         generated = output[0, prompt_length:].tolist()
         text = self.tokenizer.decode(generated, skip_special_tokens=True)
-        return BackendOutput(text=text, finish_reason="stop", prompt_tokens=prompt_length,
+        eos_token_id = self.model.generation_config.eos_token_id
+        finish_reason = infer_finish_reason(generated, config.max_new_tokens, eos_token_id)
+        return BackendOutput(text=text, finish_reason=finish_reason, prompt_tokens=prompt_length,
                              generated_tokens=len(generated), token_ids=generated,
                              metrics={"model_generate_ms": elapsed_ms})
 
