@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/dissertation/retruthqa-evaluation-record.schema.json",
+  "title": "ReTruthQA evaluation record",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "evaluator_version", "evaluation_id", "record_id", "run_id",
+    "sample_id", "generation_index", "domain", "generation_status", "finish_reason",
+    "prediction", "prediction_source", "prediction_normalized", "reference_answer",
+    "reference_normalized", "evaluation_status", "exact_match", "needs_manual_review"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "evaluator_version": {"type": "string"},
+    "evaluation_id": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "record_id": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "run_id": {"type": ["string", "null"]},
+    "sample_id": {"type": ["string", "null"]},
+    "generation_index": {"type": ["integer", "null"]},
+    "domain": {"type": "string"},
+    "generation_status": {"type": ["string", "null"]},
+    "finish_reason": {"type": ["string", "null"]},
+    "generated_tokens": {"type": ["integer", "null"]},
+    "prediction": {"type": ["string", "null"]},
+    "prediction_source": {"type": ["string", "null"]},
+    "prediction_normalized": {"type": ["string", "null"]},
+    "reference_answer": {"type": ["string", "null"]},
+    "reference_normalized": {"type": ["string", "null"]},
+    "evaluation_status": {
+      "enum": ["generation_error", "truncated", "missing_reference", "parse_failure", "exact_match", "mismatch"]
+    },
+    "exact_match": {"type": ["boolean", "null"]},
+    "needs_manual_review": {"type": "boolean"}
+  }
+}

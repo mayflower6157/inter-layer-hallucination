@@ -6,6 +6,7 @@ from pathlib import Path
 
 from .datasets import load_manifest, load_split
 from .datasets.prepare import prepare_retruthqa, validate_prepared_retruthqa
+from .evaluation import evaluate_retruthqa_generations
 from .pipeline.runner import run_generation
 
 
@@ -45,6 +46,11 @@ def build_parser() -> argparse.ArgumentParser:
         "validate-prepared", help="Validate a prepared ReTruthQA directory or manifest"
     )
     validate_prepared.add_argument("path", type=Path)
+    evaluate = subparsers.add_parser(
+        "evaluate-retruthqa", help="Extract and score answers from ReTruthQA generations"
+    )
+    evaluate.add_argument("generations", type=Path)
+    evaluate.add_argument("--output-dir", type=Path, required=True)
     return parser
 
 
@@ -66,6 +72,10 @@ def main(argv: list[str] | None = None) -> int:
         return 0
     if args.command == "validate-prepared":
         result = validate_prepared_retruthqa(args.path)
+        print(json.dumps(result, indent=2, sort_keys=True))
+        return 0
+    if args.command == "evaluate-retruthqa":
+        result = evaluate_retruthqa_generations(args.generations, args.output_dir)
         print(json.dumps(result, indent=2, sort_keys=True))
         return 0
     counters = run_generation(

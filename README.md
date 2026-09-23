@@ -7,6 +7,7 @@ This directory contains the reproducible input and generation layer for the diss
 ```text
 code/
 ├── configs/                 Run configurations
+├── evaluations/             Derived evaluation records and summaries (ignored)
 ├── data/
 │   ├── fixtures/            Committed synthetic test data
 │   ├── manifests/           Versioned raw dataset manifests
@@ -272,6 +273,23 @@ bash scripts/slurm/submit_baseline.sh
 
 The sample-order strategy and seed are stored in the adjacent run manifest. Resuming
 an output with a different seed is rejected.
+
+### ReTruthQA answer extraction and evaluation
+
+Evaluate a generation JSONL on CPU after the run completes:
+
+```bash
+dissertation-eval evaluate-retruthqa \
+  outputs/retruthqa-qwen3-4b-representative-pilot-v1.jsonl \
+  --output-dir evaluations/retruthqa-qwen3-4b-representative-pilot-v1
+```
+
+The evaluator uses the last complete balanced `\\boxed{...}` answer first and falls
+back to common `FINAL`/`Final answer` markers. It normalizes answers using the prepared
+record's domain. Truncated generations and parse failures are not silently scored as
+wrong; mismatches remain flagged for manual review. The output directory contains
+auditable `records.jsonl` and `summary.json` files with the input checksum and evaluator
+version.
 
 For a non-Slurm local GPU baseline, use the same run configuration directly:
 

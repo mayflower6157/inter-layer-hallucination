@@ -6,6 +6,8 @@ __pycache__/
 *.egg-info/
 outputs/*
 !outputs/.gitkeep
+evaluations/*
+!evaluations/.gitkeep
 data/raw/
 data/cache/
 data/processed/
