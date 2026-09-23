@@ -10,7 +10,7 @@ from ..datasets.prepare import normalize_reference_answer
 from ..io import atomic_write_json, atomic_write_jsonl, iter_jsonl, sha256_file
 
 
-EVALUATOR_VERSION = "1.0.1"
+EVALUATOR_VERSION = "1.0.2"
 _BOXED_START = re.compile(r"\\boxed\s*\{")
 _FINAL_MARKER = re.compile(
     r"(?:^|\n)\s*(?:#{1,6}\s*)?\*{0,2}final(?:\s+answer)?\*{0,2}\s*[:：]?\s*",
@@ -72,7 +72,10 @@ def normalize_evaluation_answer(answer: str, domain: str) -> str:
     if domain.casefold() == "math":
         wrapper = re.fullmatch(r"\\(?:text|mathrm)\{(.+)\}", value)
         if wrapper:
-            return wrapper.group(1)
+            value = wrapper.group(1)
+        value = value.replace(r"\!", "")
+        if re.fullmatch(r"[+-]?\d{1,3}(?:,\d{3})+", value):
+            value = value.replace(",", "")
     return value
 
 

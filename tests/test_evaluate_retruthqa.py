@@ -52,6 +52,13 @@ class ReTruthQAEvaluationTests(unittest.TestCase):
         self.assertEqual(result["evaluation_status"], "exact_match")
         self.assertTrue(result["exact_match"])
 
+    def test_numeric_thousands_separator_is_ignored(self):
+        result = evaluate_record(
+            generation(response_text=r"\boxed{58500}", reference_answer=r"58,\!500")
+        )
+        self.assertEqual(result["evaluation_status"], "exact_match")
+        self.assertTrue(result["exact_match"])
+
     def test_truncated_record_is_not_scored(self):
         result = evaluate_record(generation(finish_reason="length"))
         self.assertEqual(result["evaluation_status"], "truncated")
