@@ -4,14 +4,22 @@
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=4
 #SBATCH --gres=gpu:a40:1
-#SBATCH --mem=32G
+#SBATCH --mem=40G
 #SBATCH --time=00:30:00
 #SBATCH --output=slurm-%x-%j.out
 #SBATCH --error=slurm-%x-%j.err
 
 set -euo pipefail
 
-PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+# sbatch copies this script into Slurm's spool directory, so BASH_SOURCE no
+# longer points into the repository. Slurm records the submission directory
+# explicitly and that is the reproducible project root for this job.
+PROJECT_ROOT="${PROJECT_ROOT:-${SLURM_SUBMIT_DIR:-}}"
+if [[ -z "$PROJECT_ROOT" || ! -f "$PROJECT_ROOT/pyproject.toml" ]]; then
+  echo "Project root is invalid: ${PROJECT_ROOT:-<unset>}" >&2
+  echo "Submit this job through scripts/slurm/submit_baseline.sh from the repository." >&2
+  exit 2
+fi
 cd "$PROJECT_ROOT"
 
 MODULE_NAME="${MODULE_NAME:-Miniforge3/24.11.3-1}"
@@ -21,7 +29,7 @@ SMOKE_LIMIT="${SMOKE_LIMIT:-8}"
 
 if [[ ! -f "$CONFIG_PATH" ]]; then
   echo "Run config not found: $CONFIG_PATH" >&2
-  echo "Copy configs/run.qwen3.template.json to configs/run.qwen3.json and replace every TODO." >&2
+  echo "Submit from the repository root or set CONFIG_PATH to an existing run config." >&2
   exit 2
 fi
 if grep -q 'TODO_' "$CONFIG_PATH"; then
