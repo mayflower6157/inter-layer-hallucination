@@ -173,3 +173,22 @@ revised before formal generation because it would have placed already observed p
 questions into the held-out test. The frozen allocation instead uses explicit
 source-split quotas recorded in the selection manifest while preserving equal domain
 counts.
+
+## 2026-09-24 — Qwen3 development decoding baselines submitted
+
+The frozen 60-example development split was configured for Qwen3-2B and Qwen3-4B with
+identical prompts and decoding settings. Both model revisions are pinned. Greedy and
+four-beam decoding produce one generation per question; sampling uses temperature 0.7,
+top-p 0.9, and five fixed seeds. All conditions use non-thinking mode and a 1,024-token
+generation limit.
+
+The jobs were submitted as a dependency chain so that the 2B conditions finish before
+the 4B conditions. Initial Slurm IDs are: 2B greedy `168729`, 2B beam `168730`, 2B
+sampling-5 `168731`, 4B greedy `168732`, and 4B beam `168733`. Cluster QOS permits only
+five submitted jobs per user, so 4B sampling-5 is deferred until the first slot is
+released; it must depend on successful completion of job `168733`.
+
+The first job started successfully on an NVIDIA A40. Preflight confirmed CUDA and the
+pinned Qwen3-2B weights loaded correctly. Transformers reported reference-kernel
+fallbacks for optional `causal_conv1d` and `flash-linear-attention` packages; these are
+performance warnings rather than correctness failures and may increase runtime.
