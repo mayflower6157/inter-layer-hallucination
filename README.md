@@ -231,6 +231,14 @@ bash scripts/slurm/submit_baseline.sh
 
 Generation records report `finish_reason: "length"` when the model reaches
 `max_new_tokens`, and `finish_reason: "stop"` when an EOS token ends generation.
+If all three pilot records still end with `length`, probe one example at 2048 tokens
+before choosing a budget for a larger run:
+
+```bash
+CONFIG_PATH=configs/run.qwen3-4b.probe-2048.json \
+SMOKE_LIMIT=1 \
+bash scripts/slurm/submit_baseline.sh
+```
 
 For a non-Slurm local GPU baseline, use the same run configuration directly:
 
