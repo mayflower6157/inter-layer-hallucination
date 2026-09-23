@@ -4,6 +4,7 @@ import argparse
 import json
 from pathlib import Path
 
+from .analysis import diagnose_rhd_generations
 from .datasets import load_manifest, load_split
 from .datasets.prepare import prepare_retruthqa, validate_prepared_retruthqa
 from .datasets.selection import create_retruthqa_selection
@@ -70,6 +71,14 @@ def build_parser() -> argparse.ArgumentParser:
     )
     compare.add_argument("--self-consistency", metavar="LABEL")
     compare.add_argument("--output-dir", type=Path, required=True)
+    diagnose = subparsers.add_parser(
+        "diagnose-rhd", help="Extract read-only token-level inter-layer diagnostics"
+    )
+    diagnose.add_argument("generations", type=Path)
+    diagnose.add_argument("--output-dir", type=Path, required=True)
+    diagnose.add_argument("--limit", type=int)
+    diagnose.add_argument("--relative-layer", type=float, action="append")
+    diagnose.add_argument("--chunk-size", type=int, default=16)
     return parser
 
 
@@ -115,6 +124,16 @@ def main(argv: list[str] | None = None) -> int:
         result = compare_retruthqa_runs(
             runs, args.output_dir, self_consistency=args.self_consistency
         )
+        print(json.dumps(result, indent=2, sort_keys=True))
+        return 0
+    if args.command == "diagnose-rhd":
+        kwargs = {
+            "limit": args.limit,
+            "chunk_size": args.chunk_size,
+        }
+        if args.relative_layer is not None:
+            kwargs["relative_layers"] = args.relative_layer
+        result = diagnose_rhd_generations(args.generations, args.output_dir, **kwargs)
         print(json.dumps(result, indent=2, sort_keys=True))
         return 0
     counters = run_generation(

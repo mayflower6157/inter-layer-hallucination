@@ -335,3 +335,22 @@ Running the same command again skips completed `(sample_id, generation_index)` p
 3. Store method-specific signals in `backend_metrics`; large tensors should use immutable sidecar files referenced by checksum rather than being embedded in JSONL.
 4. Record unsuccessful and truncated generations instead of selectively retrying them.
 5. Tune layers, thresholds, and intervention strength only on the development split.
+
+## Read-only RHD diagnostics
+
+The primary RHD method is a detector, not a decoding intervention. Its frozen v1
+definition, layer policy, threshold policy, formulas, and pseudocode are documented in
+`docs/rhd-method-v1.md`. Run a three-record, label-blind GPU diagnostic over an existing
+generation file with:
+
+```bash
+GENERATIONS_PATH=outputs/qwen3-4b-greedy-development-v1.jsonl \
+OUTPUT_DIR=diagnostics/qwen3-4b-greedy-development-rhd-smoke-v1 \
+DIAGNOSTIC_LIMIT=3 \
+bash scripts/slurm/submit_rhd_diagnostic.sh
+```
+
+The job reconstructs the exact recorded token sequence and performs a teacher-forced
+forward pass. It writes per-record compressed sidecars containing token-level
+inter-layer distribution summaries, plus SHA-256 checksums and a run manifest. It does
+not call generation, use benchmark labels, or alter any response.

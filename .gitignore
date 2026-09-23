@@ -8,6 +8,8 @@ outputs/*
 !outputs/.gitkeep
 evaluations/*
 !evaluations/.gitkeep
+diagnostics/*
+!diagnostics/.gitkeep
 data/raw/
 data/cache/
 data/processed/
