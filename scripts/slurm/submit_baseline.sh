@@ -19,6 +19,23 @@ if [[ ! -f "$CONFIG_PATH" ]]; then
   exit 1
 fi
 
+python - "$CONFIG_PATH" <<'PY'
+import json
+import sys
+from pathlib import Path
+
+config_path = Path(sys.argv[1]).resolve()
+with config_path.open("r", encoding="utf-8") as handle:
+    config = json.load(handle)
+manifest = (config_path.parent / config["dataset_manifest"]).resolve()
+if not manifest.is_file():
+    raise SystemExit(
+        f"Dataset manifest required by the run config does not exist: {manifest}\n"
+        "Prepare or transfer the processed dataset before submitting a GPU job."
+    )
+print(f"Pre-submit dataset check passed: {manifest}")
+PY
+
 sbatch --chdir="$PROJECT_ROOT" \
   --export="ALL,PROJECT_ROOT=$PROJECT_ROOT,CONFIG_PATH=$CONFIG_PATH,MODULE_NAME=$MODULE_NAME,CONDA_ENV_NAME=$CONDA_ENV_NAME,SMOKE_LIMIT=$SMOKE_LIMIT" \
   scripts/slurm/baseline_qwen.sh
