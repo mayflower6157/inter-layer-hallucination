@@ -17,7 +17,13 @@ submit() {
     DEPENDENCY="$dependency" \
     bash scripts/slurm/submit_baseline.sh)"
   printf '%s\n' "$output" >&2
-  printf '%s\n' "$output" | sed -n 's/^Submitted batch job \([0-9][0-9]*\)$/\1/p' | tail -n 1
+  local job_id
+  job_id="$(printf '%s\n' "$output" | sed -n 's/^Submitted batch job \([0-9][0-9]*\)$/\1/p' | tail -n 1)"
+  if [[ -z "$job_id" ]]; then
+    echo "Could not determine a Slurm job ID for $config" >&2
+    return 1
+  fi
+  printf '%s\n' "$job_id"
 }
 
 job_2b_greedy="$(submit configs/run.qwen3-2b.greedy-development.json q3-2b-dev-greedy 01:00:00)"
