@@ -11,6 +11,7 @@ SMOKE_LIMIT="${SMOKE_LIMIT:-8}"
 SAMPLE_SEED="${SAMPLE_SEED:-}"
 TIME_LIMIT="${TIME_LIMIT:-00:30:00}"
 JOB_NAME="${JOB_NAME:-qwen-baseline}"
+PYTHON_BIN="${PYTHON_BIN:-python3}"
 
 if ! command -v sbatch >/dev/null 2>&1; then
   echo "sbatch is unavailable; run this command on the cluster login node." >&2
@@ -22,7 +23,7 @@ if [[ ! -f "$CONFIG_PATH" ]]; then
   exit 1
 fi
 
-python - "$CONFIG_PATH" <<'PY'
+"$PYTHON_BIN" - "$CONFIG_PATH" <<'PY'
 import json
 import sys
 from pathlib import Path
