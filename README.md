@@ -175,10 +175,12 @@ Complete CPU/mock validation before submitting a GPU job. On the cluster:
 
 1. Clone the repository and create the Conda environment described above.
 2. Install the `hf` dependencies and the cluster-compatible PyTorch build.
-3. Copy the run template and replace all `TODO` values:
+3. Use the committed, revision-pinned Qwen3-4B smoke configuration. It limits
+   greedy generation to 256 new tokens so the first allocation verifies the pipeline
+   without spending unnecessary GPU time:
 
 ```bash
-cp configs/run.qwen3.template.json configs/run.qwen3.json
+sed -n '1,240p' configs/run.qwen3-4b.smoke.json
 ```
 
 4. Copy the raw dataset directories through the university-approved storage mechanism;
@@ -192,22 +194,31 @@ dissertation-eval prepare-retruthqa data/manifests/retruthqa.json \
 dissertation-eval validate-prepared data/processed/retruthqa/v1
 ```
 
-6. Request an interactive GPU allocation once and run the preflight script:
+6. Confirm that the Hugging Face dependencies are installed. The Slurm job will fail
+   early if the active PyTorch installation cannot access CUDA. Then cache the pinned
+   model revision on the login node so model download time is not charged as GPU time:
 
 ```bash
-CONDA_ENV_NAME=dissertation-eval bash scripts/slurm/preflight.sh
+pip install -e '.[hf]'
+bash scripts/slurm/cache_qwen_model.sh
 ```
 
-7. Submit an eight-example baseline smoke test:
+7. Submit an eight-example baseline smoke test. The supplied script follows the NTU
+   Cluster02 requirement to name an exact GPU model and requests one A40:
 
 ```bash
-CONFIG_PATH=configs/run.qwen3.json \
+CONFIG_PATH=configs/run.qwen3-4b.smoke.json \
+MODULE_NAME=Miniforge3/24.11.3-1 \
 CONDA_ENV_NAME=dissertation-eval \
 SMOKE_LIMIT=8 \
 bash scripts/slurm/submit_baseline.sh
 ```
 
-The generic Slurm resource requests in `scripts/slurm/baseline_qwen.sh` are intentionally conservative. Add the university-specific `--account`, `--partition`, module-loading, storage, and wall-time settings required by the cluster documentation before submission. Do not increase `SMOKE_LIMIT` until the JSONL records, GPU memory, parser output, and Slurm logs have been inspected.
+The batch job loads `Miniforge3/24.11.3-1`, activates `dissertation-eval`, checks
+CUDA availability, and then runs generation. Do not increase `SMOKE_LIMIT` until the
+JSONL records, GPU memory, parser output, and Slurm logs have been inspected. If NTU
+requires an account or partition for your allocation, add the corresponding `#SBATCH`
+directive before submission.
 
 For a non-Slurm local GPU baseline, use the same run configuration directly:
 
