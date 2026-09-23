@@ -259,6 +259,20 @@ SMOKE_LIMIT=1 \
 bash scripts/slurm/submit_baseline.sh
 ```
 
+Do not infer dataset-wide behaviour from the first record. The generation CLI supports
+a deterministic shuffle before applying the limit. A larger limit with the same seed
+preserves the existing sampled prefix. Run the five-example representative pilot with:
+
+```bash
+CONFIG_PATH=configs/run.qwen3-4b.representative-pilot.json \
+SMOKE_LIMIT=5 \
+SAMPLE_SEED=2026 \
+bash scripts/slurm/submit_baseline.sh
+```
+
+The sample-order strategy and seed are stored in the adjacent run manifest. Resuming
+an output with a different seed is rejected.
+
 For a non-Slurm local GPU baseline, use the same run configuration directly:
 
 ```bash

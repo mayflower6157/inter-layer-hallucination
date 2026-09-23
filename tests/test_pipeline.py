@@ -64,6 +64,35 @@ class PipelineTests(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, "config changed"):
             run_generation(config)
 
+    def test_seeded_sampling_is_reproducible_and_recorded(self):
+        rows = [
+            {"id": str(index), "question": f"Question {index}"}
+            for index in range(8)
+        ]
+        self._manifest(rows)
+        config = self.root / "seeded.json"
+        write_json(config, {
+            "run_id": "seeded-run", "dataset_manifest": "manifest.json", "split": "dev",
+            "backend": "mock", "model_id": "mock", "model_revision": "1",
+            "prompt_template": "{prompt}", "output_path": "seeded.jsonl",
+        })
+        self.assertEqual(
+            run_generation(config, limit=3, sample_seed=2026),
+            {"success": 3, "error": 0, "skipped": 0},
+        )
+        generated = list(iter_jsonl(self.root / "seeded.jsonl"))
+        expected = list(rows)
+        import random
+        random.Random(2026).shuffle(expected)
+        self.assertEqual([row["sample_id"] for row in generated], [row["id"] for row in expected[:3]])
+        run_manifest = json.loads((self.root / "seeded.jsonl.run.json").read_text())
+        self.assertEqual(
+            run_manifest["sample_order"],
+            {"strategy": "seeded_shuffle", "seed": 2026},
+        )
+        with self.assertRaisesRegex(RuntimeError, "sample order changed"):
+            run_generation(config, limit=3, sample_seed=7)
+
 
 if __name__ == "__main__":
     unittest.main()

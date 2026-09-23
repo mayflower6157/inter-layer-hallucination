@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import platform
+import random
 import sys
 import time
 import traceback
@@ -31,20 +32,32 @@ def _render_prompt(template: str, prompt: str) -> str:
         raise ValueError("prompt_template must contain a valid {prompt} placeholder") from exc
 
 
-def _run_manifest(config_path: Path, config: RunConfig, dataset_id: str) -> dict[str, Any]:
+def _run_manifest(
+    config_path: Path, config: RunConfig, dataset_id: str, sample_seed: int | None
+) -> dict[str, Any]:
     return {
         "schema_version": "1.0",
         "run_id": config.run_id,
         "dataset_id": dataset_id,
         "run_config_path": str(config_path.resolve()),
         "run_config_sha256": sha256_file(config_path.resolve()),
+        "sample_order": {
+            "strategy": "seeded_shuffle" if sample_seed is not None else "manifest_order",
+            "seed": sample_seed,
+        },
         "python": sys.version,
         "platform": platform.platform(),
         "config": {**asdict(config), "decoding": asdict(config.decoding)},
     }
 
 
-def run_generation(config_path: Path, *, limit: int | None = None, fail_fast: bool = False) -> dict[str, int]:
+def run_generation(
+    config_path: Path,
+    *,
+    limit: int | None = None,
+    fail_fast: bool = False,
+    sample_seed: int | None = None,
+) -> dict[str, int]:
     config_path = config_path.resolve()
     config = load_run_config(config_path)
     manifest_path = (config_path.parent / config.dataset_manifest).resolve()
@@ -52,13 +65,22 @@ def run_generation(config_path: Path, *, limit: int | None = None, fail_fast: bo
     manifest, examples = load_split(manifest_path, config.split)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     run_manifest_path = output_path.with_suffix(output_path.suffix + ".run.json")
-    current_manifest = _run_manifest(config_path, config, manifest.dataset_id)
+    current_manifest = _run_manifest(config_path, config, manifest.dataset_id, sample_seed)
     if run_manifest_path.exists():
         previous = read_json(run_manifest_path)
         if previous.get("run_config_sha256") != current_manifest["run_config_sha256"]:
             raise RuntimeError("Refusing to resume: run config changed for the existing output")
+        previous_order = previous.get(
+            "sample_order", {"strategy": "manifest_order", "seed": None}
+        )
+        if previous_order != current_manifest["sample_order"]:
+            raise RuntimeError("Refusing to resume: sample order changed for the existing output")
     else:
         atomic_write_json(run_manifest_path, current_manifest)
+
+    if sample_seed is not None:
+        examples = list(examples)
+        random.Random(sample_seed).shuffle(examples)
 
     processed = load_processed_keys(output_path)
     backend = create_backend(config.backend, config.model_id, config.model_revision, config.backend_options)

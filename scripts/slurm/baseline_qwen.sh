@@ -26,6 +26,7 @@ MODULE_NAME="${MODULE_NAME:-Miniforge3/24.11.3-1}"
 CONDA_ENV_NAME="${CONDA_ENV_NAME:-dissertation-eval}"
 CONFIG_PATH="${CONFIG_PATH:-configs/run.qwen3-4b.smoke.json}"
 SMOKE_LIMIT="${SMOKE_LIMIT:-8}"
+SAMPLE_SEED="${SAMPLE_SEED:-}"
 
 if [[ ! -f "$CONFIG_PATH" ]]; then
   echo "Run config not found: $CONFIG_PATH" >&2
@@ -55,9 +56,14 @@ echo "Job ID: ${SLURM_JOB_ID:-interactive}"
 echo "Node: $(hostname)"
 echo "Config: $CONFIG_PATH"
 echo "Smoke limit: $SMOKE_LIMIT"
+echo "Sample seed: ${SAMPLE_SEED:-manifest order}"
 nvidia-smi || true
 
 REQUIRE_CUDA=1 bash scripts/slurm/preflight.sh
-python -m dissertation_eval generate "$CONFIG_PATH" --limit "$SMOKE_LIMIT" --fail-fast
+GENERATION_ARGS=("$CONFIG_PATH" --limit "$SMOKE_LIMIT" --fail-fast)
+if [[ -n "$SAMPLE_SEED" ]]; then
+  GENERATION_ARGS+=(--sample-seed "$SAMPLE_SEED")
+fi
+python -m dissertation_eval generate "${GENERATION_ARGS[@]}"
 
 echo "Small baseline completed. Inspect JSONL records and Slurm logs before increasing the limit."

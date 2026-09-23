@@ -8,6 +8,7 @@ CONFIG_PATH="${CONFIG_PATH:-configs/run.qwen3-4b.smoke.json}"
 MODULE_NAME="${MODULE_NAME:-Miniforge3/24.11.3-1}"
 CONDA_ENV_NAME="${CONDA_ENV_NAME:-dissertation-eval}"
 SMOKE_LIMIT="${SMOKE_LIMIT:-8}"
+SAMPLE_SEED="${SAMPLE_SEED:-}"
 
 if ! command -v sbatch >/dev/null 2>&1; then
   echo "sbatch is unavailable; run this command on the cluster login node." >&2
@@ -37,5 +38,5 @@ print(f"Pre-submit dataset check passed: {manifest}")
 PY
 
 sbatch --chdir="$PROJECT_ROOT" \
-  --export="ALL,PROJECT_ROOT=$PROJECT_ROOT,CONFIG_PATH=$CONFIG_PATH,MODULE_NAME=$MODULE_NAME,CONDA_ENV_NAME=$CONDA_ENV_NAME,SMOKE_LIMIT=$SMOKE_LIMIT" \
+  --export="ALL,PROJECT_ROOT=$PROJECT_ROOT,CONFIG_PATH=$CONFIG_PATH,MODULE_NAME=$MODULE_NAME,CONDA_ENV_NAME=$CONDA_ENV_NAME,SMOKE_LIMIT=$SMOKE_LIMIT,SAMPLE_SEED=$SAMPLE_SEED" \
   scripts/slurm/baseline_qwen.sh

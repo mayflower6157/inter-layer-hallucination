@@ -1,0 +1,26 @@
+{
+  "run_id": "retruthqa-qwen3-4b-representative-pilot-v1",
+  "dataset_manifest": "../data/processed/retruthqa/v1/manifest.json",
+  "split": "r1-7b_math_task1",
+  "backend": "transformers",
+  "model_id": "Qwen/Qwen3-4B",
+  "model_revision": "1cfa9a7208912126459214e8b04321603b3df60c",
+  "prompt_template": "Solve the problem in at most five concise steps. Put the final answer after FINAL:.\n\n{prompt}",
+  "output_path": "../outputs/retruthqa-qwen3-4b-representative-pilot-v1.jsonl",
+  "decoding": {
+    "strategy": "greedy",
+    "max_new_tokens": 1024,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "num_beams": 1,
+    "num_generations": 1,
+    "seeds": [42]
+  },
+  "backend_options": {
+    "dtype": "bfloat16",
+    "device_map": "auto",
+    "trust_remote_code": false,
+    "multimodal": false,
+    "enable_thinking": false
+  }
+}

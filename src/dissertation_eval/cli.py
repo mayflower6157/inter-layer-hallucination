@@ -29,6 +29,11 @@ def build_parser() -> argparse.ArgumentParser:
     generate = subparsers.add_parser("generate", help="Run or resume baseline generation")
     generate.add_argument("config", type=Path)
     generate.add_argument("--limit", type=int)
+    generate.add_argument(
+        "--sample-seed",
+        type=int,
+        help="Deterministically shuffle examples before applying --limit",
+    )
     generate.add_argument("--fail-fast", action="store_true")
     prepare = subparsers.add_parser(
         "prepare-retruthqa", help="Materialize normalized ReTruthQA generation inputs"
@@ -63,7 +68,12 @@ def main(argv: list[str] | None = None) -> int:
         result = validate_prepared_retruthqa(args.path)
         print(json.dumps(result, indent=2, sort_keys=True))
         return 0
-    counters = run_generation(args.config, limit=args.limit, fail_fast=args.fail_fast)
+    counters = run_generation(
+        args.config,
+        limit=args.limit,
+        fail_fast=args.fail_fast,
+        sample_seed=args.sample_seed,
+    )
     print(json.dumps(counters, indent=2, sort_keys=True))
     return 0 if counters["error"] == 0 else 1
 
