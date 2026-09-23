@@ -60,7 +60,7 @@ The corrected submission created the following jobs:
 |---:|---|---:|---|---|
 | 168561 | `q3-4b-greedy` | 01:00:00 | COMPLETED, exit 0 | 44/44 successes; 00:14:02 |
 | 168562 | `q3-4b-beam4` | 03:00:00 | COMPLETED, exit 0 | 44/44 successes; 00:14:03 |
-| 168563 | `q3-4b-sample5` | 04:00:00 | RUNNING | 2/220 records after approximately 00:02:28 at the last check |
+| 168563 | `q3-4b-sample5` | 04:00:00 | COMPLETED, exit 0 | 220/220 successes; 01:08:50 |
 
 Greedy and beam search ran concurrently on separate A40 nodes. The sampling job was
 initially pending with `QOSMaxJobsPerUserLimit` and started as soon as one of the first
@@ -71,22 +71,66 @@ The logs contain a Transformers deprecation warning for `torch_dtype`; it did no
 a failure or change the recorded configuration. No CUDA out-of-memory or generation
 errors were observed in the completed jobs.
 
-Generation is append-only and resumable. If job 168563 reaches its four-hour wall-time,
-resubmitting the same configuration will skip completed `(sample_id, generation_index)`
-pairs rather than overwrite them.
+Generation is append-only and resumable. Job 168563 completed without requiring a
+resume. A future interrupted run can be resubmitted with the same configuration and
+will skip completed `(sample_id, generation_index)` pairs rather than overwrite them.
+
+### Evaluation results
+
+Evaluation used `dissertation-eval compare-retruthqa` from commit `61b868f` and
+ReTruthQA evaluator version `1.0.2`. The derived files are stored on the cluster under
+`evaluations/qwen3-4b-decoding-validation-v1/`. The command writes strategy-specific
+records and summaries, `comparison.json`, `comparison.md`, and per-sample
+`self-consistency-records.jsonl`.
+
+| Strategy | Records | Samples | Completion | Truncation | Parse coverage | Exact match (scored) | Exact match (all) | Mean tokens | Median latency (s) | Peak GPU (GiB) |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| Greedy | 44 | 44 | 86.4% | 13.6% | 100.0% | 68.4% | 59.1% | 487.0 | 16.1 | 7.68 |
+| Beam-4 | 44 | 44 | 93.2% | 6.8% | 100.0% | 53.7% | 50.0% | 463.4 | 18.1 | 8.22 |
+| Sampling-5, individual generations | 220 | 44 | 91.4% | 8.6% | 100.0% | 63.2% | 57.7% | 471.5 | 17.2 | 7.68 |
+| Sampling-5 self-consistency | — | 44 | — | — | 95.5% vote coverage | 59.5% of predicted | 56.8% | 2,357.4 total | pending refresh | 7.68 |
+
+Raw counts were:
+
+- Greedy: 26 exact matches, 12 mismatches, and six truncations.
+- Beam-4: 22 exact matches, 19 mismatches, and three truncations.
+- Sampling-5: 127 exact matches, 74 mismatches, and 19 truncations across 220
+  individual generations.
+- Self-consistency: 25 exact matches across 44 samples; 42 samples had at least one
+  valid parsed vote, 35 had a strict majority, and four required a tie break.
+
+Self-consistency selects the most frequent normalized answer among completed, parsed
+generations. If multiple answers share the highest count, the answer produced at the
+lowest generation index is selected deterministically and the case is marked as a tie.
+This rule prevents nondeterministic reporting, but tied cases must be included in a
+sensitivity analysis for the confirmatory experiment.
+
+Input SHA-256 values recorded by the evaluator were:
+
+- Greedy: `86419afc2d652b5fbaf62895aa8178f76961ad224aa84fe68193afbc78882b61`.
+- Beam-4: `213049063e90b3ddcba6836958e1358eecb4604df448dc6ce9140ebc14c6d372`.
+- Sampling-5: `8cdfcab67b680f83fd55be2e5eca53f5bacd461e5dd9b377f290d2e23df6b2ae`.
+
+On this 44-question mathematics validation split, greedy decoding had the highest
+all-record and scored exact-match rates. Beam search reduced truncation but did not
+improve exact match, and five-sample self-consistency did not exceed greedy despite
+approximately 5.3 times the mean end-to-end latency per question. These observations
+are pilot findings only: the split is small and covers one domain, no confidence
+intervals or paired significance tests have been applied, and evaluator mismatches have
+not yet received a blinded error audit.
 
 ### Required completion checks
 
 Do not treat this validation run as complete until the following fields are filled from
 machine-readable evaluation outputs:
 
-- [ ] Sampling job completed with 220/220 successful generation records, or any timeout
-  and resume job IDs are documented.
-- [ ] Run `evaluate-retruthqa` separately for greedy, beam, and sampling outputs.
-- [ ] Record exact-match rate over all records and over scored, non-truncated records.
-- [ ] Record completion, truncation, parse-failure, and generation-error counts.
-- [ ] Record generated-token and latency mean/median; retain peak-memory summaries.
-- [ ] Aggregate sampling predictions by `sample_id` and report five-sample majority-vote
+- [x] Sampling job completed with 220/220 successful generation records; no resume was
+  required.
+- [x] Run `evaluate-retruthqa` separately for greedy, beam, and sampling outputs.
+- [x] Record exact-match rate over all records and over scored, non-truncated records.
+- [x] Record completion, truncation, parse-failure, and generation-error counts.
+- [x] Record generated-token and latency mean/median; retain peak-memory summaries.
+- [x] Aggregate sampling predictions by `sample_id` and report five-sample majority-vote
   self-consistency accuracy, including the deterministic tie rule.
 - [ ] Inspect disagreements among greedy, beam, and self-consistency before freezing the
   larger study; do not tune prompts or evaluators separately by strategy.

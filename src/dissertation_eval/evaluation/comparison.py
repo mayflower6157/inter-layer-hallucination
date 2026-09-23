@@ -109,6 +109,8 @@ def _self_consistency(
         ) if results else None,
         "latency_ms_total_mean": mean(row["latency_ms_total"] for row in results)
         if results else None,
+        "latency_ms_total_median": median(row["latency_ms_total"] for row in results)
+        if results else None,
         "peak_memory_bytes_max": max(
             (row["peak_memory_bytes_max"] for row in results if row["peak_memory_bytes_max"]),
             default=None,
@@ -154,7 +156,7 @@ def _markdown_table(summary: dict[str, Any]) -> str:
             f"{_percent(row['exact_match_rate_predicted'])} | "
             f"{_percent(row['exact_match_rate_all'])} | "
             f"{_number(row['generated_tokens_total_mean'])} | "
-            f"{_number(row['latency_ms_total_mean'], 1000)} | "
+            f"{_number(row['latency_ms_total_median'], 1000)} | "
             f"{_number(row['peak_memory_bytes_max'], 1024 ** 3, 2)} |"
         )
     return "\n".join(lines) + "\n"
