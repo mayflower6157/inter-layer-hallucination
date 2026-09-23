@@ -84,6 +84,7 @@ class DatasetManifest:
     license: str
     fields: FieldMapping
     splits: list[SplitSpec]
+    adapter: str | None = None
     notes: str = ""
 
     @classmethod
@@ -92,6 +93,9 @@ class DatasetManifest:
         missing = [key for key in required if not value.get(key)]
         if missing:
             raise ConfigurationError(f"Manifest missing fields: {', '.join(missing)}")
+        adapter = value.get("adapter")
+        if adapter is not None and (not isinstance(adapter, str) or not adapter):
+            raise ConfigurationError("Manifest adapter must be a non-empty string or null")
         splits = [SplitSpec.from_dict(item) for item in value.get("splits", [])]
         if not splits:
             raise ConfigurationError("Manifest must declare at least one split")
@@ -102,7 +106,7 @@ class DatasetManifest:
             display_name=str(value["display_name"]), modality=Modality(value["modality"]),
             source_url=str(value["source_url"]), revision=str(value["revision"]),
             license=str(value["license"]), fields=FieldMapping.from_dict(value.get("fields", {})),
-            splits=splits, notes=str(value.get("notes", "")),
+            splits=splits, adapter=adapter, notes=str(value.get("notes", "")),
         )
 
     def split(self, name: str) -> SplitSpec:

@@ -97,6 +97,47 @@ RESET_SMOKE_OUTPUT=1 bash scripts/cpu/smoke_mock.sh
 
 The committed synthetic fixture contains three small examples and is used only to validate infrastructure. Running `smoke_mock.sh` again without `RESET_SMOKE_OUTPUT=1` verifies resume behaviour: all three completed records should be skipped.
 
+After downloading HallusionBench into `data/raw/hallusionbench/`, validate all 1,129
+records and run an eight-record real-data smoke test with the mock backend:
+
+```bash
+RESET_SMOKE_OUTPUT=1 bash scripts/cpu/smoke_hallusionbench.sh
+```
+
+The real-data smoke sample deliberately includes both text-only control questions and
+image-conditioned questions. It validates composite sample IDs and local image paths
+without loading a model.
+
+The ReTruthQA release can be validated across all 12 provenance-preserving splits and
+smoke-tested on eight real questions with:
+
+```bash
+RESET_SMOKE_OUTPUT=1 bash scripts/cpu/smoke_retruthqa.sh
+```
+
+The adapter records reasoning-path counts and source provenance as metadata, but does
+not copy the large positive and negative reasoning traces into generation records.
+The release has no top-level answer field, so the adapter extracts the last balanced
+`\boxed{...}` value from every positive reasoning path. Preparation selects an answer
+when normalized candidates agree or one candidate has a strict majority; ties remain
+ambiguous and fail validation. Candidate votes, selection method, and confidence are
+retained for audit. Normalization is materialized once under
+`data/processed/retruthqa/v1/`.
+
+The smoke script runs these explicit preparation and validation commands before the
+mock generation step:
+
+```bash
+dissertation-eval prepare-retruthqa data/manifests/retruthqa.json \
+  --output-dir data/processed/retruthqa/v1
+dissertation-eval validate-prepared data/processed/retruthqa/v1
+```
+
+Preparation is content-addressed by the raw manifest checksum and extractor version.
+An unchanged prepared directory is reused without scanning the reasoning traces again.
+Use `--force` only when intentionally rebuilding the derived files. Generated processed
+data remain ignored by Git; the preparation code and raw manifest are versioned.
+
 ### Small baseline on a Slurm GPU cluster
 
 Complete CPU/mock validation before submitting a GPU job. On the cluster:

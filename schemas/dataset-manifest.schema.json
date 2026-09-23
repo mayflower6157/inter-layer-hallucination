@@ -13,6 +13,7 @@
     "source_url": {"type": "string", "minLength": 1},
     "revision": {"type": "string", "minLength": 1},
     "license": {"type": "string", "minLength": 1},
+    "adapter": {"type": ["string", "null"], "minLength": 1},
     "notes": {"type": "string"},
     "fields": {
       "type": "object",

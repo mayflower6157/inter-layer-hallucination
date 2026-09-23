@@ -1,0 +1,22 @@
+{
+  "run_id": "smoke-retruthqa-real-mock-v1",
+  "dataset_manifest": "../data/processed/retruthqa/v1/manifest.json",
+  "split": "r1-7b_math_task1",
+  "backend": "mock",
+  "model_id": "mock/model",
+  "model_revision": "local-test-v1",
+  "prompt_template": "{prompt}",
+  "output_path": "../outputs/smoke-retruthqa-real-mock-v1.jsonl",
+  "decoding": {
+    "strategy": "greedy",
+    "max_new_tokens": 512,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "num_beams": 1,
+    "num_generations": 1,
+    "seeds": [42]
+  },
+  "backend_options": {
+    "prefix": "RETRUTHQA-SMOKE"
+  }
+}

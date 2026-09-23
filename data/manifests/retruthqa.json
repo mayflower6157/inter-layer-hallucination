@@ -1,0 +1,104 @@
+{
+  "schema_version": "1.0",
+  "dataset_id": "retruthqa",
+  "display_name": "ReTruthQA reasoning-trace release",
+  "modality": "text",
+  "source_url": "https://github.com/Jeryi-Sun/Reasoning_Hallucination",
+  "revision": "data-archive-sha256:74abbeaa10be8e7ada4157e19e439fcbb7b56a1f3fa50544d0ef703790751c34",
+  "license": "Not specified for the released dataset",
+  "adapter": "retruthqa",
+  "fields": {
+    "id": "question",
+    "prompt": "question",
+    "reference_answer": null,
+    "group_id": null,
+    "metadata": []
+  },
+  "splits": [
+    {
+      "name": "r1-7b_math_task1",
+      "path": "../raw/retruthqa/R1-7B/hallucination/MATH_task1.jsonl",
+      "format": "jsonl",
+      "sha256": "969a31bfeef26c4b172018852130e45aea7f816bdb6f78d0bbd86e26f0eda6aa",
+      "count": 44
+    },
+    {
+      "name": "r1-7b_math_task2",
+      "path": "../raw/retruthqa/R1-7B/hallucination/MATH_task2.jsonl",
+      "format": "jsonl",
+      "sha256": "3adc53e8be534c806757bec48df5773c0369c3694f89e836e57f74457b61bee7",
+      "count": 44
+    },
+    {
+      "name": "r1-7b_multihopqa_task1",
+      "path": "../raw/retruthqa/R1-7B/hallucination/MultiHopQA_task1.jsonl",
+      "format": "jsonl",
+      "sha256": "61be40095297aa1e76d884e3ec8b4303f1280e28f00ade4309e95e612ee35b51",
+      "count": 47
+    },
+    {
+      "name": "r1-7b_multihopqa_task2",
+      "path": "../raw/retruthqa/R1-7B/hallucination/MultiHopQA_task2.jsonl",
+      "format": "jsonl",
+      "sha256": "2f60c463b4a41fccdfebe8395235dae5b5a654a7a3df5346919f46d07e121d1b",
+      "count": 47
+    },
+    {
+      "name": "r1-7b_science_task1",
+      "path": "../raw/retruthqa/R1-7B/hallucination/Science_task1.jsonl",
+      "format": "jsonl",
+      "sha256": "1c2539bd87eb8e0e4123d61274b6f08e46d620fe3f106ea4683de7693c81dbd6",
+      "count": 29
+    },
+    {
+      "name": "r1-7b_science_task2",
+      "path": "../raw/retruthqa/R1-7B/hallucination/Science_task2.jsonl",
+      "format": "jsonl",
+      "sha256": "589c35f869582a5398d1b74837019347217c1856c4968d19db385784e9d3124b",
+      "count": 29
+    },
+    {
+      "name": "r1-14b_math_task1",
+      "path": "../raw/retruthqa/R1-14B/hallucination/MATH_task1.jsonl",
+      "format": "json",
+      "sha256": "dbeb3a04fcd0dab5636547897ae237ffef6e4e6947539436538c10277592632c",
+      "count": 65
+    },
+    {
+      "name": "r1-14b_math_task2",
+      "path": "../raw/retruthqa/R1-14B/hallucination/MATH_task2.jsonl",
+      "format": "json",
+      "sha256": "b6088f63f882776a86ff28e61b3952d3a33082652356f4f44d0d829fb0eb5562",
+      "count": 71
+    },
+    {
+      "name": "r1-14b_multihopqa_task1",
+      "path": "../raw/retruthqa/R1-14B/hallucination/MultiHopQA_task1.jsonl",
+      "format": "json",
+      "sha256": "44d7cf5aca386c055ab95cfc9a401d173f771728c4c8a7df83832379d10d9915",
+      "count": 121
+    },
+    {
+      "name": "r1-14b_multihopqa_task2",
+      "path": "../raw/retruthqa/R1-14B/hallucination/MultiHopQA_task2.jsonl",
+      "format": "json",
+      "sha256": "511415e512bca0c2bcf7548d9c43b5e86600fb318b37ae55210116b343df5469",
+      "count": 143
+    },
+    {
+      "name": "r1-14b_science_task1",
+      "path": "../raw/retruthqa/R1-14B/hallucination/Science_task1.jsonl",
+      "format": "json",
+      "sha256": "4c111cced94db970e8b336b3e5b41a7d7784c8fa62eb426650c279f69a699ae9",
+      "count": 58
+    },
+    {
+      "name": "r1-14b_science_task2",
+      "path": "../raw/retruthqa/R1-14B/hallucination/Science_task2.jsonl",
+      "format": "json",
+      "sha256": "d406772b76bd487c494d713265597dc8cee179e88135ad7f1c11c7ae6a98e08c",
+      "count": 60
+    }
+  ],
+  "notes": "The release has no top-level answer field. The adapter extracts the last balanced \\boxed{...} value from every positive reasoning path. Preparation selects normalized consensus or a strict majority and records every path-level candidate for audit; ties remain ambiguous. R1-7B files are JSONL; R1-14B files are JSON arrays despite their .jsonl suffix. Splits remain separate to preserve source-model, domain, and task provenance."
+}

@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/dissertation/retruthqa-prepared-record.schema.json",
+  "title": "Prepared ReTruthQA record",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "sample_id", "prompt", "reference_answer", "reference_answer_normalized",
+    "reference_answer_candidates", "reference_answer_normalized_candidates",
+    "reference_answer_candidate_counts", "reference_answer_selection",
+    "reference_answer_confidence", "reference_answer_source", "answer_status",
+    "answer_type", "group_id", "source_model", "domain", "task",
+    "positive_path_count", "negative_path_count", "positive_step_counts",
+    "negative_step_counts", "extractor_version", "source_file_sha256"
+  ],
+  "properties": {
+    "sample_id": {"type": "string", "minLength": 1},
+    "prompt": {"type": "string", "minLength": 1},
+    "reference_answer": {"type": ["string", "null"]},
+    "reference_answer_normalized": {"type": ["string", "null"]},
+    "reference_answer_candidates": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+    "reference_answer_normalized_candidates": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+    "reference_answer_candidate_counts": {"type": "object", "additionalProperties": {"type": "integer", "minimum": 1}},
+    "reference_answer_selection": {"enum": ["normalized_consensus", "strict_majority_of_positive_paths", "none"]},
+    "reference_answer_confidence": {"type": "number", "minimum": 0, "maximum": 1},
+    "reference_answer_source": {"const": "last_boxed_answer_in_positive_path"},
+    "answer_status": {"enum": ["consensus", "majority", "ambiguous"]},
+    "answer_type": {"enum": ["math", "science", "multihopqa"]},
+    "group_id": {"type": "string", "minLength": 1},
+    "source_model": {"type": "string", "minLength": 1},
+    "domain": {"type": "string", "minLength": 1},
+    "task": {"enum": ["task1", "task2"]},
+    "positive_path_count": {"type": "integer", "minimum": 1},
+    "negative_path_count": {"type": "integer", "minimum": 1},
+    "positive_step_counts": {"type": "array", "minItems": 1, "items": {"type": "integer", "minimum": 1}},
+    "negative_step_counts": {"type": "array", "minItems": 1, "items": {"type": "integer", "minimum": 1}},
+    "extractor_version": {"type": "string", "minLength": 1},
+    "source_file_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

@@ -1,7 +1,7 @@
 {
   "run_id": "retruthqa-qwen3-baseline-v1",
-  "dataset_manifest": "../data/manifests/retruthqa.template.json",
-  "split": "test",
+  "dataset_manifest": "../data/processed/retruthqa/v1/manifest.json",
+  "split": "r1-7b_math_task1",
   "backend": "transformers",
   "model_id": "TODO_EXACT_QWEN3_MODEL_ID",
   "model_revision": "TODO_IMMUTABLE_REVISION",

@@ -1,0 +1,22 @@
+{
+  "run_id": "smoke-hallusionbench-real-mock-v1",
+  "dataset_manifest": "../data/manifests/hallusionbench.json",
+  "split": "test",
+  "backend": "mock",
+  "model_id": "mock/model",
+  "model_revision": "local-test-v1",
+  "prompt_template": "Answer the following question using the image when one is provided. Answer yes or no.\n\n{prompt}",
+  "output_path": "../outputs/smoke-hallusionbench-real-mock-v1.jsonl",
+  "decoding": {
+    "strategy": "greedy",
+    "max_new_tokens": 32,
+    "temperature": 0.0,
+    "top_p": 1.0,
+    "num_beams": 1,
+    "num_generations": 1,
+    "seeds": [42]
+  },
+  "backend_options": {
+    "prefix": "HALLUSIONBENCH-SMOKE"
+  }
+}

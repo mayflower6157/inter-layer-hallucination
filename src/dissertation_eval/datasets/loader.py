@@ -7,6 +7,14 @@ from typing import Any, Iterator
 from ..errors import DataIntegrityError
 from ..io import iter_jsonl, read_json, sha256_file
 from ..schema import DatasetExample, DatasetManifest
+from .hallusionbench import normalize_hallusionbench
+from .retruthqa import normalize_retruthqa
+
+
+_ADAPTERS = {
+    "hallusionbench": normalize_hallusionbench,
+    "retruthqa": normalize_retruthqa,
+}
 
 
 def load_manifest(path: Path) -> DatasetManifest:
@@ -47,19 +55,36 @@ def load_split(manifest_path: Path, split_name: str) -> tuple[DatasetManifest, I
         seen: set[str] = set()
         for row in _rows(data_path, split.format):
             count += 1
-            sample_id = str(_required(row, manifest.fields.id, data_path))
-            if sample_id in seen:
-                raise DataIntegrityError(f"Duplicate sample id {sample_id!r} in {data_path}")
-            seen.add(sample_id)
-            prompt = str(_required(row, manifest.fields.prompt, data_path))
-            image_path = None
-            if manifest.fields.image and row.get(manifest.fields.image):
-                image_path = str((data_path.parent / str(row[manifest.fields.image])).resolve())
-            reference = row.get(manifest.fields.reference_answer) if manifest.fields.reference_answer else None
-            group_id = row.get(manifest.fields.group_id) if manifest.fields.group_id else None
-            metadata = {name: row.get(name) for name in manifest.fields.metadata}
-            yield DatasetExample(sample_id, prompt, None if reference is None else str(reference),
-                                 image_path, None if group_id is None else str(group_id), metadata, row)
+            if manifest.adapter:
+                try:
+                    normalize = _ADAPTERS[manifest.adapter]
+                except KeyError as exc:
+                    raise DataIntegrityError(
+                        f"Unknown dataset adapter {manifest.adapter!r}"
+                    ) from exc
+                example = normalize(row, data_path, manifest)
+            else:
+                sample_id = str(_required(row, manifest.fields.id, data_path))
+                prompt = str(_required(row, manifest.fields.prompt, data_path))
+                image_path = None
+                if manifest.fields.image and row.get(manifest.fields.image):
+                    image_path = str((data_path.parent / str(row[manifest.fields.image])).resolve())
+                reference = (
+                    row.get(manifest.fields.reference_answer)
+                    if manifest.fields.reference_answer else None
+                )
+                group_id = row.get(manifest.fields.group_id) if manifest.fields.group_id else None
+                metadata = {name: row.get(name) for name in manifest.fields.metadata}
+                example = DatasetExample(
+                    sample_id, prompt, None if reference is None else str(reference),
+                    image_path, None if group_id is None else str(group_id), metadata, row,
+                )
+            if example.sample_id in seen:
+                raise DataIntegrityError(
+                    f"Duplicate sample id {example.sample_id!r} in {data_path}"
+                )
+            seen.add(example.sample_id)
+            yield example
         if split.count is not None and count != split.count:
             raise DataIntegrityError(f"Expected {split.count} rows in {data_path}, found {count}")
 

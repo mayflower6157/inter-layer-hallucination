@@ -8,6 +8,7 @@ outputs/*
 !outputs/.gitkeep
 data/raw/
 data/cache/
+data/processed/
 
 # Secrets and machine-local configuration
 .env

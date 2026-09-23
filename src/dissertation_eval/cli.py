@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 
 from .datasets import load_manifest, load_split
+from .datasets.prepare import prepare_retruthqa, validate_prepared_retruthqa
 from .pipeline.runner import run_generation
 
 
@@ -29,6 +30,16 @@ def build_parser() -> argparse.ArgumentParser:
     generate.add_argument("config", type=Path)
     generate.add_argument("--limit", type=int)
     generate.add_argument("--fail-fast", action="store_true")
+    prepare = subparsers.add_parser(
+        "prepare-retruthqa", help="Materialize normalized ReTruthQA generation inputs"
+    )
+    prepare.add_argument("manifest", type=Path)
+    prepare.add_argument("--output-dir", type=Path, required=True)
+    prepare.add_argument("--force", action="store_true")
+    validate_prepared = subparsers.add_parser(
+        "validate-prepared", help="Validate a prepared ReTruthQA directory or manifest"
+    )
+    validate_prepared.add_argument("path", type=Path)
     return parser
 
 
@@ -36,6 +47,22 @@ def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     if args.command == "validate-manifest":
         return _validate_manifest(args.manifest, args.split)
+    if args.command == "prepare-retruthqa":
+        result = prepare_retruthqa(args.manifest, args.output_dir, force=args.force)
+        summary = {
+            key: result[key]
+            for key in (
+                "status", "extractor_version", "total_records",
+                "total_ambiguous", "total_majority",
+            )
+        }
+        summary["output_dir"] = str(args.output_dir.resolve())
+        print(json.dumps(summary, indent=2, sort_keys=True))
+        return 0
+    if args.command == "validate-prepared":
+        result = validate_prepared_retruthqa(args.path)
+        print(json.dumps(result, indent=2, sort_keys=True))
+        return 0
     counters = run_generation(args.config, limit=args.limit, fail_fast=args.fail_fast)
     print(json.dumps(counters, indent=2, sort_keys=True))
     return 0 if counters["error"] == 0 else 1
