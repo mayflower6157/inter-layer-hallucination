@@ -23,10 +23,34 @@ def domain_stratified_folds(rows: list[dict[str, Any]], folds: int = 4) -> list[
 
     if folds < 2:
         raise ValueError("folds must be at least two")
+    sample_groups: dict[str, list[int]] = defaultdict(list)
+    for index, row in enumerate(rows):
+        sample_groups[str(row.get("sample_id", row["record_id"]))].append(index)
+    result: list[list[int]] = [[] for _ in range(folds)]
+    if any(len(indices) > 1 for indices in sample_groups.values()):
+        # Sampling produces several traces for the same question. Keep every trace
+        # from a question in one fold to prevent prompt/reference leakage, while
+        # distributing question groups independently inside each domain.
+        by_domain: dict[str, list[tuple[str, list[int]]]] = defaultdict(list)
+        for sample_id, indices in sample_groups.items():
+            domains = {str(rows[index]["domain"]) for index in indices}
+            if len(domains) != 1:
+                raise ValueError(f"Sample {sample_id} spans multiple domains")
+            by_domain[domains.pop()].append((sample_id, indices))
+        for domain, groups in sorted(by_domain.items()):
+            ordered = sorted(
+                groups,
+                key=lambda item: hashlib.sha256(
+                    f"20260924\0{domain}\0{item[0]}".encode()
+                ).digest(),
+            )
+            for offset, (_, indices) in enumerate(ordered):
+                result[offset % folds].extend(indices)
+        return [sorted(indices) for indices in result]
+
     strata: dict[tuple[str, int], list[int]] = defaultdict(list)
     for index, row in enumerate(rows):
         strata[(str(row["domain"]), int(row["label"]))].append(index)
-    result: list[list[int]] = [[] for _ in range(folds)]
     for key, indices in sorted(strata.items()):
         ordered = sorted(
             indices,
@@ -142,6 +166,7 @@ def cross_validate_rhd(
         rows.append(
             {
                 "record_id": str(diagnostic["record_id"]),
+                "sample_id": str(diagnostic["sample_id"]),
                 "domain": str(evaluation["domain"]),
                 "label": 0 if evaluation["exact_match"] is True else 1,
                 "values": values,

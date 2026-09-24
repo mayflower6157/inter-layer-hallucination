@@ -25,6 +25,27 @@ class RhdCrossValidationTests(unittest.TestCase):
         self.assertGreater(threshold, 0.2)
         self.assertLessEqual(threshold, 0.8)
 
+    def test_sampling_generations_for_one_sample_never_cross_folds(self):
+        rows = [
+            {
+                "record_id": f"{domain}-{sample}-{generation}",
+                "sample_id": f"{domain}-{sample}",
+                "domain": domain,
+                "label": generation % 2,
+            }
+            for domain in ("MATH", "Science", "MultiHopQA")
+            for sample in range(8)
+            for generation in range(5)
+        ]
+        folds = domain_stratified_folds(rows, 4)
+        assignment = {
+            rows[index]["sample_id"]: fold_index
+            for fold_index, fold in enumerate(folds)
+            for index in fold
+        }
+        for fold_index, fold in enumerate(folds):
+            self.assertTrue(all(assignment[rows[index]["sample_id"]] == fold_index for index in fold))
+
 
 if __name__ == "__main__":
     unittest.main()
