@@ -164,12 +164,32 @@ def _token_step_indices(tokenizer: Any, token_ids: list[int]) -> tuple[str, list
     )
     reencoded = list(encoded["input_ids"])
     offsets = list(encoded["offset_mapping"])
-    usable = min(len(token_ids), len(offsets))
-    if reencoded[:usable] != token_ids[:usable]:
-        raise ValueError("Generated token IDs do not round-trip through decoded text")
+    if reencoded == token_ids:
+        token_offsets = offsets
+    else:
+        # Tokenization is not necessarily bijective: valid generated token sequences
+        # can decode to text that the tokenizer re-encodes differently. Derive exact
+        # character ends from cumulative decoding instead of rejecting such traces.
+        ends = [
+            len(
+                tokenizer.decode(
+                    token_ids[: index + 1],
+                    skip_special_tokens=True,
+                    clean_up_tokenization_spaces=False,
+                )
+            )
+            for index in range(len(token_ids))
+        ]
+        token_offsets = []
+        previous = 0
+        for end in ends:
+            end = max(previous, min(end, len(text)))
+            token_offsets.append((previous, end))
+            previous = end
+    usable = len(token_offsets)
     indices: list[int] = []
     step = 0
-    for start, end in offsets[:usable]:
+    for start, end in token_offsets:
         midpoint = start + max(0, end - start - 1) / 2
         while step + 1 < len(spans) and midpoint >= spans[step][1]:
             step += 1
