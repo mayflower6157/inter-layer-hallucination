@@ -33,7 +33,7 @@ args=(
   --limit "$DIAGNOSTIC_LIMIT"
 )
 if [[ -n "$RHD_RELATIVE_LAYERS" ]]; then
-  IFS=',' read -ra depths <<< "$RHD_RELATIVE_LAYERS"
+  IFS=':' read -ra depths <<< "$RHD_RELATIVE_LAYERS"
   for depth in "${depths[@]}"; do
     args+=(--relative-layer "$depth")
   done
