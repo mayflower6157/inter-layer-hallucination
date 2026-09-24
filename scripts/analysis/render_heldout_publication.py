@@ -300,6 +300,7 @@ def write_tables(
     condition_data: list[dict[str, Any]],
     generation_data: list[dict[str, Any]],
     results: dict[str, Any],
+    comparisons: dict[str, dict[str, Any]],
     output: Path,
 ) -> None:
     with (output / "heldout_generation_results.csv").open("w", newline="", encoding="utf-8") as handle:
@@ -342,6 +343,73 @@ def write_tables(
         )
     rhd_tex.extend([r"\bottomrule", r"\end{tabular}%", r"}", r"\end{table}"])
     (output / "heldout_rhd_results.tex").write_text("\n".join(rhd_tex) + "\n")
+
+    operating_rows = []
+    operating_tex = [
+        r"\begin{table}[t]", r"\centering", r"\small",
+        r"\caption{Held-out class prevalence, AUPRC, and frozen-threshold performance. The positive class is an incorrect final answer; confidence intervals use the same clustered bootstrap as AUROC.}",
+        r"\label{tab:heldout-operating}", r"\resizebox{\textwidth}{!}{%",
+        r"\begin{tabular}{llrrrrr}", r"\toprule",
+        r"Model & Decoding & Scored & Incorrect (\%) & RHD AUPRC [95\% CI] & RHD BA [95\% CI] & Threshold \\",
+        r"\midrule",
+    ]
+    for row in condition_data:
+        auprc_lo, auprc_hi = row["auprc_ci"]
+        ba_lo, ba_hi = row["balanced_accuracy_ci"]
+        threshold = results["conditions"][row["condition"]]["models"]["rhd_only"]["overall"]["threshold"]
+        prevalence = row["incorrect"] / row["scored"]
+        operating_rows.append(
+            {
+                "model": row["model"], "strategy": row["strategy"], "scored": row["scored"],
+                "incorrect_prevalence": prevalence, "rhd_auprc": row["auprc"],
+                "rhd_auprc_ci_low": auprc_lo, "rhd_auprc_ci_high": auprc_hi,
+                "rhd_balanced_accuracy": row["balanced_accuracy"],
+                "rhd_balanced_accuracy_ci_low": ba_lo, "rhd_balanced_accuracy_ci_high": ba_hi,
+                "frozen_threshold": threshold,
+            }
+        )
+        operating_tex.append(
+            f"Qwen3-{row['model']} & {row['strategy']} & {row['scored']} & {100*prevalence:.1f} & "
+            f"{row['auprc']:.3f} [{auprc_lo:.3f}, {auprc_hi:.3f}] & "
+            f"{row['balanced_accuracy']:.3f} [{ba_lo:.3f}, {ba_hi:.3f}] & {threshold:.3f} " + r"\\"
+        )
+    operating_tex.extend([r"\bottomrule", r"\end{tabular}%", r"}", r"\end{table}"])
+    (output / "heldout_operating_results.tex").write_text("\n".join(operating_tex) + "\n")
+    with (output / "heldout_operating_results.csv").open("w", newline="", encoding="utf-8") as handle:
+        writer = csv.DictWriter(handle, fieldnames=list(operating_rows[0]), lineterminator="\n")
+        writer.writeheader()
+        writer.writerows(operating_rows)
+
+    self_consistency_rows = []
+    self_consistency_tex = [
+        r"\begin{table}[t]", r"\centering", r"\small",
+        r"\caption{Question-level Sampling-5 self-consistency on the held-out split. Accuracy over all questions treats uncovered questions as unanswered; predicted accuracy is conditional on a valid majority-vote prediction.}",
+        r"\label{tab:heldout-self-consistency}", r"\resizebox{\textwidth}{!}{%",
+        r"\begin{tabular}{lrrrrrr}", r"\toprule",
+        r"Model & Questions & Coverage (\%) & Accuracy all (\%) & Accuracy predicted (\%) & Strict majority & Ties \\",
+        r"\midrule",
+    ]
+    for model in ("2B", "4B"):
+        values = comparisons[model]["self_consistency"]
+        row = {
+            "model": model, "questions": values["samples"],
+            "prediction_coverage": values["prediction_coverage"],
+            "accuracy_all": values["exact_match_rate_all"],
+            "accuracy_predicted": values["exact_match_rate_predicted"],
+            "strict_majority_count": values["strict_majority_count"], "tie_count": values["tie_count"],
+        }
+        self_consistency_rows.append(row)
+        self_consistency_tex.append(
+            f"Qwen3-{model} & {row['questions']} & {100*row['prediction_coverage']:.1f} & "
+            f"{100*row['accuracy_all']:.1f} & {100*row['accuracy_predicted']:.1f} & "
+            f"{row['strict_majority_count']} & {row['tie_count']} " + r"\\"
+        )
+    self_consistency_tex.extend([r"\bottomrule", r"\end{tabular}%", r"}", r"\end{table}"])
+    (output / "heldout_self_consistency.tex").write_text("\n".join(self_consistency_tex) + "\n")
+    with (output / "heldout_self_consistency.csv").open("w", newline="", encoding="utf-8") as handle:
+        writer = csv.DictWriter(handle, fieldnames=list(self_consistency_rows[0]), lineterminator="\n")
+        writer.writeheader()
+        writer.writerows(self_consistency_rows)
 
     domain_rows = []
     domain_tex = [
@@ -397,7 +465,7 @@ def main() -> None:
     development_comparison(rows, args.development_matrix, args.output_dir)
     domain_heatmap(results, args.output_dir)
     truncation_figure(generations, args.output_dir)
-    write_tables(rows, generations, results, args.output_dir)
+    write_tables(rows, generations, results, comparisons, args.output_dir)
     manifest = {
         "schema_version": "1.0",
         "heldout_results": str(args.heldout_results.resolve()),
@@ -412,7 +480,9 @@ def main() -> None:
         "tables": [
             "heldout_generation_results.tex", "heldout_rhd_results.tex",
             "heldout_domain_results.tex", "heldout_generation_results.csv",
-            "heldout_domain_results.csv",
+            "heldout_domain_results.csv", "heldout_operating_results.tex",
+            "heldout_operating_results.csv", "heldout_self_consistency.tex",
+            "heldout_self_consistency.csv",
         ],
     }
     (args.output_dir / "publication_manifest.json").write_text(
