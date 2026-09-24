@@ -222,3 +222,33 @@ The 2B comparison contains completed/exact counts of 47/24 (greedy), 48/23
 SHA-256 checksums of the machine-readable `comparison.json` artifacts are
 `eb702c658e470f46f2efbffa04bfa8516b89abcd15cd590ca5696b2053518076` (2B) and
 `bd04789ac6e3c619c77095ee2c026e2512d014442c488118a2a5168dae128fcc` (4B).
+
+## 2026-09-24 — Read-only RHD inter-layer diagnostic smoke test
+
+RHD v1 was specified as a post-hoc, label-blind detector rather than a decoding
+intervention. The frozen method definition is recorded in `docs/rhd-method-v1.md`.
+The first diagnostic pass projects hidden states at normalized candidate depths
+0.50, 0.625, 0.75, and 0.875 and compares their vocabulary distributions with the
+final-layer distribution using Jensen–Shannon divergence. It does not alter prompts,
+generated token IDs, or decoding decisions.
+
+Slurm job `168967` ran the diagnostic on the first three records of the Qwen3-4B
+greedy development output and completed with exit code `0:0` in 00:01:17. For the
+36-block Qwen3-4B model, the candidate layers resolved to `[18, 23, 27, 32]`, with
+layer 36 as the final anchor. The output directory is
+`diagnostics/qwen3-4b-greedy-development-rhd-smoke-v1` on the server.
+
+All three records produced finite, non-constant token-level scores, all observed JSD
+values were within the theoretical interval `[0, ln(2)]`, and all sidecar SHA-256
+checksums validated. The source generation file's SHA-256 was unchanged before and
+after diagnosis. Across the three records, the mean token-level reasoning score was
+0.54656 and the observed record-mean range was 0.14029–0.69306. Candidate-layer mean
+JSD decreased toward the final layer in every record; for the first record the means
+were 0.6816, 0.6560, 0.5342, and 0.3383 at layers 18, 23, 27, and 32 respectively.
+The diagnostic manifest SHA-256 is
+`a975682c146ffd61801545060073f7e5b2d3d591a968f58d8b05ee1dea083aac`.
+
+This smoke test establishes extraction integrity and a measurable layer- and
+token-dependent signal. It does not establish that the signal discriminates correct
+from hallucinated reasoning: that claim requires frozen step segmentation and a
+larger development-only comparison containing both correct and incorrect outputs.
