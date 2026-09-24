@@ -1,0 +1,19 @@
+{
+  "completed": 47,
+  "evaluator_version": "1.0.2",
+  "exact_match_rate_all": 0.4,
+  "exact_match_rate_scored": 0.5106382978723404,
+  "exact_matches": 24,
+  "input_path": "/home/kxu009/mayflower/Disseration/outputs/qwen3-2b-greedy-development-v1.jsonl",
+  "input_sha256": "0188106f7fed53c90c7e4d8184c994918d7f069c0864ae12ba0e0b74b797f5a2",
+  "manual_review_count": 36,
+  "parse_coverage_completed": 1.0,
+  "parsed_completed": 47,
+  "records": 60,
+  "schema_version": "1.0",
+  "status_counts": {
+    "exact_match": 24,
+    "mismatch": 23,
+    "truncated": 13
+  }
+}

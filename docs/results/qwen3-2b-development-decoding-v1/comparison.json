@@ -1,0 +1,116 @@
+{
+  "schema_version": "1.0",
+  "self_consistency": {
+    "exact_match_rate_all": 0.5,
+    "exact_match_rate_predicted": 0.5882352941176471,
+    "exact_matches": 30,
+    "generated_tokens_total_mean": 2883.9666666666667,
+    "generations_per_sample_max": 5,
+    "generations_per_sample_min": 5,
+    "latency_ms_total_mean": 107482.8502059371,
+    "latency_ms_total_median": 105536.52441478334,
+    "peak_memory_bytes_max": 3939990016,
+    "prediction_coverage": 0.85,
+    "predictions": 51,
+    "samples": 60,
+    "source_strategy": "sampling5",
+    "strict_majority_count": 40,
+    "tie_count": 9,
+    "tie_rule": "lowest generation_index among answers tied for the highest vote count"
+  },
+  "strategies": {
+    "beam4": {
+      "efficiency": {
+        "generated_tokens_mean": 560.95,
+        "generated_tokens_median": 498.0,
+        "latency_ms_mean": 23455.36473655763,
+        "latency_ms_median": 20231.053554452956,
+        "peak_memory_bytes_max": 4430302208,
+        "peak_memory_bytes_mean": 3974880512.0
+      },
+      "evaluation": {
+        "completed": 48,
+        "evaluator_version": "1.0.2",
+        "exact_match_rate_all": 0.38333333333333336,
+        "exact_match_rate_scored": 0.4791666666666667,
+        "exact_matches": 23,
+        "input_path": "/home/kxu009/mayflower/Disseration/outputs/qwen3-2b-beam4-development-v1.jsonl",
+        "input_sha256": "f3a90c1c7d05357eeef47c866724d2203949acb23dad29dd0e2190f79ff2ac61",
+        "manual_review_count": 37,
+        "parse_coverage_completed": 1.0,
+        "parsed_completed": 48,
+        "records": 60,
+        "schema_version": "1.0",
+        "status_counts": {
+          "exact_match": 23,
+          "mismatch": 25,
+          "truncated": 12
+        }
+      },
+      "input_path": "/home/kxu009/mayflower/Disseration/outputs/qwen3-2b-beam4-development-v1.jsonl",
+      "unique_samples": 60
+    },
+    "greedy": {
+      "efficiency": {
+        "generated_tokens_mean": 547.7166666666667,
+        "generated_tokens_median": 469.0,
+        "latency_ms_mean": 22117.41215280878,
+        "latency_ms_median": 18628.8811925333,
+        "peak_memory_bytes_max": 3939990016,
+        "peak_memory_bytes_mean": 3823351756.8
+      },
+      "evaluation": {
+        "completed": 47,
+        "evaluator_version": "1.0.2",
+        "exact_match_rate_all": 0.4,
+        "exact_match_rate_scored": 0.5106382978723404,
+        "exact_matches": 24,
+        "input_path": "/home/kxu009/mayflower/Disseration/outputs/qwen3-2b-greedy-development-v1.jsonl",
+        "input_sha256": "0188106f7fed53c90c7e4d8184c994918d7f069c0864ae12ba0e0b74b797f5a2",
+        "manual_review_count": 36,
+        "parse_coverage_completed": 1.0,
+        "parsed_completed": 47,
+        "records": 60,
+        "schema_version": "1.0",
+        "status_counts": {
+          "exact_match": 24,
+          "mismatch": 23,
+          "truncated": 13
+        }
+      },
+      "input_path": "/home/kxu009/mayflower/Disseration/outputs/qwen3-2b-greedy-development-v1.jsonl",
+      "unique_samples": 60
+    },
+    "sampling5": {
+      "efficiency": {
+        "generated_tokens_mean": 576.7933333333333,
+        "generated_tokens_median": 543.5,
+        "latency_ms_mean": 21496.570041187417,
+        "latency_ms_median": 20136.747953947634,
+        "peak_memory_bytes_max": 3939990016,
+        "peak_memory_bytes_mean": 3824659947.52
+      },
+      "evaluation": {
+        "completed": 217,
+        "evaluator_version": "1.0.2",
+        "exact_match_rate_all": 0.4066666666666667,
+        "exact_match_rate_scored": 0.5622119815668203,
+        "exact_matches": 122,
+        "input_path": "/home/kxu009/mayflower/Disseration/outputs/qwen3-2b-sampling5-development-v1.jsonl",
+        "input_sha256": "b577039a0b752c3ba29b12ec1e9222624021fa433b98e5b9180d49d715c38d65",
+        "manual_review_count": 178,
+        "parse_coverage_completed": 1.0,
+        "parsed_completed": 217,
+        "records": 300,
+        "schema_version": "1.0",
+        "status_counts": {
+          "exact_match": 122,
+          "mismatch": 95,
+          "truncated": 83
+        }
+      },
+      "input_path": "/home/kxu009/mayflower/Disseration/outputs/qwen3-2b-sampling5-development-v1.jsonl",
+      "unique_samples": 60
+    }
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "schema_version": "1.0",
+  "artifact_set": "rhd-frozen-development-v1",
+  "source_commit": "33d155b50cf2b3850a4b8e9444b3449ff23592db",
+  "branch": "main",
+  "verified_at": "2026-09-24T00:00:00+08:00",
+  "scope": "development_only",
+  "held_out_labels_used": false,
+  "models": ["Qwen3-2B", "Qwen3-4B"],
+  "decoding_strategies": ["greedy", "beam4", "sampling5"],
+  "calibrations": [
+    "calibrations/qwen3-2b-greedy.json",
+    "calibrations/qwen3-2b-beam4.json",
+    "calibrations/qwen3-2b-sampling5.json",
+    "calibrations/qwen3-4b-greedy.json",
+    "calibrations/qwen3-4b-beam4.json",
+    "calibrations/qwen3-4b-sampling5.json"
+  ],
+  "summary_tables": ["auroc_matrix.csv"],
+  "figures": ["auroc_matrix.svg", "sampling_truncation_comparison.svg"],
+  "plotting_script": "scripts/analysis/render_rhd_frozen_summary.py"
+}

@@ -1,0 +1,19 @@
+{
+  "completed": 48,
+  "evaluator_version": "1.0.2",
+  "exact_match_rate_all": 0.38333333333333336,
+  "exact_match_rate_scored": 0.4791666666666667,
+  "exact_matches": 23,
+  "input_path": "/home/kxu009/mayflower/Disseration/outputs/qwen3-2b-beam4-development-v1.jsonl",
+  "input_sha256": "f3a90c1c7d05357eeef47c866724d2203949acb23dad29dd0e2190f79ff2ac61",
+  "manual_review_count": 37,
+  "parse_coverage_completed": 1.0,
+  "parsed_completed": 48,
+  "records": 60,
+  "schema_version": "1.0",
+  "status_counts": {
+    "exact_match": 23,
+    "mismatch": 25,
+    "truncated": 12
+  }
+}

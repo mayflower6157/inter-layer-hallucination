@@ -1,0 +1,19 @@
+{
+  "completed": 217,
+  "evaluator_version": "1.0.2",
+  "exact_match_rate_all": 0.4066666666666667,
+  "exact_match_rate_scored": 0.5622119815668203,
+  "exact_matches": 122,
+  "input_path": "/home/kxu009/mayflower/Disseration/outputs/qwen3-2b-sampling5-development-v1.jsonl",
+  "input_sha256": "b577039a0b752c3ba29b12ec1e9222624021fa433b98e5b9180d49d715c38d65",
+  "manual_review_count": 178,
+  "parse_coverage_completed": 1.0,
+  "parsed_completed": 217,
+  "records": 300,
+  "schema_version": "1.0",
+  "status_counts": {
+    "exact_match": 122,
+    "mismatch": 95,
+    "truncated": 83
+  }
+}
