@@ -1,6 +1,11 @@
+import math
 import unittest
 
-from dissertation_eval.analysis.rhd import resolve_candidate_layers
+from dissertation_eval.analysis.rhd import (
+    official_trace_features,
+    resolve_candidate_layers,
+    segment_reasoning_steps,
+)
 
 
 class RhdDiagnosticTests(unittest.TestCase):
@@ -21,6 +26,32 @@ class RhdDiagnosticTests(unittest.TestCase):
         for value in (0.0, 1.0, -0.5, 1.5):
             with self.subTest(value=value), self.assertRaises(ValueError):
                 resolve_candidate_layers(28, [value])
+
+    def test_paragraph_step_segmentation_is_deterministic(self):
+        text = " First step.\n\nSecond step.\n  \nThird step. "
+        self.assertEqual(
+            [text[start:end] for start, end in segment_reasoning_steps(text)],
+            ["First step.", "Second step.", "Third step."],
+        )
+
+    def test_official_features_have_released_order_and_finite_values(self):
+        features = official_trace_features(
+            [1.0, 2.0, 1.0, 3.0, 2.0],
+            [0.2, 0.3, 0.25, 0.5, 0.4],
+            [
+                [0, 0, 0, 0, 0],
+                [1, 0, 0, 0, 0],
+                [0.2, 0.8, 0, 0, 0],
+                [0.1, 0.3, 0.6, 0, 0],
+                [0.1, 0.2, 0.3, 0.4, 0],
+            ],
+        )
+        self.assertEqual(
+            list(features),
+            ["attention_score", "cv_score", "reasoning_score_mean", "pcc"],
+        )
+        self.assertAlmostEqual(features["reasoning_score_mean"], 1.8)
+        self.assertTrue(all(math.isfinite(value) for value in features.values()))
 
 
 if __name__ == "__main__":

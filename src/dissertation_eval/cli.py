@@ -8,7 +8,7 @@ from .analysis import diagnose_rhd_generations
 from .datasets import load_manifest, load_split
 from .datasets.prepare import prepare_retruthqa, validate_prepared_retruthqa
 from .datasets.selection import create_retruthqa_selection
-from .evaluation import compare_retruthqa_runs, evaluate_retruthqa_generations
+from .evaluation import compare_retruthqa_runs, evaluate_retruthqa_generations, evaluate_rhd_diagnostics
 from .pipeline.runner import run_generation
 
 
@@ -79,6 +79,12 @@ def build_parser() -> argparse.ArgumentParser:
     diagnose.add_argument("--limit", type=int)
     diagnose.add_argument("--relative-layer", type=float, action="append")
     diagnose.add_argument("--chunk-size", type=int, default=16)
+    evaluate_rhd = subparsers.add_parser(
+        "evaluate-rhd", help="Compare development-only RHD diagnostic configurations"
+    )
+    evaluate_rhd.add_argument("evaluation", type=Path)
+    evaluate_rhd.add_argument("--diagnostic", action="append", required=True, metavar="LABEL=DIR")
+    evaluate_rhd.add_argument("--output", type=Path, required=True)
     return parser
 
 
@@ -134,6 +140,18 @@ def main(argv: list[str] | None = None) -> int:
         if args.relative_layer is not None:
             kwargs["relative_layers"] = args.relative_layer
         result = diagnose_rhd_generations(args.generations, args.output_dir, **kwargs)
+        print(json.dumps(result, indent=2, sort_keys=True))
+        return 0
+    if args.command == "evaluate-rhd":
+        diagnostics: dict[str, Path] = {}
+        for item in args.diagnostic:
+            if "=" not in item:
+                raise SystemExit(f"--diagnostic must use LABEL=DIR, received: {item!r}")
+            label, raw_path = item.split("=", 1)
+            if not label or not raw_path or label in diagnostics:
+                raise SystemExit(f"Invalid or duplicate --diagnostic value: {item!r}")
+            diagnostics[label] = Path(raw_path)
+        result = evaluate_rhd_diagnostics(args.evaluation, diagnostics, args.output)
         print(json.dumps(result, indent=2, sort_keys=True))
         return 0
     counters = run_generation(

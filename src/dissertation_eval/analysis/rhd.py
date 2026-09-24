@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import math
 import os
+import re
 import tempfile
 import time
 from pathlib import Path
@@ -14,6 +15,82 @@ from ..io import append_jsonl, atomic_write_json, iter_jsonl, read_json, sha256_
 
 RHD_DIAGNOSTIC_VERSION = "1.1.0"
 DEFAULT_RELATIVE_LAYERS = (0.5, 0.625, 0.75, 0.875)
+
+
+def segment_reasoning_steps(text: str) -> list[tuple[int, int]]:
+    """Return immutable paragraph-based reasoning-step character spans.
+
+    A step boundary is two or more newlines, optionally containing whitespace.
+    Empty regions are discarded; no semantic or answer-label information is used.
+    """
+
+    spans: list[tuple[int, int]] = []
+    start = 0
+    for match in re.finditer(r"\n\s*\n+", text):
+        left, right = start, match.start()
+        while left < right and text[left].isspace():
+            left += 1
+        while right > left and text[right - 1].isspace():
+            right -= 1
+        if left < right:
+            spans.append((left, right))
+        start = match.end()
+    left, right = start, len(text)
+    while left < right and text[left].isspace():
+        left += 1
+    while right > left and text[right - 1].isspace():
+        right -= 1
+    if left < right:
+        spans.append((left, right))
+    return spans or ([(0, len(text))] if text else [])
+
+
+def official_trace_features(
+    step_scores: list[float], step_entropies: list[float], attention_matrix: list[list[float]]
+) -> dict[str, float]:
+    """Compute the four released RHD features without labels or fitted weights."""
+
+    try:
+        import numpy as np
+    except ImportError as exc:
+        raise RuntimeError("RHD diagnostics require NumPy; install the hf dependencies") from exc
+    r = np.asarray(step_scores, dtype=float)
+    entropy = np.asarray(step_entropies, dtype=float)
+    if r.size == 0 or entropy.size != r.size:
+        raise ValueError("RHD trace features require aligned non-empty step arrays")
+    early = r[: max(1, r.size // 2)]
+    early_mean = float(early.mean())
+    cv = float(early.std() / early_mean) if early_mean != 0 else 0.0
+    attention = np.asarray(attention_matrix, dtype=float)
+    if attention.shape != (r.size, r.size):
+        raise ValueError("attention_matrix must be square and aligned to steps")
+    start = int(np.floor(r.size * 0.8))
+    threshold = float(np.quantile(r, 0.2))
+    late_scores: list[float] = []
+    for index in range(start, r.size):
+        prior = attention[index, :start]
+        top_k = min(5, prior.size)
+        if top_k:
+            top = np.argsort(prior)[-top_k:]
+            late_scores.append(float(np.mean((r[top] < threshold) | (r[top] > 4))))
+    attention_score = float(np.mean(late_scores)) if late_scores else 0.0
+
+    def minmax(values: Any) -> Any:
+        low, high = float(values.min()), float(values.max())
+        return (values - low) / (high - low) if high > low else np.zeros_like(values)
+
+    dr = np.diff(minmax(r))
+    de = np.diff(minmax(entropy))
+    if dr.size >= 2 and float(dr.std()) > 0 and float(de.std()) > 0:
+        pcc = float(np.corrcoef(dr, de)[0, 1])
+    else:
+        pcc = 0.0
+    return {
+        "attention_score": attention_score,
+        "cv_score": cv,
+        "reasoning_score_mean": float(r.mean()),
+        "pcc": pcc,
+    }
 
 
 def resolve_candidate_layers(
@@ -75,6 +152,25 @@ def _model_parts(model: Any) -> tuple[Any, Any]:
     return norm, lm_head
 
 
+def _token_step_indices(tokenizer: Any, token_ids: list[int]) -> tuple[str, list[int]]:
+    pieces = [
+        tokenizer.decode([token_id], skip_special_tokens=False, clean_up_tokenization_spaces=False)
+        for token_id in token_ids
+    ]
+    text = "".join(pieces)
+    spans = segment_reasoning_steps(text)
+    indices: list[int] = []
+    cursor = 0
+    step = 0
+    for piece in pieces:
+        midpoint = cursor + max(0, len(piece) - 1) / 2
+        while step + 1 < len(spans) and midpoint >= spans[step][1]:
+            step += 1
+        indices.append(step)
+        cursor += len(piece)
+    return text, indices
+
+
 def _analyse_record(
     backend: TransformersBackend,
     row: dict[str, Any],
@@ -112,6 +208,7 @@ def _analyse_record(
             input_ids=input_ids,
             attention_mask=attention_mask,
             output_hidden_states=True,
+            output_attentions=True,
             use_cache=False,
             return_dict=True,
         )
@@ -220,6 +317,46 @@ def _analyse_record(
     ]
     arrays["reference_reasoning_score"] = reference_reasoning_score
     arrays["token_ids"] = token_ids
+    decoded_text, step_index = _token_step_indices(backend.tokenizer, token_ids)
+    arrays["step_index"] = step_index
+    step_count = max(step_index) + 1
+    step_reference_scores = [
+        mean(reference_reasoning_score[i] for i, value in enumerate(step_index) if value == step)
+        for step in range(step_count)
+    ]
+    step_entropies = [
+        mean(float(arrays["final_entropy"][i]) for i, value in enumerate(step_index) if value == step)
+        for step in range(step_count)
+    ]
+    attention_matrix = [[0.0 for _ in range(step_count)] for _ in range(step_count)]
+    if outputs.attentions:
+        generated_positions = torch.arange(
+            prompt_length, prompt_length + len(token_ids), device=input_ids.device
+        )
+        token_attention = None
+        for layer_attention in outputs.attentions:
+            selected = layer_attention[0].float().mean(0).index_select(0, generated_positions)
+            selected = selected.index_select(1, generated_positions)
+            token_attention = selected if token_attention is None else token_attention + selected
+        token_attention = token_attention / len(outputs.attentions)
+        for current_step in range(step_count):
+            current = torch.tensor(
+                [i for i, value in enumerate(step_index) if value == current_step],
+                device=input_ids.device,
+            )
+            for previous_step in range(current_step):
+                previous = torch.tensor(
+                    [i for i, value in enumerate(step_index) if value == previous_step],
+                    device=input_ids.device,
+                )
+                attention_matrix[current_step][previous_step] = float(
+                    token_attention.index_select(0, current).index_select(1, previous).mean()
+                )
+        del token_attention
+    features = official_trace_features(step_reference_scores, step_entropies, attention_matrix)
+    arrays["step_reference_reasoning_score"] = step_reference_scores
+    arrays["step_entropy"] = step_entropies
+    arrays["step_attention_matrix"] = attention_matrix
     elapsed_ms = (time.perf_counter() - started) * 1000
     summary = {
         "record_id": row.get("record_id"),
@@ -236,6 +373,10 @@ def _analyse_record(
         "reasoning_score_min": min(reasoning_score),
         "reference_reasoning_score_mean": mean(reference_reasoning_score),
         "reference_reasoning_score_std": pstdev(reference_reasoning_score),
+        "step_count": step_count,
+        "step_segmentation": "paragraph_blank_line_v1",
+        "decoded_text_matches_record": decoded_text == str(row.get("response_text", "")),
+        "official_features": features,
         "final_entropy_mean": mean(float(x) for x in arrays["final_entropy"]),
         "top_token_agreement_by_layer": {
             str(layer): mean(float(x) for x in arrays[f"layer_{layer}_top_agrees_final"])

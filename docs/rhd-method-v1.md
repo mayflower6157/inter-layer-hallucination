@@ -75,9 +75,20 @@ H_C = alpha_1 Avg(R)
 20% of reasoning steps and counts, among their top-5 attended earlier steps, those below
 the 20th percentile of `R` or above the released code's fixed value 4. `PCC` is Pearson
 correlation between first differences of independently min-max-normalized `R` and
-normalized entropy. Diagnostic v1 implements the distribution-derived inputs (`R`, entropy,
-token probability/rank) but deliberately does not claim a complete RHD score until
-step boundaries and attention summaries are implemented and tested.
+normalized entropy. Diagnostic v1.1 records all four unweighted features, plus the
+distribution-derived token diagnostics. It does not form a final weighted detector
+until weights and an operating threshold are fitted and frozen on development data.
+
+## Frozen reasoning-step segmentation
+
+For generated Qwen3 traces, a reasoning step is a maximal non-empty paragraph.
+Boundaries are two or more newline characters with optional intervening whitespace.
+Leading/trailing whitespace is excluded, empty paragraphs are discarded, and a
+non-empty response with no boundary is one step. This label-blind
+`paragraph_blank_line_v1` rule is fixed before detection evaluation and is applied
+identically to every model and decoding strategy. It approximates the pre-segmented
+reasoning paths consumed by the released RHD code without introducing semantic or
+answer-dependent manual annotation.
 
 ## Candidate layers
 
