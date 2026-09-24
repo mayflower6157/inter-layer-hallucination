@@ -290,3 +290,31 @@ and free-form Qwen3 generations without inspecting the held-out test split.
 Job `168979` is excluded: Slurm's comma-delimited `--export` retained only the first
 requested layer. The submission scripts now translate layer lists to colon-delimited
 values before export; job `168980` verified all six intended layers.
+
+## 2026-09-24 — RHD segmentation, confound, and trajectory audit
+
+The full 60-record Qwen3-4B Greedy development diagnostic was joined to generation
+metadata and automatic exact-match labels. Sidecar checksums were verified before
+analysis. The audit contains 30 correct, 27 incorrect, and three unscored truncated
+traces and is committed under `docs/results/rhd-qwen3-4b-development-audit-v1`.
+
+Paragraph segmentation was not dominated by degenerate one-step traces: the median was
+six steps, the mean 8.72, and only 6.7% of responses contained one or two steps. The
+median step length was 26 tokens, although the maximum of 287 tokens shows that a
+sentence-level fallback may still be useful for a minority of long paragraphs.
+
+Across all scored traces, AUROC was 0.609 attention, 0.330 CV, 0.626 PCC, and 0.342
+mean Reasoning Score. The low direct Mean-R AUROC corresponds to higher Mean-R among
+correct traces (mean 2.463) than incorrect traces (mean 2.319), so its direction is
+opposite to a naive “larger means more hallucination” assumption. CV is substantially
+confounded by step count (Pearson r=0.581) and token count (r=0.482).
+
+The strongest finding is heterogeneity rather than a single stable global detector.
+Attention AUROC was 0.817 for MATH, 0.510 for MultiHopQA, and 0.352 for Science; PCC
+AUROC was respectively 0.385, 0.610, and 0.769. Attention also varied strongly with
+length: 0.385 short, 0.628 medium, and 0.851 long. These results indicate that domain
+and length effects can explain the unstable half-split confirmation. Before changing
+step rules or entering held-out evaluation, the next development-only analysis should
+compare the detector with length/step-count baselines and use domain-grouped or
+domain-stratified cross-validation. Any direction changes, feature weights, and
+thresholds must be learned inside training folds.
