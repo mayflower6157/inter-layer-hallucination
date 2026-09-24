@@ -106,11 +106,16 @@ class RhdCrossValidationTests(unittest.TestCase):
                 "held_out_policy": "apply_only_no_refit_no_threshold_selection",
                 "diagnostic_manifest": manifest, "models": models,
             }))
-            result = apply_frozen_calibration(evaluation, diagnostic, calibration)
+            result = apply_frozen_calibration(
+                evaluation, diagnostic, calibration, bootstrap_iterations=20
+            )
             self.assertEqual(result["scored_records"], 2)
             self.assertEqual(result["excluded_records"], 1)
             self.assertEqual(result["models"]["rhd_only"]["overall"]["threshold"], 0.8)
             self.assertEqual(len(result["records"]), 2)
+            self.assertEqual(result["bootstrap"]["sampling_unit"], "sample_id")
+            self.assertEqual(result["bootstrap"]["stratified_by"], "domain")
+            self.assertGreater(result["bootstrap"]["valid_iterations"], 0)
 
 
 if __name__ == "__main__":

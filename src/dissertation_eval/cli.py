@@ -135,6 +135,8 @@ def build_parser() -> argparse.ArgumentParser:
         metavar="LABEL=EVAL,DIAG,CALIBRATION",
     )
     heldout_rhd.add_argument("--output-dir", type=Path, required=True)
+    heldout_rhd.add_argument("--bootstrap", type=int, default=2000)
+    heldout_rhd.add_argument("--bootstrap-seed", type=int, default=20260924)
     return parser
 
 
@@ -249,7 +251,12 @@ def main(argv: list[str] | None = None) -> int:
             if not label or len(paths) != 3 or label in conditions:
                 raise SystemExit(f"Invalid or duplicate --condition: {item!r}")
             conditions[label] = tuple(Path(path) for path in paths)
-        result = evaluate_heldout_matrix(conditions, args.output_dir)
+        result = evaluate_heldout_matrix(
+            conditions,
+            args.output_dir,
+            bootstrap_iterations=args.bootstrap,
+            bootstrap_seed=args.bootstrap_seed,
+        )
         print(json.dumps({"conditions": sorted(result["conditions"])}, indent=2))
         return 0
     counters = run_generation(
