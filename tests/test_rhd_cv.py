@@ -1,7 +1,11 @@
 import json
+import tempfile
 import unittest
+from pathlib import Path
 
+from dissertation_eval.evaluation.heldout import apply_frozen_calibration
 from dissertation_eval.evaluation.rhd_cv import (
+    MODEL_FEATURES,
     domain_stratified_folds,
     score_frozen_calibration,
     select_training_threshold,
@@ -58,6 +62,55 @@ class RhdCrossValidationTests(unittest.TestCase):
         }
         for fold_index, fold in enumerate(folds):
             self.assertTrue(all(assignment[rows[index]["sample_id"]] == fold_index for index in fold))
+
+    def test_heldout_application_uses_frozen_threshold_and_excludes_unscored(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            evaluation = root / "evaluation.jsonl"
+            diagnostic = root / "diagnostic"
+            calibration = root / "calibration.json"
+            diagnostic.mkdir()
+            manifest = {
+                "model_id": "model", "model_revision": "revision",
+                "candidate_layers": [1], "anchor_layer": 2,
+            }
+            (diagnostic / "manifest.json").write_text(json.dumps(manifest))
+            evaluations = [
+                {"record_id": "a", "sample_id": "q1", "domain": "MATH",
+                 "evaluation_status": "exact_match", "exact_match": True},
+                {"record_id": "b", "sample_id": "q2", "domain": "MATH",
+                 "evaluation_status": "mismatch", "exact_match": False},
+                {"record_id": "c", "sample_id": "q3", "domain": "MATH",
+                 "evaluation_status": "truncated", "exact_match": None},
+            ]
+            evaluation.write_text("".join(json.dumps(row) + "\n" for row in evaluations))
+            diagnostics = [
+                {"record_id": key, "sample_id": f"q{index}", "generation_index": 0,
+                 "token_count": index, "step_count": 1,
+                 "official_features": {"attention_score": index, "cv_score": 0,
+                 "reasoning_score_mean": 0, "pcc": 0}}
+                for index, key in enumerate(("a", "b", "c"), 1)
+            ]
+            (diagnostic / "records.jsonl").write_text(
+                "".join(json.dumps(row) + "\n" for row in diagnostics)
+            )
+            models = {}
+            for name, features in MODEL_FEATURES.items():
+                models[name] = {
+                    "features": list(features), "center": [0] * len(features),
+                    "scale": [1] * len(features), "intercept": 0,
+                    "weights": [1] + [0] * (len(features) - 1), "threshold": 0.8,
+                }
+            calibration.write_text(json.dumps({
+                "scope": "development_only_frozen_calibration",
+                "held_out_policy": "apply_only_no_refit_no_threshold_selection",
+                "diagnostic_manifest": manifest, "models": models,
+            }))
+            result = apply_frozen_calibration(evaluation, diagnostic, calibration)
+            self.assertEqual(result["scored_records"], 2)
+            self.assertEqual(result["excluded_records"], 1)
+            self.assertEqual(result["models"]["rhd_only"]["overall"]["threshold"], 0.8)
+            self.assertEqual(len(result["records"]), 2)
 
 
 if __name__ == "__main__":

@@ -13,6 +13,7 @@ from .evaluation import (
     audit_sampling_truncation,
     compare_retruthqa_runs,
     cross_validate_rhd,
+    evaluate_heldout_matrix,
     evaluate_retruthqa_generations,
     evaluate_rhd_diagnostics,
     freeze_rhd_calibration,
@@ -123,6 +124,17 @@ def build_parser() -> argparse.ArgumentParser:
     freeze_rhd.add_argument("evaluation", type=Path)
     freeze_rhd.add_argument("diagnostic_dir", type=Path)
     freeze_rhd.add_argument("--output", type=Path, required=True)
+    heldout_rhd = subparsers.add_parser(
+        "evaluate-heldout-rhd",
+        help="Apply frozen development calibrations to held-out RHD diagnostics",
+    )
+    heldout_rhd.add_argument(
+        "--condition",
+        action="append",
+        required=True,
+        metavar="LABEL=EVAL,DIAG,CALIBRATION",
+    )
+    heldout_rhd.add_argument("--output-dir", type=Path, required=True)
     return parser
 
 
@@ -224,6 +236,21 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "freeze-rhd-calibration":
         result = freeze_rhd_calibration(args.evaluation, args.diagnostic_dir, args.output)
         print(json.dumps(result, indent=2, sort_keys=True))
+        return 0
+    if args.command == "evaluate-heldout-rhd":
+        conditions = {}
+        for item in args.condition:
+            if "=" not in item:
+                raise SystemExit(
+                    f"--condition must use LABEL=EVAL,DIAG,CALIBRATION: {item!r}"
+                )
+            label, payload = item.split("=", 1)
+            paths = payload.split(",")
+            if not label or len(paths) != 3 or label in conditions:
+                raise SystemExit(f"Invalid or duplicate --condition: {item!r}")
+            conditions[label] = tuple(Path(path) for path in paths)
+        result = evaluate_heldout_matrix(conditions, args.output_dir)
+        print(json.dumps({"conditions": sorted(result["conditions"])}, indent=2))
         return 0
     counters = run_generation(
         args.config,
