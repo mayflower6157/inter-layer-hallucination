@@ -8,7 +8,12 @@ from .analysis import diagnose_rhd_generations
 from .datasets import load_manifest, load_split
 from .datasets.prepare import prepare_retruthqa, validate_prepared_retruthqa
 from .datasets.selection import create_retruthqa_selection
-from .evaluation import compare_retruthqa_runs, evaluate_retruthqa_generations, evaluate_rhd_diagnostics
+from .evaluation import (
+    audit_rhd_diagnostics,
+    compare_retruthqa_runs,
+    evaluate_retruthqa_generations,
+    evaluate_rhd_diagnostics,
+)
 from .pipeline.runner import run_generation
 
 
@@ -86,6 +91,13 @@ def build_parser() -> argparse.ArgumentParser:
     evaluate_rhd.add_argument("--diagnostic", action="append", required=True, metavar="LABEL=DIR")
     evaluate_rhd.add_argument("--output", type=Path, required=True)
     evaluate_rhd.add_argument("--skip-records", type=int, default=0)
+    audit_rhd = subparsers.add_parser(
+        "audit-rhd", help="Audit development RHD segmentation, confounds, and trajectories"
+    )
+    audit_rhd.add_argument("generations", type=Path)
+    audit_rhd.add_argument("evaluation", type=Path)
+    audit_rhd.add_argument("diagnostic_dir", type=Path)
+    audit_rhd.add_argument("--output-dir", type=Path, required=True)
     return parser
 
 
@@ -154,6 +166,12 @@ def main(argv: list[str] | None = None) -> int:
             diagnostics[label] = Path(raw_path)
         result = evaluate_rhd_diagnostics(
             args.evaluation, diagnostics, args.output, skip_records=args.skip_records
+        )
+        print(json.dumps(result, indent=2, sort_keys=True))
+        return 0
+    if args.command == "audit-rhd":
+        result = audit_rhd_diagnostics(
+            args.generations, args.evaluation, args.diagnostic_dir, args.output_dir
         )
         print(json.dumps(result, indent=2, sort_keys=True))
         return 0
