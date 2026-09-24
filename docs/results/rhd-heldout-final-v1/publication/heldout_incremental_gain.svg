@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="560" viewBox="0 0 1180 560">
+<rect width="100%" height="100%" fill="white"/>
+<text x="28" y="38" font-family="Arial, Helvetica, sans-serif" font-size="25" font-weight="bold">Incremental AUROC beyond length and step count</text>
+<text x="28" y="64" font-family="Arial, Helvetica, sans-serif" font-size="14" fill="#444">Combined minus baseline; paired domain-stratified sample_id bootstrap</text>
+<line x1="270.0" y1="82" x2="270.0" y2="505" stroke="#e1e5ea"/>
+<text x="270.0" y="535" font-family="Arial, Helvetica, sans-serif" font-size="13" text-anchor="middle">-0.1</text>
+<line x1="450.0" y1="82" x2="450.0" y2="505" stroke="#e1e5ea"/>
+<text x="450.0" y="535" font-family="Arial, Helvetica, sans-serif" font-size="13" text-anchor="middle">+0.0</text>
+<line x1="630.0" y1="82" x2="630.0" y2="505" stroke="#e1e5ea"/>
+<text x="630.0" y="535" font-family="Arial, Helvetica, sans-serif" font-size="13" text-anchor="middle">+0.1</text>
+<line x1="810.0000000000001" y1="82" x2="810.0000000000001" y2="505" stroke="#e1e5ea"/>
+<text x="810.0000000000001" y="535" font-family="Arial, Helvetica, sans-serif" font-size="13" text-anchor="middle">+0.2</text>
+<line x1="450.0" y1="82" x2="450.0" y2="505" stroke="#222" stroke-width="2"/>
+<text x="252" y="105" font-family="Arial, Helvetica, sans-serif" font-size="15" text-anchor="end">Qwen3-2B Greedy</text>
+<line x1="478.1240026595745" y1="100" x2="824.5836134137908" y2="100" stroke="#d45d5d" stroke-width="5"/>
+<circle cx="650.2450980392157" cy="100" r="7" fill="#d45d5d"/>
+<text x="912" y="105" font-family="Arial, Helvetica, sans-serif" font-size="13">+0.111 [+0.016, +0.208]</text>
+<text x="252" y="173" font-family="Arial, Helvetica, sans-serif" font-size="15" text-anchor="end">Qwen3-2B Beam-4</text>
+<line x1="324.9925914249685" y1="168" x2="863.0899649649646" y2="168" stroke="#d45d5d" stroke-width="5"/>
+<circle cx="595.8417338709678" cy="168" r="7" fill="#d45d5d"/>
+<text x="912" y="173" font-family="Arial, Helvetica, sans-serif" font-size="13">+0.081 [-0.069, +0.229]</text>
+<text x="252" y="241" font-family="Arial, Helvetica, sans-serif" font-size="15" text-anchor="end">Qwen3-2B Sampling-5</text>
+<line x1="389.8384695193173" y1="236" x2="629.123341649417" y2="236" stroke="#d45d5d" stroke-width="5"/>
+<circle cx="513.9800613496932" cy="236" r="7" fill="#d45d5d"/>
+<text x="912" y="241" font-family="Arial, Helvetica, sans-serif" font-size="13">+0.036 [-0.033, +0.100]</text>
+<text x="252" y="309" font-family="Arial, Helvetica, sans-serif" font-size="15" text-anchor="end">Qwen3-4B Greedy</text>
+<line x1="498.85158171249725" y1="304" x2="762.5355536785" y2="304" stroke="#4f78b8" stroke-width="5"/>
+<circle cx="624.9435347261435" cy="304" r="7" fill="#4f78b8"/>
+<text x="912" y="309" font-family="Arial, Helvetica, sans-serif" font-size="13">+0.097 [+0.027, +0.174]</text>
+<text x="252" y="377" font-family="Arial, Helvetica, sans-serif" font-size="15" text-anchor="end">Qwen3-4B Beam-4</text>
+<line x1="365.9804070036921" y1="372" x2="699.7868079038694" y2="372" stroke="#4f78b8" stroke-width="5"/>
+<circle cx="532.0722755505362" cy="372" r="7" fill="#4f78b8"/>
+<text x="912" y="377" font-family="Arial, Helvetica, sans-serif" font-size="13">+0.046 [-0.047, +0.139]</text>
+<text x="252" y="445" font-family="Arial, Helvetica, sans-serif" font-size="15" text-anchor="end">Qwen3-4B Sampling-5</text>
+<line x1="417.3716336429675" y1="440" x2="637.6139110555107" y2="440" stroke="#4f78b8" stroke-width="5"/>
+<circle cx="527.9597613992519" cy="440" r="7" fill="#4f78b8"/>
+<text x="912" y="445" font-family="Arial, Helvetica, sans-serif" font-size="13">+0.043 [-0.018, +0.104]</text>
+</svg>

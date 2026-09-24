@@ -1,0 +1,21 @@
+{
+  "comparison_2b": "/home/kxu009/mayflower/Disseration/evaluations/qwen3-2b-heldout-decoding-v1/comparison.json",
+  "comparison_4b": "/home/kxu009/mayflower/Disseration/evaluations/qwen3-4b-heldout-decoding-v1/comparison.json",
+  "development_matrix": "/home/kxu009/mayflower/Disseration/docs/results/rhd-frozen-protocol-v1/auroc_matrix.csv",
+  "figures": [
+    "heldout_auroc_ci.svg",
+    "heldout_incremental_gain.svg",
+    "development_heldout_auroc.svg",
+    "heldout_domain_auroc.svg",
+    "heldout_truncation.svg"
+  ],
+  "heldout_results": "/home/kxu009/mayflower/Disseration/evaluations/rhd-heldout-final-v1/heldout_results.json",
+  "schema_version": "1.0",
+  "tables": [
+    "heldout_generation_results.tex",
+    "heldout_rhd_results.tex",
+    "heldout_domain_results.tex",
+    "heldout_generation_results.csv",
+    "heldout_domain_results.csv"
+  ]
+}

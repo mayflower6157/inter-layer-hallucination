@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1260" height="570" viewBox="0 0 1260 570">
+<rect width="100%" height="100%" fill="white"/>
+<text x="28" y="38" font-family="Arial, Helvetica, sans-serif" font-size="25" font-weight="bold">Held-out discrimination under frozen calibration</text>
+<text x="28" y="64" font-family="Arial, Helvetica, sans-serif" font-size="14" fill="#444">RHD-only 95% clustered bootstrap CI; baseline and combined estimates shown as points</text>
+<line x1="352.2222222222223" y1="82" x2="352.2222222222223" y2="520" stroke="#e1e5ea"/>
+<text x="352.2222222222223" y="545" font-family="Arial, Helvetica, sans-serif" font-size="13" text-anchor="middle">0.4</text>
+<line x1="516.6666666666666" y1="82" x2="516.6666666666666" y2="520" stroke="#e1e5ea"/>
+<text x="516.6666666666666" y="545" font-family="Arial, Helvetica, sans-serif" font-size="13" text-anchor="middle">0.5</text>
+<line x1="681.1111111111111" y1="82" x2="681.1111111111111" y2="520" stroke="#e1e5ea"/>
+<text x="681.1111111111111" y="545" font-family="Arial, Helvetica, sans-serif" font-size="13" text-anchor="middle">0.6</text>
+<line x1="845.5555555555554" y1="82" x2="845.5555555555554" y2="520" stroke="#e1e5ea"/>
+<text x="845.5555555555554" y="545" font-family="Arial, Helvetica, sans-serif" font-size="13" text-anchor="middle">0.7</text>
+<line x1="1010.0" y1="82" x2="1010.0" y2="520" stroke="#e1e5ea"/>
+<text x="1010.0" y="545" font-family="Arial, Helvetica, sans-serif" font-size="13" text-anchor="middle">0.8</text>
+<line x1="516.6666666666666" y1="82" x2="516.6666666666666" y2="520" stroke="#555" stroke-dasharray="6 5"/>
+<text x="252" y="105" font-family="Arial, Helvetica, sans-serif" font-size="15" text-anchor="end">Qwen3-2B Greedy</text>
+<line x1="574.5648148148148" y1="100" x2="913.503657875814" y2="100" stroke="#d45d5d" stroke-width="5"/>
+<circle cx="740.5833938513676" cy="100" r="7" fill="#d45d5d"/>
+<rect x="525.3255870249334" y="95" width="10" height="10" fill="#777"/>
+<path d="M 713.2655531348341 93 L 720.2655531348341 100 L 713.2655531348341 107 L 706.2655531348341 100 Z" fill="#222"/>
+<text x="1022" y="105" font-family="Arial, Helvetica, sans-serif" font-size="13">0.636 [0.535, 0.741]</text>
+<text x="252" y="175" font-family="Arial, Helvetica, sans-serif" font-size="15" text-anchor="end">Qwen3-2B Beam-4</text>
+<line x1="543.5916618663596" y1="170" x2="859.6949080142854" y2="170" stroke="#d45d5d" stroke-width="5"/>
+<circle cx="709.7894265232974" cy="170" r="7" fill="#d45d5d"/>
+<rect x="588.9572132616487" y="165" width="10" height="10" fill="#777"/>
+<path d="M 727.1953405017921 163 L 734.1953405017921 170 L 727.1953405017921 177 L 720.1953405017921 170 Z" fill="#222"/>
+<text x="1022" y="175" font-family="Arial, Helvetica, sans-serif" font-size="13">0.617 [0.516, 0.709]</text>
+<text x="252" y="245" font-family="Arial, Helvetica, sans-serif" font-size="15" text-anchor="end">Qwen3-2B Sampling-5</text>
+<line x1="608.750432598245" y1="240" x2="842.662958296322" y2="240" stroke="#d45d5d" stroke-width="5"/>
+<circle cx="729.7166228454571" cy="240" r="7" fill="#d45d5d"/>
+<rect x="645.7822085889571" y="235" width="10" height="10" fill="#777"/>
+<path d="M 709.2331288343559 233 L 716.2331288343559 240 L 709.2331288343559 247 L 702.2331288343559 240 Z" fill="#222"/>
+<text x="1022" y="245" font-family="Arial, Helvetica, sans-serif" font-size="13">0.630 [0.556, 0.698]</text>
+<text x="252" y="315" font-family="Arial, Helvetica, sans-serif" font-size="15" text-anchor="end">Qwen3-4B Greedy</text>
+<line x1="609.7183881049363" y1="310" x2="880.1162321009342" y2="310" stroke="#4f78b8" stroke-width="5"/>
+<circle cx="749.9623564840956" cy="310" r="7" fill="#4f78b8"/>
+<rect x="603.4760649978041" y="305" width="10" height="10" fill="#777"/>
+<path d="M 768.3010226488487 303 L 775.3010226488487 310 L 768.3010226488487 317 L 761.3010226488487 310 Z" fill="#222"/>
+<text x="1022" y="315" font-family="Arial, Helvetica, sans-serif" font-size="13">0.642 [0.557, 0.721]</text>
+<text x="252" y="385" font-family="Arial, Helvetica, sans-serif" font-size="15" text-anchor="end">Qwen3-4B Beam-4</text>
+<line x1="495.3090366842489" y1="380" x2="774.6332812371131" y2="380" stroke="#4f78b8" stroke-width="5"/>
+<circle cx="637.8411443628835" cy="380" r="7" fill="#4f78b8"/>
+<rect x="560.415019762846" y="375" width="10" height="10" fill="#777"/>
+<path d="M 640.3946295250643 373 L 647.3946295250643 380 L 640.3946295250643 387 L 633.3946295250643 380 Z" fill="#222"/>
+<text x="1022" y="385" font-family="Arial, Helvetica, sans-serif" font-size="13">0.574 [0.487, 0.657]</text>
+<text x="252" y="455" font-family="Arial, Helvetica, sans-serif" font-size="15" text-anchor="end">Qwen3-4B Sampling-5</text>
+<line x1="598.371513674992" y1="450" x2="793.0234952325793" y2="450" stroke="#4f78b8" stroke-width="5"/>
+<circle cx="695.9190360110388" cy="450" r="7" fill="#4f78b8"/>
+<rect x="609.6841935117473" y="445" width="10" height="10" fill="#777"/>
+<path d="M 685.9066915801995 443 L 692.9066915801995 450 L 685.9066915801995 457 L 678.9066915801995 450 Z" fill="#222"/>
+<text x="1022" y="455" font-family="Arial, Helvetica, sans-serif" font-size="13">0.609 [0.550, 0.668]</text>
+<circle cx="300" cy="505" r="6" fill="#4f78b8"/>
+<text x="314" y="510" font-family="Arial, Helvetica, sans-serif" font-size="13">RHD-only (line: 95% CI)</text>
+<rect x="490" y="499" width="10" height="10" fill="#777"/>
+<text x="506" y="510" font-family="Arial, Helvetica, sans-serif" font-size="13">Length/step baseline</text>
+<path d="M 690 498 L 697 505 L 690 512 L 683 505 Z" fill="#222"/>
+<text x="706" y="510" font-family="Arial, Helvetica, sans-serif" font-size="13">Combined</text>
+</svg>

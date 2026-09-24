@@ -1,0 +1,20 @@
+\begin{table}[t]
+\centering
+\small
+\caption{Held-out RHD discrimination under frozen development calibration. Confidence intervals use 2,000 domain-stratified, sample-clustered bootstrap replicates.}
+\label{tab:heldout-rhd}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{llrrrrrr}
+\toprule
+Model & Decoding & Scored & Base AUC & RHD AUC [95\% CI] & Combined AUC & $\Delta$ [95\% CI] & RHD BA \\
+\midrule
+Qwen3-2B & Greedy & 122 & 0.508 & 0.636 [0.535, 0.741] & 0.620 & +0.111 [+0.016, +0.208] & 0.549 \\
+Qwen3-2B & Beam-4 & 126 & 0.547 & 0.617 [0.516, 0.709] & 0.628 & +0.081 [-0.069, +0.229] & 0.599 \\
+Qwen3-2B & Sampling-5 & 606 & 0.582 & 0.630 [0.556, 0.698] & 0.617 & +0.036 [-0.033, +0.100] & 0.605 \\
+Qwen3-4B & Greedy & 169 & 0.556 & 0.642 [0.557, 0.721] & 0.653 & +0.097 [+0.027, +0.174] & 0.612 \\
+Qwen3-4B & Beam-4 & 169 & 0.530 & 0.574 [0.487, 0.657] & 0.575 & +0.046 [-0.047, +0.139] & 0.533 \\
+Qwen3-4B & Sampling-5 & 849 & 0.560 & 0.609 [0.550, 0.668] & 0.603 & +0.043 [-0.018, +0.104] & 0.592 \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}

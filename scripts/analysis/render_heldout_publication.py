@@ -347,7 +347,8 @@ def write_tables(
     domain_tex = [
         r"\begin{table}[t]", r"\centering", r"\small",
         r"\caption{Domain-stratified held-out AUROC. Domain results are secondary and use no domain-specific refitting.}",
-        r"\label{tab:heldout-domain}", r"\begin{tabular}{lllrrrr}", r"\toprule",
+        r"\label{tab:heldout-domain}", r"\resizebox{\textwidth}{!}{%",
+        r"\begin{tabular}{lllrrrr}", r"\toprule",
         r"Model & Decoding & Domain & Scored & Base AUC & RHD AUC & Combined AUC \\", r"\midrule",
     ]
     for condition in ORDER:
@@ -370,7 +371,7 @@ def write_tables(
                 f"{fmt(row['combined_auroc'])} " + r"\\"
             )
         domain_tex.append(r"\addlinespace")
-    domain_tex.extend([r"\bottomrule", r"\end{tabular}", r"\end{table}"])
+    domain_tex.extend([r"\bottomrule", r"\end{tabular}%", r"}", r"\end{table}"])
     (output / "heldout_domain_results.tex").write_text("\n".join(domain_tex) + "\n")
     with (output / "heldout_domain_results.csv").open("w", newline="", encoding="utf-8") as handle:
         writer = csv.DictWriter(handle, fieldnames=list(domain_rows[0]), lineterminator="\n")
