@@ -1,0 +1,3 @@
+model,questions,zero,at_least_one,all_five,exactly_1,exactly_2,exactly_3,exactly_4,exactly_5
+Qwen3-2B,180,86,94,29,21,19,10,15,29
+Qwen3-4B,180,162,18,4,7,4,0,3,4

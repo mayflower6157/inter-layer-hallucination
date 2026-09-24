@@ -1,0 +1,41 @@
+\begin{longtable}{lllr@{\hspace{0.7em}}rrr}
+\caption{Frozen development-only RHD feature transformations and logistic weights. Direction is the sign of the fitted weight after standardisation.}\label{tab:appendix-calibration-features}\\
+\toprule
+Model & Decoder & Feature & Dir. & Centre & Scale & Weight \\
+\midrule
+\endfirsthead
+\multicolumn{7}{l}{\small\itshape Table~\thetable\ continued from previous page}\\
+\toprule
+Model & Decoder & Feature & Dir. & Centre & Scale & Weight \\
+\midrule
+\endhead
+\midrule
+\multicolumn{7}{r}{\small\itshape Continued on next page}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Qwen3-2B & Greedy & Attention & + & 0.3738 & 0.2210 & 0.0926 \\
+ &  & CV & - & 0.0614 & 0.0650 & -0.2773 \\
+ &  & Reasoning score & - & 1.2224 & 0.1653 & -0.6712 \\
+ &  & PCC & + & -0.3293 & 0.7083 & 0.0505 \\
+Qwen3-2B & Beam-4 & Attention & + & 0.3198 & 0.1519 & 0.1572 \\
+ &  & CV & + & 0.0639 & 0.0680 & 0.6440 \\
+ &  & Reasoning score & - & 1.2554 & 0.1636 & -0.9374 \\
+ &  & PCC & - & -0.2911 & 0.7139 & -0.2693 \\
+Qwen3-2B & Sampling-5 & Attention & + & 0.3907 & 0.2059 & 0.1374 \\
+ &  & CV & - & 0.0651 & 0.0727 & -0.0884 \\
+ &  & Reasoning score & - & 1.2228 & 0.1667 & -0.4252 \\
+ &  & PCC & - & -0.3171 & 0.7079 & -0.0751 \\
+Qwen3-4B & Greedy & Attention & + & 0.2509 & 0.1735 & 0.1551 \\
+ &  & CV & - & 0.1562 & 0.1154 & -0.5582 \\
+ &  & Reasoning score & - & 2.3946 & 0.2475 & -0.5189 \\
+ &  & PCC & + & -0.2776 & 0.6263 & 0.0836 \\
+Qwen3-4B & Beam-4 & Attention & + & 0.2503 & 0.1769 & 0.5331 \\
+ &  & CV & - & 0.1590 & 0.1272 & -0.8005 \\
+ &  & Reasoning score & - & 2.3970 & 0.2832 & -0.8901 \\
+ &  & PCC & - & -0.3631 & 0.6045 & -0.3135 \\
+Qwen3-4B & Sampling-5 & Attention & + & 0.2604 & 0.1993 & 0.2018 \\
+ &  & CV & - & 0.1629 & 0.1270 & -0.5759 \\
+ &  & Reasoning score & - & 2.3768 & 0.2825 & -0.6883 \\
+ &  & PCC & - & -0.2995 & 0.6359 & -0.0549 \\
+\end{longtable}

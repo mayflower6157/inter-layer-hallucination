@@ -1,0 +1,17 @@
+{
+  "calibration_scope": "development_only_frozen_calibration",
+  "files": [
+    "appendix_manifest.json",
+    "calibration_feature_parameters.csv",
+    "calibration_feature_parameters.tex",
+    "calibration_operating_parameters.csv",
+    "calibration_operating_parameters.tex",
+    "sampling_question_truncation.csv",
+    "sampling_question_truncation.tex",
+    "sampling_question_truncation_detail.tex",
+    "sampling_question_truncation_summary.csv"
+  ],
+  "sampling_generations_per_question": 5,
+  "schema_version": "1.0",
+  "truncation_unit": "sample_id"
+}
