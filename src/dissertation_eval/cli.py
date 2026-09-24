@@ -85,6 +85,7 @@ def build_parser() -> argparse.ArgumentParser:
     evaluate_rhd.add_argument("evaluation", type=Path)
     evaluate_rhd.add_argument("--diagnostic", action="append", required=True, metavar="LABEL=DIR")
     evaluate_rhd.add_argument("--output", type=Path, required=True)
+    evaluate_rhd.add_argument("--skip-records", type=int, default=0)
     return parser
 
 
@@ -151,7 +152,9 @@ def main(argv: list[str] | None = None) -> int:
             if not label or not raw_path or label in diagnostics:
                 raise SystemExit(f"Invalid or duplicate --diagnostic value: {item!r}")
             diagnostics[label] = Path(raw_path)
-        result = evaluate_rhd_diagnostics(args.evaluation, diagnostics, args.output)
+        result = evaluate_rhd_diagnostics(
+            args.evaluation, diagnostics, args.output, skip_records=args.skip_records
+        )
         print(json.dumps(result, indent=2, sort_keys=True))
         return 0
     counters = run_generation(

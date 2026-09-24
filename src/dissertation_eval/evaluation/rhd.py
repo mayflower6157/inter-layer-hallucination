@@ -23,10 +23,16 @@ def _auc(labels: list[int], scores: list[float]) -> float | None:
 
 
 def evaluate_rhd_diagnostics(
-    evaluation_path: Path, diagnostic_dirs: dict[str, Path], output_path: Path
+    evaluation_path: Path,
+    diagnostic_dirs: dict[str, Path],
+    output_path: Path,
+    *,
+    skip_records: int = 0,
 ) -> dict[str, Any]:
     """Compare frozen diagnostic configurations using development labels only."""
 
+    if skip_records < 0:
+        raise ValueError("skip_records must be non-negative")
     evaluation_path = evaluation_path.resolve()
     labels = {
         str(row["record_id"]): 0 if row.get("exact_match") is True else 1
@@ -38,7 +44,8 @@ def evaluate_rhd_diagnostics(
         directory = directory.resolve()
         manifest = read_json(directory / "manifest.json")
         rows = list(iter_jsonl(directory / "records.jsonl"))
-        matched = [row for row in rows if str(row.get("record_id")) in labels]
+        selected = rows[skip_records:]
+        matched = [row for row in selected if str(row.get("record_id")) in labels]
         y = [labels[str(row["record_id"])] for row in matched]
         feature_names = ("attention_score", "cv_score", "reasoning_score_mean", "pcc")
         aucs = {
@@ -59,6 +66,7 @@ def evaluate_rhd_diagnostics(
     result = {
         "schema_version": "1.0",
         "scope": "development_only_layer_grid_comparison",
+        "skip_records": skip_records,
         "evaluation_path": str(evaluation_path),
         "evaluation_sha256": sha256_file(evaluation_path),
         "configurations": configurations,
