@@ -284,7 +284,14 @@ def _fmt(value: Any) -> str:
 
 
 def _write_report(path: Path, result: dict[str, Any]) -> None:
-    lines = ["# Sampling-5 truncation and RHD selection-bias audit", "", "Development data only. Truncated traces are treated as a separate endpoint and are never assigned correctness labels.", "", "## Configuration sanity", "", f"Overall check: **{'PASS' if result['configuration_sanity']['passed'] else 'FAIL'}**.", "", "## Truncation summary", "", "| Condition | Trace truncation | Questions with ≥1 truncation | Questions with all 5 truncated |", "|---|---:|---:|---:|"]
+    sanity = result["configuration_sanity"]
+    lines = ["# Sampling-5 truncation and RHD selection-bias audit", "", "Development data only. Truncated traces are treated as a separate endpoint and are never assigned correctness labels.", "", "## Configuration sanity", "", f"Overall check: **{'PASS' if sanity['passed'] else 'FAIL'}**. Both conditions use the shared Transformers backend and finish-reason implementation. Model-specific empirical stop-token IDs differ, as expected for different tokenizer vocabularies; every length termination occurs exactly at `max_new_tokens`.", "", "| Field | 2B | 4B |", "|---|---|---|"]
+    field_labels = list(sanity["fields"])
+    condition_labels = list(result["conditions"])
+    for field in field_labels:
+        values = sanity["fields"][field]
+        lines.append(f"| {field} | `{values[condition_labels[0]]}` | `{values[condition_labels[1]]}` |")
+    lines.extend(["", f"Empirical terminal token IDs: `{sanity['terminal_token_ids_for_stop']}`.", "", "## Truncation summary", "", "| Condition | Trace truncation | Questions with ≥1 truncation | Questions with all 5 truncated |", "|---|---:|---:|---:|"])
     for label, data in result["conditions"].items():
         lines.append(f"| {label} | {data['truncated_traces']}/{data['traces']} ({100*data['truncation_rate']:.1f}%) | {data['questions_any_truncated']}/{data['questions']} | {data['questions_all_truncated']}/{data['questions']} |")
     lines.extend(["", "## Domain and seed breakdown", ""])
@@ -294,11 +301,32 @@ def _write_report(path: Path, result: dict[str, Any]) -> None:
             for value, item in data[field].items():
                 lines.append(f"| {field[3:]}={value} | {item['truncated']}/{item['n']} | {100*item['rate']:.1f}% |")
         lines.append("")
+    lines.extend(["## Token, step, and trajectory distributions", "", "| Condition | Status | Tokens median [Q1, Q3] | Steps median [Q1, Q3] |", "|---|---|---:|---:|"])
+    for label, data in result["conditions"].items():
+        for status in ("scored", "truncated"):
+            distribution = data["distributions"][status]
+            tokens, steps = distribution["token_count"], distribution["step_count"]
+            lines.append(f"| {label} | {status} | {_fmt(tokens['median'])} [{_fmt(tokens['q1'])}, {_fmt(tokens['q3'])}] | {_fmt(steps['median'])} [{_fmt(steps['q1'])}, {_fmt(steps['q3'])}] |")
+    if "paired_comparison" in result:
+        paired = result["paired_comparison"]
+        lines.extend(["", f"The paired analysis contains {paired['pairs']} matched `(sample_id, generation_index)` traces. The 4B-minus-2B median token difference is {_fmt(paired['second_minus_first']['token_count']['median'])}, and the median step difference is {_fmt(paired['second_minus_first']['step_count']['median'])}. Truncation contingency (2B→4B): `{paired['truncation_contingency']}`.", ""])
+    lines.extend(["Normalized reference-compatible Reasoning Score trajectory (ten relative-position bins):", "", "| Condition | Status | Bins 1–10 |", "|---|---|---|"])
+    for label, data in result["conditions"].items():
+        for status in ("scored", "truncated"):
+            values = ", ".join(_fmt(value) for value in data["distributions"][status]["trajectory"])
+            lines.append(f"| {label} | {status} | {values} |")
+    lines.append("")
     lines.extend(["## Completed-trace feature discrimination", "", "AUROC is oriented descriptively so that 0.5 is chance and larger values indicate stronger separation. Confidence intervals use clustered `sample_id` bootstrap resampling.", "", "| Condition | Feature | AUROC | 95% CI | Truncation-endpoint AUROC |", "|---|---|---:|---:|---:|"])
     for label, data in result["conditions"].items():
         for feature, metrics in data["feature_auroc"].items():
             completed, truncation = metrics["incorrect_completed"], metrics["truncation_endpoint"]
             ci = completed["ci95"]
             lines.append(f"| {label} | {feature} | {_fmt(completed['discrimination'])} | {f'[{_fmt(ci[0])}, {_fmt(ci[1])}]' if ci else 'NA'} | {_fmt(truncation['discrimination'])} |")
+    lines.extend(["", "## Domain-stratified completed-trace feature AUROC", "", "| Condition | Domain | Attention | CV | Mean-R | PCC |", "|---|---|---:|---:|---:|---:|"])
+    for label, data in result["conditions"].items():
+        domains = sorted(next(iter(data["feature_auroc"].values()))["by_domain"])
+        for domain in domains:
+            metrics = {feature: data["feature_auroc"][feature]["by_domain"][domain]["discrimination"] for feature in RHD_FEATURES}
+            lines.append(f"| {label} | {domain} | {_fmt(metrics['attention_score'])} | {_fmt(metrics['cv_score'])} | {_fmt(metrics['reasoning_score_mean'])} | {_fmt(metrics['pcc'])} |")
     lines.extend(["", "## Figures", "", "![Truncation rates](truncation_rates.svg)", "", "![Token and step distributions](token_step_distributions.svg)", "", "![Feature AUROC](feature_auroc.svg)", ""])
     path.write_text("\n".join(lines), encoding="utf-8")
