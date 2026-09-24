@@ -318,3 +318,29 @@ step rules or entering held-out evaluation, the next development-only analysis s
 compare the detector with length/step-count baselines and use domain-grouped or
 domain-stratified cross-validation. Any direction changes, feature weights, and
 thresholds must be learned inside training folds.
+
+## 2026-09-24 — Domain-stratified RHD cross-validation
+
+A deterministic four-fold cross-validation was run over the 57 scored Qwen3-4B
+Greedy development traces. Four folds are the maximum that place examples from every
+available domain×correctness stratum across folds because MATH contains only four
+incorrect traces. Within each training fold, features were standardized, feature
+directions and L2-regularized logistic weights were learned, and an operating threshold
+was chosen by balanced accuracy with recall as the tie-breaker. No validation-fold
+statistics contributed to preprocessing, fitting, or threshold selection.
+
+| Model | OOF AUROC | OOF AUPRC | OOF balanced accuracy | Fold AUROC mean ± SD |
+|---|---:|---:|---:|---:|
+| Token/step-count baseline | 0.620 | 0.606 | 0.591 | 0.633 ± 0.060 |
+| RHD four features | 0.665 | 0.575 | 0.619 | 0.661 ± 0.098 |
+| RHD + token/step count | 0.642 | 0.557 | 0.581 | 0.693 ± 0.123 |
+
+RHD-only improves OOF AUROC by 0.045 and balanced accuracy by 0.028 relative to the
+length/step baseline, providing preliminary evidence of signal beyond simple response
+length. However, adding the nuisance variables did not improve pooled OOF performance,
+and fold variability remains substantial. Learned directions were most consistent for
+negative CV and negative mean Reasoning Score; attention and PCC directions varied in
+some folds, matching the earlier domain heterogeneity. These development results do not
+yet justify a held-out claim. The machine-readable fold assignments, training-only
+thresholds, weights, and metrics are committed in
+`docs/results/rhd-qwen3-4b-development-cv-v1`.
