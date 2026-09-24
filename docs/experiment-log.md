@@ -376,3 +376,27 @@ RHD behavior is sensitive to decoding strategy and model scale; it does not supp
 claim of stable universal generalization. Full fold metrics and provenance are archived
 under `docs/results/rhd-cross-model-decoding-comparison-v1.md` and its linked condition
 directories.
+
+## 2026-09-24 — Completion of the 2B decoding matrix
+
+To complete the model-scale × decoding-strategy development matrix, job `169270` used
+one A40 to extract frozen read-only RHD diagnostics for Qwen3-2B Beam-4 (60 traces) and
+Sampling-5 (300 traces). Existing generation outputs were reused, so no text generation
+was repeated. Answer evaluation, diagnostics, and grouped cross-validation completed in
+00:08:54 with exit code zero. The same six relative layer depths mapped to layers 16,
+18, 20, 21, 22, and 23.
+
+Beam-4 yielded 48 scored traces (23 correct and 25 incorrect; 12 truncated). Sampling-5
+yielded 217 scored traces (122 correct and 95 incorrect; 83 truncated). Sampling traces
+from the same question remained in a single fold.
+
+| Qwen3-2B condition | Scored traces | Length/step AUROC | RHD AUROC | Difference | Combined AUROC | RHD balanced accuracy |
+|---|---:|---:|---:|---:|---:|---:|
+| Beam-4 | 48 | 0.477 | 0.692 | +0.215 | 0.670 | 0.666 |
+| Sampling-5 | 217 | 0.472 | 0.458 | -0.014 | 0.438 | 0.565 |
+
+The completed 2×3 matrix strengthens the decoding-sensitivity finding. At both model
+scales, Beam-4 exposes a clearer RHD signal than Sampling-5. For Qwen3-2B Sampling-5,
+RHD does not improve over token and step count. This is evidence against decoding
+invariance and motivates analyzing stochastic trajectories rather than forcing a
+universal RHD detector claim.
