@@ -205,19 +205,19 @@ def render_truncation_detail_table(rows: list[dict[str, Any]], path: Path) -> No
     affected = [row for row in by_sample.values() if row["Qwen3-2B"] or row["Qwen3-4B"]]
     affected.sort(key=lambda row: (row["domain"], row["sample_id"]))
     lines = [
-        r"\begin{longtable}{lllrr}",
+        r"\begin{longtable}{llllrr}",
         r"\caption{Held-out questions with at least one truncated Sampling-5 generation. The identifier is the first 12 characters of the source hash; complete identifiers are retained in the accompanying CSV artifact.}\label{tab:appendix-sampling-question-detail}\\",
         r"\toprule",
-        r"Domain & Source family & Identifier & 2B & 4B \\",
+        r"Domain & Source family & Task & Identifier & 2B & 4B \\",
         r"\midrule",
         r"\endfirsthead",
-        r"\multicolumn{5}{l}{\small\itshape Table~\thetable\ continued from previous page}\\",
+        r"\multicolumn{6}{l}{\small\itshape Table~\thetable\ continued from previous page}\\",
         r"\toprule",
-        r"Domain & Source family & Identifier & 2B & 4B \\",
+        r"Domain & Source family & Task & Identifier & 2B & 4B \\",
         r"\midrule",
         r"\endhead",
         r"\midrule",
-        r"\multicolumn{5}{r}{\small\itshape Continued on next page}\\",
+        r"\multicolumn{6}{r}{\small\itshape Continued on next page}\\",
         r"\endfoot",
         r"\bottomrule",
         r"\endlastfoot",
@@ -227,7 +227,7 @@ def render_truncation_detail_table(rows: list[dict[str, Any]], path: Path) -> No
         family = parts[0]
         identifier = parts[-1][:12]
         lines.append(
-            f"{esc(row['domain'])} & {esc(family)} & \texttt{{{identifier}}} & "
+            f"{esc(row['domain'])} & {esc(family)} & {esc(parts[2])} & \\texttt{{{identifier}}} & "
             f"{row['Qwen3-2B']} & {row['Qwen3-4B']} \\\\"
         )
     lines.extend([r"\end{longtable}", ""])
