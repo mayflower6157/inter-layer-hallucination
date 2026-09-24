@@ -400,3 +400,46 @@ scales, Beam-4 exposes a clearer RHD signal than Sampling-5. For Qwen3-2B Sampli
 RHD does not improve over token and step count. This is evidence against decoding
 invariance and motivates analyzing stochastic trajectories rather than forcing a
 universal RHD detector claim.
+
+## 2026-09-24 — Sampling-5 truncation and selection-bias audit
+
+A development-only CPU audit compared all 300 paired Qwen3-2B and Qwen3-4B Sampling-5
+traces. The generation sanity check passed: both conditions used the same prompt,
+1,024-token limit, temperature 0.7, top-p 0.9, five seeds, shared Transformers backend,
+and shared finish-reason implementation. Every length termination occurred at exactly
+1,024 generated tokens. The model-specific empirical stop IDs differed (248044 for 2B
+and 151645 for 4B), as expected from their tokenizer vocabularies; no record-level
+configuration mismatch was found.
+
+| Condition | Truncated traces | Questions with ≥1 truncation | Questions with all 5 truncated |
+|---|---:|---:|---:|
+| Qwen3-2B Sampling-5 | 83/300 (27.7%) | 27/60 | 9/60 |
+| Qwen3-4B Sampling-5 | 6/300 (2.0%) | 2/60 | 0/60 |
+
+Qwen3-2B truncation was strongly domain-dependent: Science 49/100, MATH 32/100, and
+MultiHopQA 2/100. It was not concentrated in one seed; seed-specific rates ranged from
+25.0% to 31.7%. Qwen3-4B truncated only six MATH traces. Among 300 paired
+`(sample_id, generation_index)` outputs, 217 completed in both models, 77 truncated
+only for 2B, and six truncated for both; there were no 4B-only truncations. Relative
+to 2B, the 4B response used a median 207.5 fewer tokens but two more paragraph steps.
+
+Among completed traces, the strongest individual feature was mean Reasoning Score for
+both 2B (descriptive AUROC 0.626, clustered 95% CI 0.497–0.747) and 4B (0.648,
+0.547–0.747). These intervals overlap. At the composite cross-validated level,
+however, 2B Sampling-5 RHD remained below its length/step baseline (0.458 versus
+0.472), whereas 4B RHD exceeded its baseline (0.685 versus 0.576). Thus simple
+univariate feature separation does not recover stable 2B composite generalization.
+
+Treating truncation as its own endpoint, rather than assigning it a correctness label,
+showed only modest feature association for 2B (maximum descriptive AUROC 0.593 for
+PCC). The six 4B truncations were highly separable by CV and mean Reasoning Score, but
+that estimate is too sparse for a stable claim. The high 2B truncation rate and nine
+entirely missing questions create material selection bias, especially through the
+Science and MATH domain mixture. Nevertheless, the modest 2B truncation-endpoint
+association indicates that selection alone is unlikely to explain the entire weak
+completed-only composite RHD result.
+
+All bootstrap confidence intervals resampled `sample_id`, keeping the five generations
+of a question together. Full configuration checks, domain/seed tables, token and step
+distributions, ten-bin trajectories, feature AUROCs, figures, and machine-readable
+results are archived in `docs/results/rhd-sampling5-truncation-audit-v1`.
