@@ -179,7 +179,7 @@ def render_truncation_table(rows: list[dict[str, Any]], path: Path) -> None:
         r"\caption{Question-level Sampling-5 truncation. Counts in columns 4--8 are the number of questions with exactly that many truncated generations.}",
         r"\label{tab:appendix-sampling-question-truncation}",
         r"\small",
-        r"\begin{tabular}{lrrrrrrrrr}",
+        r"\begin{tabular}{lrrrrrrrr}",
         r"\toprule",
         r"Model & Questions & $\geq 1$ & 1 & 2 & 3 & 4 & 5 & All five \\",
         r"\midrule",
@@ -191,6 +191,46 @@ def render_truncation_table(rows: list[dict[str, Any]], path: Path) -> None:
             f"{row['exactly_4']} & {row['exactly_5']} & {row['all_five']} \\\\"
         )
     lines.extend([r"\bottomrule", r"\end{tabular}", r"\end{table}", ""])
+    path.write_text("\n".join(lines), encoding="utf-8")
+
+
+def render_truncation_detail_table(rows: list[dict[str, Any]], path: Path) -> None:
+    by_sample: dict[str, dict[str, Any]] = {}
+    for row in rows:
+        item = by_sample.setdefault(
+            row["sample_id"],
+            {"sample_id": row["sample_id"], "domain": row["domain"], "Qwen3-2B": 0, "Qwen3-4B": 0},
+        )
+        item[row["model"]] = row["truncated_traces"]
+    affected = [row for row in by_sample.values() if row["Qwen3-2B"] or row["Qwen3-4B"]]
+    affected.sort(key=lambda row: (row["domain"], row["sample_id"]))
+    lines = [
+        r"\begin{longtable}{lllrr}",
+        r"\caption{Held-out questions with at least one truncated Sampling-5 generation. The identifier is the first 12 characters of the source hash; complete identifiers are retained in the accompanying CSV artifact.}\label{tab:appendix-sampling-question-detail}\\",
+        r"\toprule",
+        r"Domain & Source family & Identifier & 2B & 4B \\",
+        r"\midrule",
+        r"\endfirsthead",
+        r"\multicolumn{5}{l}{\small\itshape Table~\thetable\ continued from previous page}\\",
+        r"\toprule",
+        r"Domain & Source family & Identifier & 2B & 4B \\",
+        r"\midrule",
+        r"\endhead",
+        r"\midrule",
+        r"\multicolumn{5}{r}{\small\itshape Continued on next page}\\",
+        r"\endfoot",
+        r"\bottomrule",
+        r"\endlastfoot",
+    ]
+    for row in affected:
+        parts = row["sample_id"].split("/")
+        family = parts[0]
+        identifier = parts[-1][:12]
+        lines.append(
+            f"{esc(row['domain'])} & {esc(family)} & \texttt{{{identifier}}} & "
+            f"{row['Qwen3-2B']} & {row['Qwen3-4B']} \\\\"
+        )
+    lines.extend([r"\end{longtable}", ""])
     path.write_text("\n".join(lines), encoding="utf-8")
 
 
@@ -214,6 +254,9 @@ def main() -> None:
     write_csv(args.output_dir / "sampling_question_truncation.csv", details_2b + details_4b)
     write_csv(args.output_dir / "sampling_question_truncation_summary.csv", [summary_2b, summary_4b])
     render_truncation_table([summary_2b, summary_4b], args.output_dir / "sampling_question_truncation.tex")
+    render_truncation_detail_table(
+        details_2b + details_4b, args.output_dir / "sampling_question_truncation_detail.tex"
+    )
     manifest = {
         "schema_version": "1.0",
         "calibration_scope": "development_only_frozen_calibration",
