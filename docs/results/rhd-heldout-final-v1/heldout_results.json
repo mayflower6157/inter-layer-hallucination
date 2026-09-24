@@ -1,6 +1,61 @@
 {
   "conditions": {
     "Qwen3-2B Beam-4": {
+      "bootstrap": {
+        "combined_minus_baseline_auroc": [
+          -0.06944856031946194,
+          0.22949442498053588
+        ],
+        "iterations": 2000,
+        "models": {
+          "length_step_baseline": {
+            "auprc": [
+              0.4138431870449585,
+              0.662651770248203
+            ],
+            "auroc": [
+              0.447644448983297,
+              0.6487985539841734
+            ],
+            "balanced_accuracy": [
+              0.4906148270678902,
+              0.6275576572489694
+            ]
+          },
+          "rhd_only": {
+            "auprc": [
+              0.47855925294292045,
+              0.7101552181302253
+            ],
+            "auroc": [
+              0.5163733078917051,
+              0.708598254873552
+            ],
+            "balanced_accuracy": [
+              0.5192177870089478,
+              0.6703634655335994
+            ]
+          },
+          "rhd_plus_length_step": {
+            "auprc": [
+              0.4744913697734797,
+              0.7137053609647643
+            ],
+            "auroc": [
+              0.5292881192881193,
+              0.7159108092008798
+            ],
+            "balanced_accuracy": [
+              0.5362903225806451,
+              0.685192652329749
+            ]
+          }
+        },
+        "sampling_unit": "sample_id",
+        "seed": 20260925,
+        "stratified_by": "domain",
+        "valid_iterations": 2000
+      },
       "calibration_path": "/home/kxu009/mayflower/Disseration/docs/results/rhd-frozen-protocol-v1/calibrations/qwen3-2b-beam4.json",
       "calibration_sha256": "2af4b27bfb51e1b692681630b37563e43061826191481681c33f4b6268244956",
       "diagnostic_dir": "/home/kxu009/mayflower/Disseration/diagnostics/rhd-qwen3-2b-beam4-test-v1",
@@ -65,6 +120,20 @@
             "auprc": 0.527069466264798,
             "auroc": 0.5470010080645161,
             "balanced_accuracy": 0.560483870967742,
+            "confidence_95": {
+              "auprc": [
+                0.4138431870449585,
+                0.662651770248203
+              ],
+              "auroc": [
+                0.447644448983297,
+                0.6487985539841734
+              ],
+              "balanced_accuracy": [
+                0.4906148270678902,
+                0.6275576572489694
+              ]
+            },
             "correct": 64,
             "incorrect": 62,
             "incorrect_rate": 0.49206349206349204,
@@ -127,6 +196,20 @@
             "auprc": 0.5914480838106454,
             "auroc": 0.6174395161290323,
             "balanced_accuracy": 0.5985383064516129,
+            "confidence_95": {
+              "auprc": [
+                0.47855925294292045,
+                0.7101552181302253
+              ],
+              "auroc": [
+                0.5163733078917051,
+                0.708598254873552
+              ],
+              "balanced_accuracy": [
+                0.5192177870089478,
+                0.6703634655335994
+              ]
+            },
             "correct": 64,
             "incorrect": 62,
             "incorrect_rate": 0.49206349206349204,
@@ -191,6 +274,20 @@
             "auprc": 0.5885513418286339,
             "auroc": 0.6280241935483871,
             "balanced_accuracy": 0.6146673387096775,
+            "confidence_95": {
+              "auprc": [
+                0.4744913697734797,
+                0.7137053609647643
+              ],
+              "auroc": [
+                0.5292881192881193,
+                0.7159108092008798
+              ],
+              "balanced_accuracy": [
+                0.5362903225806451,
+                0.685192652329749
+              ]
+            },
             "correct": 64,
             "incorrect": 62,
             "incorrect_rate": 0.49206349206349204,
@@ -208,6 +305,61 @@
       "total_records": 180
     },
     "Qwen3-2B Greedy": {
+      "bootstrap": {
+        "combined_minus_baseline_auroc": [
+          0.015624445921985817,
+          0.20810200745210589
+        ],
+        "iterations": 2000,
+        "models": {
+          "length_step_baseline": {
+            "auprc": [
+              0.45449937498488147,
+              0.6958582567155341
+            ],
+            "auroc": [
+              0.40604806414704364,
+              0.6126887745461417
+            ],
+            "balanced_accuracy": [
+              0.4587270021645022,
+              0.6366352266970616
+            ]
+          },
+          "rhd_only": {
+            "auprc": [
+              0.5454575382549349,
+              0.7879839940974955
+            ],
+            "auroc": [
+              0.5352083333333333,
+              0.7413197919515085
+            ],
+            "balanced_accuracy": [
+              0.47682540153706665,
+              0.6227609564554715
+            ]
+          },
+          "rhd_plus_length_step": {
+            "auprc": [
+              0.566953158358489,
+              0.793146414301581
+            ],
+            "auroc": [
+              0.5215028151196871,
+              0.7180625
+            ],
+            "balanced_accuracy": [
+              0.5094223239942528,
+              0.6812822454287006
+            ]
+          }
+        },
+        "sampling_unit": "sample_id",
+        "seed": 20260924,
+        "stratified_by": "domain",
+        "valid_iterations": 2000
+      },
       "calibration_path": "/home/kxu009/mayflower/Disseration/docs/results/rhd-frozen-protocol-v1/calibrations/qwen3-2b-greedy.json",
       "calibration_sha256": "0e8184a6f23b7652aff654da302d8c986b8cdb5eb21f135fc3857c18f54a8b24",
       "diagnostic_dir": "/home/kxu009/mayflower/Disseration/diagnostics/rhd-qwen3-2b-greedy-test-v1",
@@ -272,6 +424,20 @@
             "auprc": 0.5721743703577651,
             "auroc": 0.5083061002178649,
             "balanced_accuracy": 0.548202614379085,
+            "confidence_95": {
+              "auprc": [
+                0.45449937498488147,
+                0.6958582567155341
+              ],
+              "auroc": [
+                0.40604806414704364,
+                0.6126887745461417
+              ],
+              "balanced_accuracy": [
+                0.4587270021645022,
+                0.6366352266970616
+              ]
+            },
             "correct": 54,
             "incorrect": 68,
             "incorrect_rate": 0.5573770491803278,
@@ -334,6 +500,20 @@
             "auprc": 0.6678110278792877,
             "auroc": 0.6361655773420479,
             "balanced_accuracy": 0.5490196078431373,
+            "confidence_95": {
+              "auprc": [
+                0.5454575382549349,
+                0.7879839940974955
+              ],
+              "auroc": [
+                0.5352083333333333,
+                0.7413197919515085
+              ],
+              "balanced_accuracy": [
+                0.47682540153706665,
+                0.6227609564554715
+              ]
+            },
             "correct": 54,
             "incorrect": 68,
             "incorrect_rate": 0.5573770491803278,
@@ -398,6 +578,20 @@
             "auprc": 0.6889746988831515,
             "auroc": 0.6195533769063181,
             "balanced_accuracy": 0.5942265795206971,
+            "confidence_95": {
+              "auprc": [
+                0.566953158358489,
+                0.793146414301581
+              ],
+              "auroc": [
+                0.5215028151196871,
+                0.7180625
+              ],
+              "balanced_accuracy": [
+                0.5094223239942528,
+                0.6812822454287006
+              ]
+            },
             "correct": 54,
             "incorrect": 68,
             "incorrect_rate": 0.5573770491803278,
@@ -415,6 +609,61 @@
       "total_records": 180
     },
     "Qwen3-2B Sampling-5": {
+      "bootstrap": {
+        "combined_minus_baseline_auroc": [
+          -0.033423072489268166,
+          0.09951296758300941
+        ],
+        "iterations": 2000,
+        "models": {
+          "length_step_baseline": {
+            "auprc": [
+              0.5311358112614871,
+              0.7125404187943395
+            ],
+            "auroc": [
+              0.5131242762524519,
+              0.6515166201159892
+            ],
+            "balanced_accuracy": [
+              0.48915311356869445,
+              0.5999698620645852
+            ]
+          },
+          "rhd_only": {
+            "auprc": [
+              0.5463330707058975,
+              0.7279125178275122
+            ],
+            "auroc": [
+              0.5559968846881219,
+              0.6982409881531688
+            ],
+            "balanced_accuracy": [
+              0.5530145392332005,
+              0.6565787019588204
+            ]
+          },
+          "rhd_plus_length_step": {
+            "auprc": [
+              0.550235182540028,
+              0.7301430495512232
+            ],
+            "auroc": [
+              0.5486151709483782,
+              0.683942339741556
+            ],
+            "balanced_accuracy": [
+              0.5500851648923544,
+              0.6558476895204526
+            ]
+          }
+        },
+        "sampling_unit": "sample_id",
+        "seed": 20260926,
+        "stratified_by": "domain",
+        "valid_iterations": 2000
+      },
       "calibration_path": "/home/kxu009/mayflower/Disseration/docs/results/rhd-frozen-protocol-v1/calibrations/qwen3-2b-sampling5.json",
       "calibration_sha256": "46b9545454fd28b55fff28c054c97058ab2d4e61b8069e11e611554ef21cf2d1",
       "diagnostic_dir": "/home/kxu009/mayflower/Disseration/diagnostics/rhd-qwen3-2b-sampling5-test-v1",
@@ -479,6 +728,20 @@
             "auprc": 0.6203816419952279,
             "auroc": 0.5815567484662577,
             "balanced_accuracy": 0.5455083260297984,
+            "confidence_95": {
+              "auprc": [
+                0.5311358112614871,
+                0.7125404187943395
+              ],
+              "auroc": [
+                0.5131242762524519,
+                0.6515166201159892
+              ],
+              "balanced_accuracy": [
+                0.48915311356869445,
+                0.5999698620645852
+              ]
+            },
             "correct": 280,
             "incorrect": 326,
             "incorrect_rate": 0.5379537953795379,
@@ -541,6 +804,20 @@
             "auprc": 0.6365082690291085,
             "auroc": 0.6295574057843997,
             "balanced_accuracy": 0.605203768624014,
+            "confidence_95": {
+              "auprc": [
+                0.5463330707058975,
+                0.7279125178275122
+              ],
+              "auroc": [
+                0.5559968846881219,
+                0.6982409881531688
+              ],
+              "balanced_accuracy": [
+                0.5530145392332005,
+                0.6565787019588204
+              ]
+            },
             "correct": 280,
             "incorrect": 326,
             "incorrect_rate": 0.5379537953795379,
@@ -605,6 +882,20 @@
             "auprc": 0.641200886128486,
             "auroc": 0.617101226993865,
             "balanced_accuracy": 0.6031003505696757,
+            "confidence_95": {
+              "auprc": [
+                0.550235182540028,
+                0.7301430495512232
+              ],
+              "auroc": [
+                0.5486151709483782,
+                0.683942339741556
+              ],
+              "balanced_accuracy": [
+                0.5500851648923544,
+                0.6558476895204526
+              ]
+            },
             "correct": 280,
             "incorrect": 326,
             "incorrect_rate": 0.5379537953795379,
@@ -622,6 +913,61 @@
       "total_records": 900
     },
     "Qwen3-4B Beam-4": {
+      "bootstrap": {
+        "combined_minus_baseline_auroc": [
+          -0.046677551664615485,
+          0.138770448835483
+        ],
+        "iterations": 2000,
+        "models": {
+          "length_step_baseline": {
+            "auprc": [
+              0.5371935126295913,
+              0.7241560567517941
+            ],
+            "auroc": [
+              0.4460891730054412,
+              0.6119420760350067
+            ],
+            "balanced_accuracy": [
+              0.5051848284992657,
+              0.6288183099122789
+            ]
+          },
+          "rhd_only": {
+            "auprc": [
+              0.5625820826849142,
+              0.7502346999166118
+            ],
+            "auroc": [
+              0.4870122520377189,
+              0.6568715899414878
+            ],
+            "balanced_accuracy": [
+              0.4560420846709471,
+              0.6073406606704064
+            ]
+          },
+          "rhd_plus_length_step": {
+            "auprc": [
+              0.5675291262577664,
+              0.75240789022092
+            ],
+            "auroc": [
+              0.4921252017836879,
+              0.6595516109955933
+            ],
+            "balanced_accuracy": [
+              0.43963589227673733,
+              0.5921375072510371
+            ]
+          }
+        },
+        "sampling_unit": "sample_id",
+        "seed": 20260928,
+        "stratified_by": "domain",
+        "valid_iterations": 2000
+      },
       "calibration_path": "/home/kxu009/mayflower/Disseration/docs/results/rhd-frozen-protocol-v1/calibrations/qwen3-4b-beam4.json",
       "calibration_sha256": "fef2dc8d2bc7ed1464f73930c32d4cd0474e79482eeff9306f6072cf3150ffda",
       "diagnostic_dir": "/home/kxu009/mayflower/Disseration/diagnostics/rhd-qwen3-4b-beam4-test-v1",
@@ -687,6 +1033,20 @@
             "auprc": 0.6294510311692648,
             "auroc": 0.5296442687747036,
             "balanced_accuracy": 0.5677583286278939,
+            "confidence_95": {
+              "auprc": [
+                0.5371935126295913,
+                0.7241560567517941
+              ],
+              "auroc": [
+                0.4460891730054412,
+                0.6119420760350067
+              ],
+              "balanced_accuracy": [
+                0.5051848284992657,
+                0.6288183099122789
+              ]
+            },
             "correct": 77,
             "incorrect": 92,
             "incorrect_rate": 0.5443786982248521,
@@ -749,6 +1109,20 @@
             "auprc": 0.6554878469059682,
             "auroc": 0.5736871823828346,
             "balanced_accuracy": 0.5325381140598532,
+            "confidence_95": {
+              "auprc": [
+                0.5625820826849142,
+                0.7502346999166118
+              ],
+              "auroc": [
+                0.4870122520377189,
+                0.6568715899414878
+              ],
+              "balanced_accuracy": [
+                0.4560420846709471,
+                0.6073406606704064
+              ]
+            },
             "correct": 77,
             "incorrect": 92,
             "incorrect_rate": 0.5443786982248521,
@@ -813,6 +1187,20 @@
             "auprc": 0.6591623960530519,
             "auroc": 0.5752399774138904,
             "balanced_accuracy": 0.5151750423489554,
+            "confidence_95": {
+              "auprc": [
+                0.5675291262577664,
+                0.75240789022092
+              ],
+              "auroc": [
+                0.4921252017836879,
+                0.6595516109955933
+              ],
+              "balanced_accuracy": [
+                0.43963589227673733,
+                0.5921375072510371
+              ]
+            },
             "correct": 77,
             "incorrect": 92,
             "incorrect_rate": 0.5443786982248521,
@@ -830,6 +1218,61 @@
       "total_records": 180
     },
     "Qwen3-4B Greedy": {
+      "bootstrap": {
+        "combined_minus_baseline_auroc": [
+          0.027139767618054016,
+          0.17363086315472223
+        ],
+        "iterations": 2000,
+        "models": {
+          "length_step_baseline": {
+            "auprc": [
+              0.5006981661066452,
+              0.7032542780700909
+            ],
+            "auroc": [
+              0.4703410114790218,
+              0.6356890209394453
+            ],
+            "balanced_accuracy": [
+              0.4810990783210356,
+              0.6276743704855539
+            ]
+          },
+          "rhd_only": {
+            "auprc": [
+              0.602830562083296,
+              0.7939406702941595
+            ],
+            "auroc": [
+              0.5565855062800288,
+              0.7210166276289465
+            ],
+            "balanced_accuracy": [
+              0.5380133319209467,
+              0.6830521588340738
+            ]
+          },
+          "rhd_plus_length_step": {
+            "auprc": [
+              0.5995268909603134,
+              0.7973633958838935
+            ],
+            "auroc": [
+              0.56769004949926,
+              0.7365689946610999
+            ],
+            "balanced_accuracy": [
+              0.50954987050645,
+              0.6426418254631036
+            ]
+          }
+        },
+        "sampling_unit": "sample_id",
+        "seed": 20260927,
+        "stratified_by": "domain",
+        "valid_iterations": 2000
+      },
       "calibration_path": "/home/kxu009/mayflower/Disseration/docs/results/rhd-frozen-protocol-v1/calibrations/qwen3-4b-greedy.json",
       "calibration_sha256": "1cb1ec53744bed21fddcfdd5189c66932d854d63c4b1ecf7378bd22fb88664eb",
       "diagnostic_dir": "/home/kxu009/mayflower/Disseration/diagnostics/rhd-qwen3-4b-greedy-test-v1",
@@ -894,6 +1337,20 @@
             "auprc": 0.6036915338642362,
             "auroc": 0.5558300395256917,
             "balanced_accuracy": 0.5566770186335404,
+            "confidence_95": {
+              "auprc": [
+                0.5006981661066452,
+                0.7032542780700909
+              ],
+              "auroc": [
+                0.4703410114790218,
+                0.6356890209394453
+              ],
+              "balanced_accuracy": [
+                0.4810990783210356,
+                0.6276743704855539
+              ]
+            },
             "correct": 77,
             "incorrect": 92,
             "incorrect_rate": 0.5443786982248521,
@@ -956,6 +1413,20 @@
             "auprc": 0.7038139644720538,
             "auroc": 0.6418690005646528,
             "balanced_accuracy": 0.6116600790513834,
+            "confidence_95": {
+              "auprc": [
+                0.602830562083296,
+                0.7939406702941595
+              ],
+              "auroc": [
+                0.5565855062800288,
+                0.7210166276289465
+              ],
+              "balanced_accuracy": [
+                0.5380133319209467,
+                0.6830521588340738
+              ]
+            },
             "correct": 77,
             "incorrect": 92,
             "incorrect_rate": 0.5443786982248521,
@@ -1020,6 +1491,20 @@
             "auprc": 0.6986180933735756,
             "auroc": 0.653020892151327,
             "balanced_accuracy": 0.5764398644833427,
+            "confidence_95": {
+              "auprc": [
+                0.5995268909603134,
+                0.7973633958838935
+              ],
+              "auroc": [
+                0.56769004949926,
+                0.7365689946610999
+              ],
+              "balanced_accuracy": [
+                0.50954987050645,
+                0.6426418254631036
+              ]
+            },
             "correct": 77,
             "incorrect": 92,
             "incorrect_rate": 0.5443786982248521,
@@ -1037,6 +1522,61 @@
       "total_records": 180
     },
     "Qwen3-4B Sampling-5": {
+      "bootstrap": {
+        "combined_minus_baseline_auroc": [
+          -0.018126870198351425,
+          0.10422995058639485
+        ],
+        "iterations": 2000,
+        "models": {
+          "length_step_baseline": {
+            "auprc": [
+              0.5166706377683521,
+              0.6926682057583629
+            ],
+            "auroc": [
+              0.49353418648222425,
+              0.6251804218981634
+            ],
+            "balanced_accuracy": [
+              0.5001792077851918,
+              0.584574243789015
+            ]
+          },
+          "rhd_only": {
+            "auprc": [
+              0.5902429842406305,
+              0.7306038624350522
+            ],
+            "auroc": [
+              0.5496853799374951,
+              0.6680548281819739
+            ],
+            "balanced_accuracy": [
+              0.5437871062543151,
+              0.6429602293084765
+            ]
+          },
+          "rhd_plus_length_step": {
+            "auprc": [
+              0.5920666237306044,
+              0.7341676674907163
+            ],
+            "auroc": [
+              0.5405979011453151,
+              0.6648096967423003
+            ],
+            "balanced_accuracy": [
+              0.5180285886652503,
+              0.6233579454075969
+            ]
+          }
+        },
+        "sampling_unit": "sample_id",
+        "seed": 20260929,
+        "stratified_by": "domain",
+        "valid_iterations": 2000
+      },
       "calibration_path": "/home/kxu009/mayflower/Disseration/docs/results/rhd-frozen-protocol-v1/calibrations/qwen3-4b-sampling5.json",
       "calibration_sha256": "cbec885179a453a6de9726923952d8a5dc2c91a4c4d705e545882a8d9759a222",
       "diagnostic_dir": "/home/kxu009/mayflower/Disseration/diagnostics/rhd-qwen3-4b-sampling5-test-v1",
@@ -1102,6 +1642,20 @@
             "auprc": 0.603877733826126,
             "auroc": 0.5596052528111977,
             "balanced_accuracy": 0.5442658308900347,
+            "confidence_95": {
+              "auprc": [
+                0.5166706377683521,
+                0.6926682057583629
+              ],
+              "auroc": [
+                0.49353418648222425,
+                0.6251804218981634
+              ],
+              "balanced_accuracy": [
+                0.5001792077851918,
+                0.584574243789015
+              ]
+            },
             "correct": 378,
             "incorrect": 471,
             "incorrect_rate": 0.5547703180212014,
@@ -1164,6 +1718,20 @@
             "auprc": 0.6660068235719614,
             "auroc": 0.609004819195902,
             "balanced_accuracy": 0.592053381862299,
+            "confidence_95": {
+              "auprc": [
+                0.5902429842406305,
+                0.7306038624350522
+              ],
+              "auroc": [
+                0.5496853799374951,
+                0.6680548281819739
+              ],
+              "balanced_accuracy": [
+                0.5437871062543151,
+                0.6429602293084765
+              ]
+            },
             "correct": 378,
             "incorrect": 471,
             "incorrect_rate": 0.5547703180212014,
@@ -1228,6 +1796,20 @@
             "auprc": 0.6686863899744303,
             "auroc": 0.6029162313663375,
             "balanced_accuracy": 0.5710662892191555,
+            "confidence_95": {
+              "auprc": [
+                0.5920666237306044,
+                0.7341676674907163
+              ],
+              "auroc": [
+                0.5405979011453151,
+                0.6648096967423003
+              ],
+              "balanced_accuracy": [
+                0.5180285886652503,
+                0.6233579454075969
+              ]
+            },
             "correct": 378,
             "incorrect": 471,
             "incorrect_rate": 0.5547703180212014,

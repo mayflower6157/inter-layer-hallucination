@@ -478,5 +478,8 @@ AUROC gains over the frozen token/step baseline were 0.111, 0.081, 0.036, 0.097,
 Greedy RHD AUROC ranged from 0.472 on Science to 0.713 on MultiHopQA.
 
 Aggregate artifacts are stored under `docs/results/rhd-heldout-final-v1/`. Complete per-trace
-scores and diagnostic sidecars remain on the NTU server. The point-estimate table is complete;
-clustered 95% confidence intervals remain to be computed with `sample_id` as the resampling unit.
+scores and diagnostic sidecars remain on the NTU server. Two thousand bootstrap replicates were
+stratified by domain and clustered by `sample_id`. Only the Qwen3-2B Greedy gain (0.111, 95% CI
+0.016--0.208) and Qwen3-4B Greedy gain (0.097, 0.027--0.174) excluded zero. All Beam-4 and
+Sampling-5 incremental-gain intervals crossed zero; the final claim is therefore conditional
+rather than decoding-invariant.

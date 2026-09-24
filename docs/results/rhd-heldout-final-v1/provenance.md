@@ -15,5 +15,6 @@ The versioned directory contains aggregate JSON, CSV, Markdown, and LaTeX artifa
 Complete generation outputs, token-level sidecars, and per-trace held-out scores remain on the
 NTU server and are deliberately excluded from the repository.
 
-The current tables contain point estimates. Clustered confidence intervals must resample by
-`sample_id`, so all five Sampling-5 generations for a question remain in the same bootstrap unit.
+Confidence intervals use 2,000 deterministic bootstrap replicates, stratified by domain and
+clustered by `sample_id`, so all five Sampling-5 generations for a question remain in the same
+resampling unit. The reported incremental-gain interval is paired within each replicate.
