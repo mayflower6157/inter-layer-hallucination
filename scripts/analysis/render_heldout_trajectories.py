@@ -148,15 +148,21 @@ def main() -> None:
     parser.add_argument("--scored-records", type=Path, required=True)
     parser.add_argument("--diagnostic-2b-greedy", type=Path, required=True)
     parser.add_argument("--diagnostic-4b-greedy", type=Path, required=True)
+    parser.add_argument("--diagnostic-2b-beam", type=Path)
+    parser.add_argument("--diagnostic-4b-beam", type=Path)
     parser.add_argument("--output-dir", type=Path, required=True)
     args = parser.parse_args()
     args.output_dir.mkdir(parents=True, exist_ok=True)
     results = json.loads(args.heldout_results.read_text(encoding="utf-8"))
     scored_rows = read_jsonl(args.scored_records)
-    specifications = (
+    specifications = [
         ("Qwen3-2B Greedy", args.diagnostic_2b_greedy, "qwen3-2b-greedy-trajectories.svg"),
         ("Qwen3-4B Greedy", args.diagnostic_4b_greedy, "qwen3-4b-greedy-trajectories.svg"),
-    )
+    ]
+    if args.diagnostic_2b_beam is not None:
+        specifications.append(("Qwen3-2B Beam-4", args.diagnostic_2b_beam, "qwen3-2b-beam4-trajectories.svg"))
+    if args.diagnostic_4b_beam is not None:
+        specifications.append(("Qwen3-4B Beam-4", args.diagnostic_4b_beam, "qwen3-4b-beam4-trajectories.svg"))
     manifest_rows = []
     for condition, diagnostic_dir, filename in specifications:
         threshold = results["conditions"][condition]["models"]["rhd_only"]["overall"]["threshold"]
@@ -180,7 +186,7 @@ def main() -> None:
         writer.writerows(manifest_rows)
     manifest = {
         "schema_version": "1.0",
-        "scope": "heldout_completed_greedy_explanatory_examples",
+        "scope": "heldout_completed_fixed_rule_explanatory_examples",
         "selection_rule": "For each model and TP/FP/FN/TN cell, select the completed trace with the greatest absolute margin between frozen RHD probability and frozen threshold; break ties by sample_id then generation_index.",
         "score_display": "Token-level reference Reasoning Score standardized within trace; black points are per-step means; dashed lines are frozen paragraph boundaries.",
         "confirmatory_use": False,
