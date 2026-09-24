@@ -13,7 +13,7 @@ from ..backends.transformers import TransformersBackend
 from ..io import append_jsonl, atomic_write_json, iter_jsonl, read_json, sha256_file
 
 
-RHD_DIAGNOSTIC_VERSION = "1.1.0"
+RHD_DIAGNOSTIC_VERSION = "1.1.1"
 DEFAULT_RELATIVE_LAYERS = (0.5, 0.625, 0.75, 0.875)
 
 
@@ -153,21 +153,30 @@ def _model_parts(model: Any) -> tuple[Any, Any]:
 
 
 def _token_step_indices(tokenizer: Any, token_ids: list[int]) -> tuple[str, list[int]]:
-    pieces = [
-        tokenizer.decode([token_id], skip_special_tokens=False, clean_up_tokenization_spaces=False)
-        for token_id in token_ids
-    ]
-    text = "".join(pieces)
+    text = tokenizer.decode(
+        token_ids, skip_special_tokens=True, clean_up_tokenization_spaces=False
+    )
     spans = segment_reasoning_steps(text)
+    encoded = tokenizer(
+        text,
+        add_special_tokens=False,
+        return_offsets_mapping=True,
+    )
+    reencoded = list(encoded["input_ids"])
+    offsets = list(encoded["offset_mapping"])
+    usable = min(len(token_ids), len(offsets))
+    if reencoded[:usable] != token_ids[:usable]:
+        raise ValueError("Generated token IDs do not round-trip through decoded text")
     indices: list[int] = []
-    cursor = 0
     step = 0
-    for piece in pieces:
-        midpoint = cursor + max(0, len(piece) - 1) / 2
+    for start, end in offsets[:usable]:
+        midpoint = start + max(0, end - start - 1) / 2
         while step + 1 < len(spans) and midpoint >= spans[step][1]:
             step += 1
         indices.append(step)
-        cursor += len(piece)
+    # Special terminal tokens are absent from skip-special-token offsets. Attribute
+    # them to the final textual step so token-level arrays remain aligned.
+    indices.extend([step] * (len(token_ids) - usable))
     return text, indices
 
 
