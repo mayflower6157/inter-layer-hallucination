@@ -39,7 +39,8 @@ def esc(value: str) -> str:
 
 
 def svg_text(x: float, y: float, value: str, **attributes: Any) -> str:
-    options = {"font-family": "Arial, Helvetica, sans-serif", "font-size": 14, **attributes}
+    options = {"font-family": "Arial, Helvetica, sans-serif", "font-size": 14}
+    options.update({key.replace("_", "-"): item for key, item in attributes.items()})
     payload = " ".join(f'{key.replace("_", "-")}="{item}"' for key, item in options.items())
     return f'<text x="{x}" y="{y}" {payload}>{html.escape(value)}</text>'
 
@@ -88,8 +89,8 @@ def condition_rows(results: dict[str, Any]) -> list[dict[str, Any]]:
 
 
 def auroc_forest(rows: list[dict[str, Any]], output: Path) -> None:
-    width, height = 1120, 570
-    left, right, top, row_h = 270, 1060, 100, 70
+    width, height = 1260, 570
+    left, right, top, row_h = 270, 1010, 100, 70
     low, high = 0.35, 0.80
     x = lambda value: left + (float(value) - low) / (high - low) * (right - left)
     parts = svg_start(
@@ -131,7 +132,7 @@ def auroc_forest(rows: list[dict[str, Any]], output: Path) -> None:
 
 
 def gain_forest(rows: list[dict[str, Any]], output: Path) -> None:
-    width, height = 1040, 560
+    width, height = 1180, 560
     left, right, top, row_h = 270, 900, 100, 68
     low, high = -0.10, 0.25
     x = lambda value: left + (float(value) - low) / (high - low) * (right - left)
