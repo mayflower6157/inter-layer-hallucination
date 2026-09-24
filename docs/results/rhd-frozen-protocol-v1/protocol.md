@@ -1,6 +1,6 @@
 # Frozen RHD protocol v1
 
-Status: **frozen after development analysis; held-out test remains sealed**.
+Status: **frozen and execution-ready; held-out test remains sealed**.
 
 ## Confirmatory questions
 
@@ -49,6 +49,8 @@ Sampling-5 uses five fixed seeds (101, 202, 303, 404, 505); Greedy and Beam use 
 ## Gate before held-out execution
 
 The development diagnostics, AUROC matrix, truncation audit, and protocol are frozen.
-The remaining prerequisite is to serialize one final all-development calibration for
-each of the six cells and verify a loader can reproduce its development scores. Only
-after that verification should the 180-example held-out jobs be submitted.
+One final all-development calibration has been serialized for each of the six cells
+under `calibrations/`. Reloaded scores reproduce the original development scores with
+maximum absolute error no larger than 2.22e-16. The held-out configurations and a
+two-lane submission script are prepared, but submission requires a separate explicit
+execution decision because it allocates up to two A40 GPUs and reveals test results.

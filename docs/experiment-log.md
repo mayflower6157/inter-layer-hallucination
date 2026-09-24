@@ -443,3 +443,23 @@ All bootstrap confidence intervals resampled `sample_id`, keeping the five gener
 of a question together. Full configuration checks, domain/seed tables, token and step
 distributions, ten-bin trajectories, feature AUROCs, figures, and machine-readable
 results are archived in `docs/results/rhd-sampling5-truncation-audit-v1`.
+
+## 2026-09-24 — Protocol freeze and held-out preparation
+
+The development phase was formally frozen as `rhd-frozen-protocol-v1`. A reproducible
+2×3 AUROC matrix and Sampling-5 truncation comparison figure were generated from the
+committed machine-readable development results. The confirmatory questions, generation
+settings, layer mapping, segmentation, features, metrics, clustered uncertainty rule,
+and truncation policy are fixed in `docs/results/rhd-frozen-protocol-v1/protocol.md`.
+
+One final calibration was fitted on all scored development traces for each model ×
+decoding cell. Each artifact contains the feature order, centers, scales, logistic
+weights, intercept, and development-selected threshold for the RHD-only, token/step,
+and combined models. Serialized reload reproduced development scores with maximum
+absolute error between 1.11e-16 and 2.22e-16. The artifacts explicitly require
+`apply_only_no_refit_no_threshold_selection` on held-out data.
+
+Six held-out generation configs and a two-lane Slurm submission script were prepared.
+Each lane uses one A40 and runs Greedy → Beam-4 → Sampling-5 sequentially for one model,
+allowing at most two concurrent A40 allocations. The jobs were not submitted during
+this preparation step, so the 180-example held-out split remains unobserved.

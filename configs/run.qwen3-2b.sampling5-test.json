@@ -1,0 +1,12 @@
+{
+  "run_id": "qwen3-2b-sampling5-test-v1",
+  "dataset_manifest": "../data/processed/retruthqa/selection-240-v1/manifest.json",
+  "split": "test",
+  "backend": "transformers",
+  "model_id": "Qwen/Qwen3-2B",
+  "model_revision": "15852e8c16360a2fea060d615a32b45270f8a8fc",
+  "prompt_template": "Solve the problem in at most five concise steps. Put the final answer after FINAL:.\n\n{prompt}",
+  "output_path": "../outputs/qwen3-2b-sampling5-test-v1.jsonl",
+  "decoding": {"strategy": "sample", "max_new_tokens": 1024, "temperature": 0.7, "top_p": 0.9, "num_beams": 1, "num_generations": 5, "seeds": [101, 202, 303, 404, 505]},
+  "backend_options": {"dtype": "bfloat16", "device_map": "auto", "trust_remote_code": false, "multimodal": false, "enable_thinking": false}
+}

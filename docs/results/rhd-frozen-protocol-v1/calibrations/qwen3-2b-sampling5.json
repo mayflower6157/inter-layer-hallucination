@@ -1,0 +1,142 @@
+{
+  "correct": 122,
+  "diagnostic_manifest": {
+    "anchor_layer": 24,
+    "candidate_layers": [
+      16,
+      18,
+      20,
+      21,
+      22,
+      23
+    ],
+    "candidate_relative_depths": [
+      0.6666666666666666,
+      0.75,
+      0.8333333333333334,
+      0.875,
+      0.9166666666666666,
+      0.9583333333333334
+    ],
+    "changes_generation": false,
+    "chunk_size": 16,
+    "diagnostic_version": "1.1.2",
+    "generation_path": "/home/kxu009/mayflower/Disseration/outputs/qwen3-2b-sampling5-development-v1.jsonl",
+    "generation_sha256": "b577039a0b752c3ba29b12ec1e9222624021fa433b98e5b9180d49d715c38d65",
+    "labels_available_to_extractor": false,
+    "mode": "post_hoc_teacher_forced_read_only",
+    "model_id": "Qwen/Qwen3-2B",
+    "model_revision": "15852e8c16360a2fea060d615a32b45270f8a8fc",
+    "num_hidden_layers": 24,
+    "relative_layer_request": [
+      0.6666666667,
+      0.75,
+      0.8333333333,
+      0.875,
+      0.9166666667,
+      0.9583333333
+    ],
+    "schema_version": "1.0"
+  },
+  "evaluation_sha256": "2a84a9392224e49adb6753edf3a9256b50112e28de6476e43b12bddf8879bf3d",
+  "held_out_policy": "apply_only_no_refit_no_threshold_selection",
+  "incorrect": 95,
+  "models": {
+    "length_step_baseline": {
+      "center": [
+        405.741935483871,
+        4.764976958525345
+      ],
+      "development_apparent_auprc": 0.5785031325422864,
+      "development_apparent_auroc": 0.6091889559965488,
+      "features": [
+        "token_count",
+        "step_count"
+      ],
+      "intercept": -0.26205547858112976,
+      "reproduction_max_abs_error": 1.1102230246251565e-16,
+      "scale": [
+        261.4361924284036,
+        2.1153529462070138
+      ],
+      "threshold": 0.44507065451236405,
+      "weights": [
+        -0.1949613088818343,
+        -0.2215105403850073
+      ]
+    },
+    "rhd_only": {
+      "center": [
+        0.39070660522273387,
+        0.06508530156501274,
+        1.2228307612229756,
+        -0.31707920765993153
+      ],
+      "development_apparent_auprc": 0.5403694636716327,
+      "development_apparent_auroc": 0.6398619499568594,
+      "features": [
+        "attention_score",
+        "cv_score",
+        "reasoning_score_mean",
+        "pcc"
+      ],
+      "intercept": -0.2700402279290401,
+      "reproduction_max_abs_error": 1.1102230246251565e-16,
+      "scale": [
+        0.20592083954304355,
+        0.07271570702839075,
+        0.16665557674666767,
+        0.7079424399057502
+      ],
+      "threshold": 0.3919016021179225,
+      "weights": [
+        0.13742287363903571,
+        -0.08841100569828274,
+        -0.42516971301137185,
+        -0.07507708273573024
+      ]
+    },
+    "rhd_plus_length_step": {
+      "center": [
+        0.39070660522273387,
+        0.06508530156501274,
+        1.2228307612229756,
+        -0.31707920765993153,
+        405.741935483871,
+        4.764976958525345
+      ],
+      "development_apparent_auprc": 0.5535862453339851,
+      "development_apparent_auroc": 0.6446937014667817,
+      "features": [
+        "attention_score",
+        "cv_score",
+        "reasoning_score_mean",
+        "pcc",
+        "token_count",
+        "step_count"
+      ],
+      "intercept": -0.2741039930090788,
+      "reproduction_max_abs_error": 1.1102230246251565e-16,
+      "scale": [
+        0.20592083954304355,
+        0.07271570702839075,
+        0.16665557674666767,
+        0.7079424399057502,
+        261.4361924284036,
+        2.1153529462070138
+      ],
+      "threshold": 0.42031728369943594,
+      "weights": [
+        0.11971574501104293,
+        -0.11355932282878264,
+        -0.4208253995022744,
+        -0.09717719494764397,
+        -0.2090223455030494,
+        0.1403263406781053
+      ]
+    }
+  },
+  "records": 217,
+  "schema_version": "1.0",
+  "scope": "development_only_frozen_calibration"
+}
