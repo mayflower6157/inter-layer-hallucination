@@ -1,0 +1,1250 @@
+{
+  "conditions": {
+    "Qwen3-2B Beam-4": {
+      "calibration_path": "/home/kxu009/mayflower/Disseration/docs/results/rhd-frozen-protocol-v1/calibrations/qwen3-2b-beam4.json",
+      "calibration_sha256": "2af4b27bfb51e1b692681630b37563e43061826191481681c33f4b6268244956",
+      "diagnostic_dir": "/home/kxu009/mayflower/Disseration/diagnostics/rhd-qwen3-2b-beam4-test-v1",
+      "diagnostic_manifest_sha256": "7032a83e1f98c2413762f08c7fe1947fabc3c7eaf02692a5b1ce52beb557fbc8",
+      "evaluation_path": "/home/kxu009/mayflower/Disseration/evaluations/qwen3-2b-heldout-decoding-v1/Beam-4/records.jsonl",
+      "evaluation_sha256": "d3cc1975f6d66ed9d885329ee0d4d1510d1edda679a1e3678d6b44e2abe9185a",
+      "evaluation_status_counts": {
+        "exact_match": 64,
+        "mismatch": 62,
+        "truncated": 54
+      },
+      "excluded_records": 54,
+      "held_out_policy": "apply_only_no_refit_no_threshold_selection",
+      "models": {
+        "length_step_baseline": {
+          "by_domain": {
+            "MATH": {
+              "auprc": 0.2167452434167816,
+              "auroc": 0.422360248447205,
+              "balanced_accuracy": 0.49689440993788814,
+              "correct": 23,
+              "incorrect": 7,
+              "incorrect_rate": 0.23333333333333334,
+              "questions": 30,
+              "recall": 0.42857142857142855,
+              "records": 30,
+              "specificity": 0.5652173913043478,
+              "threshold": 0.4951789152557819
+            },
+            "MultiHopQA": {
+              "auprc": 0.5393280332958944,
+              "auroc": 0.48012820512820514,
+              "balanced_accuracy": 0.5,
+              "correct": 26,
+              "incorrect": 30,
+              "incorrect_rate": 0.5357142857142857,
+              "questions": 56,
+              "recall": 1.0,
+              "records": 56,
+              "specificity": 0.0,
+              "threshold": 0.4951789152557819
+            },
+            "Science": {
+              "auprc": 0.7210232609699462,
+              "auroc": 0.5626666666666666,
+              "balanced_accuracy": 0.52,
+              "correct": 15,
+              "incorrect": 25,
+              "incorrect_rate": 0.625,
+              "questions": 40,
+              "recall": 0.84,
+              "records": 40,
+              "specificity": 0.2,
+              "threshold": 0.4951789152557819
+            }
+          },
+          "features": [
+            "token_count",
+            "step_count"
+          ],
+          "overall": {
+            "auprc": 0.527069466264798,
+            "auroc": 0.5470010080645161,
+            "balanced_accuracy": 0.560483870967742,
+            "correct": 64,
+            "incorrect": 62,
+            "incorrect_rate": 0.49206349206349204,
+            "questions": 126,
+            "recall": 0.8709677419354839,
+            "records": 126,
+            "specificity": 0.25,
+            "threshold": 0.4951789152557819
+          }
+        },
+        "rhd_only": {
+          "by_domain": {
+            "MATH": {
+              "auprc": 0.3646358543417367,
+              "auroc": 0.6211180124223602,
+              "balanced_accuracy": 0.6055900621118012,
+              "correct": 23,
+              "incorrect": 7,
+              "incorrect_rate": 0.23333333333333334,
+              "questions": 30,
+              "recall": 0.42857142857142855,
+              "records": 30,
+              "specificity": 0.782608695652174,
+              "threshold": 0.447217936896035
+            },
+            "MultiHopQA": {
+              "auprc": 0.6281521535270966,
+              "auroc": 0.5474358974358975,
+              "balanced_accuracy": 0.517948717948718,
+              "correct": 26,
+              "incorrect": 30,
+              "incorrect_rate": 0.5357142857142857,
+              "questions": 56,
+              "recall": 0.7666666666666667,
+              "records": 56,
+              "specificity": 0.2692307692307692,
+              "threshold": 0.447217936896035
+            },
+            "Science": {
+              "auprc": 0.5860238085784487,
+              "auroc": 0.42133333333333334,
+              "balanced_accuracy": 0.48,
+              "correct": 15,
+              "incorrect": 25,
+              "incorrect_rate": 0.625,
+              "questions": 40,
+              "recall": 0.96,
+              "records": 40,
+              "specificity": 0.0,
+              "threshold": 0.447217936896035
+            }
+          },
+          "features": [
+            "attention_score",
+            "cv_score",
+            "reasoning_score_mean",
+            "pcc"
+          ],
+          "overall": {
+            "auprc": 0.5914480838106454,
+            "auroc": 0.6174395161290323,
+            "balanced_accuracy": 0.5985383064516129,
+            "correct": 64,
+            "incorrect": 62,
+            "incorrect_rate": 0.49206349206349204,
+            "questions": 126,
+            "recall": 0.8064516129032258,
+            "records": 126,
+            "specificity": 0.390625,
+            "threshold": 0.447217936896035
+          }
+        },
+        "rhd_plus_length_step": {
+          "by_domain": {
+            "MATH": {
+              "auprc": 0.3927156177156177,
+              "auroc": 0.6645962732919255,
+              "balanced_accuracy": 0.6055900621118012,
+              "correct": 23,
+              "incorrect": 7,
+              "incorrect_rate": 0.23333333333333334,
+              "questions": 30,
+              "recall": 0.42857142857142855,
+              "records": 30,
+              "specificity": 0.782608695652174,
+              "threshold": 0.411157401764728
+            },
+            "MultiHopQA": {
+              "auprc": 0.6298171387535813,
+              "auroc": 0.5615384615384615,
+              "balanced_accuracy": 0.5346153846153846,
+              "correct": 26,
+              "incorrect": 30,
+              "incorrect_rate": 0.5357142857142857,
+              "questions": 56,
+              "recall": 0.8,
+              "records": 56,
+              "specificity": 0.2692307692307692,
+              "threshold": 0.411157401764728
+            },
+            "Science": {
+              "auprc": 0.5912957115980297,
+              "auroc": 0.432,
+              "balanced_accuracy": 0.5,
+              "correct": 15,
+              "incorrect": 25,
+              "incorrect_rate": 0.625,
+              "questions": 40,
+              "recall": 1.0,
+              "records": 40,
+              "specificity": 0.0,
+              "threshold": 0.411157401764728
+            }
+          },
+          "features": [
+            "attention_score",
+            "cv_score",
+            "reasoning_score_mean",
+            "pcc",
+            "token_count",
+            "step_count"
+          ],
+          "overall": {
+            "auprc": 0.5885513418286339,
+            "auroc": 0.6280241935483871,
+            "balanced_accuracy": 0.6146673387096775,
+            "correct": 64,
+            "incorrect": 62,
+            "incorrect_rate": 0.49206349206349204,
+            "questions": 126,
+            "recall": 0.8387096774193549,
+            "records": 126,
+            "specificity": 0.390625,
+            "threshold": 0.411157401764728
+          }
+        }
+      },
+      "schema_version": "1.0",
+      "scope": "held_out_apply_only_frozen_development_calibration",
+      "scored_records": 126,
+      "total_records": 180
+    },
+    "Qwen3-2B Greedy": {
+      "calibration_path": "/home/kxu009/mayflower/Disseration/docs/results/rhd-frozen-protocol-v1/calibrations/qwen3-2b-greedy.json",
+      "calibration_sha256": "0e8184a6f23b7652aff654da302d8c986b8cdb5eb21f135fc3857c18f54a8b24",
+      "diagnostic_dir": "/home/kxu009/mayflower/Disseration/diagnostics/rhd-qwen3-2b-greedy-test-v1",
+      "diagnostic_manifest_sha256": "8e871d4da686e229224a17a65951ab72aace53debe85847a7642f078551d6316",
+      "evaluation_path": "/home/kxu009/mayflower/Disseration/evaluations/qwen3-2b-heldout-decoding-v1/Greedy/records.jsonl",
+      "evaluation_sha256": "2e9a321e578bcfead2930233ef60ecfdf3f2f3b36fe67740fa37ff97c890838c",
+      "evaluation_status_counts": {
+        "exact_match": 54,
+        "mismatch": 68,
+        "truncated": 58
+      },
+      "excluded_records": 58,
+      "held_out_policy": "apply_only_no_refit_no_threshold_selection",
+      "models": {
+        "length_step_baseline": {
+          "by_domain": {
+            "MATH": {
+              "auprc": 0.3221164813654227,
+              "auroc": 0.26,
+              "balanced_accuracy": 0.475,
+              "correct": 20,
+              "incorrect": 15,
+              "incorrect_rate": 0.42857142857142855,
+              "questions": 35,
+              "recall": 0.0,
+              "records": 35,
+              "specificity": 0.95,
+              "threshold": 0.5363522110707812
+            },
+            "MultiHopQA": {
+              "auprc": 0.5884499483320803,
+              "auroc": 0.365,
+              "balanced_accuracy": 0.42857142857142855,
+              "correct": 20,
+              "incorrect": 35,
+              "incorrect_rate": 0.6363636363636364,
+              "questions": 55,
+              "recall": 0.8571428571428571,
+              "records": 55,
+              "specificity": 0.0,
+              "threshold": 0.5363522110707812
+            },
+            "Science": {
+              "auprc": 0.6557634072915058,
+              "auroc": 0.5436507936507936,
+              "balanced_accuracy": 0.5833333333333334,
+              "correct": 14,
+              "incorrect": 18,
+              "incorrect_rate": 0.5625,
+              "questions": 32,
+              "recall": 0.16666666666666666,
+              "records": 32,
+              "specificity": 1.0,
+              "threshold": 0.5363522110707812
+            }
+          },
+          "features": [
+            "token_count",
+            "step_count"
+          ],
+          "overall": {
+            "auprc": 0.5721743703577651,
+            "auroc": 0.5083061002178649,
+            "balanced_accuracy": 0.548202614379085,
+            "correct": 54,
+            "incorrect": 68,
+            "incorrect_rate": 0.5573770491803278,
+            "questions": 122,
+            "recall": 0.4852941176470588,
+            "records": 122,
+            "specificity": 0.6111111111111112,
+            "threshold": 0.5363522110707812
+          }
+        },
+        "rhd_only": {
+          "by_domain": {
+            "MATH": {
+              "auprc": 0.5300361648609703,
+              "auroc": 0.5333333333333333,
+              "balanced_accuracy": 0.5,
+              "correct": 20,
+              "incorrect": 15,
+              "incorrect_rate": 0.42857142857142855,
+              "questions": 35,
+              "recall": 0.0,
+              "records": 35,
+              "specificity": 1.0,
+              "threshold": 0.6304206905188166
+            },
+            "MultiHopQA": {
+              "auprc": 0.7765640073811532,
+              "auroc": 0.7128571428571429,
+              "balanced_accuracy": 0.5964285714285714,
+              "correct": 20,
+              "incorrect": 35,
+              "incorrect_rate": 0.6363636363636364,
+              "questions": 55,
+              "recall": 0.34285714285714286,
+              "records": 55,
+              "specificity": 0.85,
+              "threshold": 0.6304206905188166
+            },
+            "Science": {
+              "auprc": 0.6138985325576344,
+              "auroc": 0.4722222222222222,
+              "balanced_accuracy": 0.45238095238095233,
+              "correct": 14,
+              "incorrect": 18,
+              "incorrect_rate": 0.5625,
+              "questions": 32,
+              "recall": 0.3333333333333333,
+              "records": 32,
+              "specificity": 0.5714285714285714,
+              "threshold": 0.6304206905188166
+            }
+          },
+          "features": [
+            "attention_score",
+            "cv_score",
+            "reasoning_score_mean",
+            "pcc"
+          ],
+          "overall": {
+            "auprc": 0.6678110278792877,
+            "auroc": 0.6361655773420479,
+            "balanced_accuracy": 0.5490196078431373,
+            "correct": 54,
+            "incorrect": 68,
+            "incorrect_rate": 0.5573770491803278,
+            "questions": 122,
+            "recall": 0.2647058823529412,
+            "records": 122,
+            "specificity": 0.8333333333333334,
+            "threshold": 0.6304206905188166
+          }
+        },
+        "rhd_plus_length_step": {
+          "by_domain": {
+            "MATH": {
+              "auprc": 0.4486019463212117,
+              "auroc": 0.38666666666666666,
+              "balanced_accuracy": 0.5083333333333333,
+              "correct": 20,
+              "incorrect": 15,
+              "incorrect_rate": 0.42857142857142855,
+              "questions": 35,
+              "recall": 0.06666666666666667,
+              "records": 35,
+              "specificity": 0.95,
+              "threshold": 0.5273935038311904
+            },
+            "MultiHopQA": {
+              "auprc": 0.7803667721143362,
+              "auroc": 0.67,
+              "balanced_accuracy": 0.6392857142857143,
+              "correct": 20,
+              "incorrect": 35,
+              "incorrect_rate": 0.6363636363636364,
+              "questions": 55,
+              "recall": 0.8285714285714286,
+              "records": 55,
+              "specificity": 0.45,
+              "threshold": 0.5273935038311904
+            },
+            "Science": {
+              "auprc": 0.6320668048029472,
+              "auroc": 0.5158730158730159,
+              "balanced_accuracy": 0.4365079365079365,
+              "correct": 14,
+              "incorrect": 18,
+              "incorrect_rate": 0.5625,
+              "questions": 32,
+              "recall": 0.4444444444444444,
+              "records": 32,
+              "specificity": 0.42857142857142855,
+              "threshold": 0.5273935038311904
+            }
+          },
+          "features": [
+            "attention_score",
+            "cv_score",
+            "reasoning_score_mean",
+            "pcc",
+            "token_count",
+            "step_count"
+          ],
+          "overall": {
+            "auprc": 0.6889746988831515,
+            "auroc": 0.6195533769063181,
+            "balanced_accuracy": 0.5942265795206971,
+            "correct": 54,
+            "incorrect": 68,
+            "incorrect_rate": 0.5573770491803278,
+            "questions": 122,
+            "recall": 0.5588235294117647,
+            "records": 122,
+            "specificity": 0.6296296296296297,
+            "threshold": 0.5273935038311904
+          }
+        }
+      },
+      "schema_version": "1.0",
+      "scope": "held_out_apply_only_frozen_development_calibration",
+      "scored_records": 122,
+      "total_records": 180
+    },
+    "Qwen3-2B Sampling-5": {
+      "calibration_path": "/home/kxu009/mayflower/Disseration/docs/results/rhd-frozen-protocol-v1/calibrations/qwen3-2b-sampling5.json",
+      "calibration_sha256": "46b9545454fd28b55fff28c054c97058ab2d4e61b8069e11e611554ef21cf2d1",
+      "diagnostic_dir": "/home/kxu009/mayflower/Disseration/diagnostics/rhd-qwen3-2b-sampling5-test-v1",
+      "diagnostic_manifest_sha256": "2d9eb8f88c2d49035d1d37d2cd1a61916b5b970a1716b5e2d468b38ff5e41ed6",
+      "evaluation_path": "/home/kxu009/mayflower/Disseration/evaluations/qwen3-2b-heldout-decoding-v1/Sampling-5/records.jsonl",
+      "evaluation_sha256": "90d07f956e712c7a6fd476dba24144cd28468b1d25b6a97ae30e11edfd83f3ed",
+      "evaluation_status_counts": {
+        "exact_match": 280,
+        "mismatch": 326,
+        "truncated": 294
+      },
+      "excluded_records": 294,
+      "held_out_policy": "apply_only_no_refit_no_threshold_selection",
+      "models": {
+        "length_step_baseline": {
+          "by_domain": {
+            "MATH": {
+              "auprc": 0.24097577342208928,
+              "auroc": 0.3791208791208791,
+              "balanced_accuracy": 0.4543432757718472,
+              "correct": 98,
+              "incorrect": 39,
+              "incorrect_rate": 0.2846715328467153,
+              "questions": 40,
+              "recall": 0.10256410256410256,
+              "records": 137,
+              "specificity": 0.8061224489795918,
+              "threshold": 0.44507065451236405
+            },
+            "MultiHopQA": {
+              "auprc": 0.6707005258884254,
+              "auroc": 0.5259208384208384,
+              "balanced_accuracy": 0.5003052503052503,
+              "correct": 108,
+              "incorrect": 182,
+              "incorrect_rate": 0.6275862068965518,
+              "questions": 60,
+              "recall": 0.945054945054945,
+              "records": 290,
+              "specificity": 0.05555555555555555,
+              "threshold": 0.44507065451236405
+            },
+            "Science": {
+              "auprc": 0.5602663994308342,
+              "auroc": 0.4667953667953668,
+              "balanced_accuracy": 0.4485842985842986,
+              "correct": 74,
+              "incorrect": 105,
+              "incorrect_rate": 0.5865921787709497,
+              "questions": 51,
+              "recall": 0.18095238095238095,
+              "records": 179,
+              "specificity": 0.7162162162162162,
+              "threshold": 0.44507065451236405
+            }
+          },
+          "features": [
+            "token_count",
+            "step_count"
+          ],
+          "overall": {
+            "auprc": 0.6203816419952279,
+            "auroc": 0.5815567484662577,
+            "balanced_accuracy": 0.5455083260297984,
+            "correct": 280,
+            "incorrect": 326,
+            "incorrect_rate": 0.5379537953795379,
+            "questions": 151,
+            "recall": 0.598159509202454,
+            "records": 606,
+            "specificity": 0.4928571428571429,
+            "threshold": 0.44507065451236405
+          }
+        },
+        "rhd_only": {
+          "by_domain": {
+            "MATH": {
+              "auprc": 0.3100775942181677,
+              "auroc": 0.5136054421768708,
+              "balanced_accuracy": 0.5516745159602303,
+              "correct": 98,
+              "incorrect": 39,
+              "incorrect_rate": 0.2846715328467153,
+              "questions": 40,
+              "recall": 0.2564102564102564,
+              "records": 137,
+              "specificity": 0.8469387755102041,
+              "threshold": 0.3919016021179225
+            },
+            "MultiHopQA": {
+              "auprc": 0.7282680412556987,
+              "auroc": 0.5808404558404558,
+              "balanced_accuracy": 0.5069698819698819,
+              "correct": 108,
+              "incorrect": 182,
+              "incorrect_rate": 0.6275862068965518,
+              "questions": 60,
+              "recall": 0.9120879120879121,
+              "records": 290,
+              "specificity": 0.10185185185185185,
+              "threshold": 0.3919016021179225
+            },
+            "Science": {
+              "auprc": 0.5629882750794268,
+              "auroc": 0.47477477477477475,
+              "balanced_accuracy": 0.5282496782496783,
+              "correct": 74,
+              "incorrect": 105,
+              "incorrect_rate": 0.5865921787709497,
+              "questions": 51,
+              "recall": 0.9619047619047619,
+              "records": 179,
+              "specificity": 0.0945945945945946,
+              "threshold": 0.3919016021179225
+            }
+          },
+          "features": [
+            "attention_score",
+            "cv_score",
+            "reasoning_score_mean",
+            "pcc"
+          ],
+          "overall": {
+            "auprc": 0.6365082690291085,
+            "auroc": 0.6295574057843997,
+            "balanced_accuracy": 0.605203768624014,
+            "correct": 280,
+            "incorrect": 326,
+            "incorrect_rate": 0.5379537953795379,
+            "questions": 151,
+            "recall": 0.8496932515337423,
+            "records": 606,
+            "specificity": 0.3607142857142857,
+            "threshold": 0.3919016021179225
+          }
+        },
+        "rhd_plus_length_step": {
+          "by_domain": {
+            "MATH": {
+              "auprc": 0.28704830566242645,
+              "auroc": 0.46781789638932497,
+              "balanced_accuracy": 0.5464416535845107,
+              "correct": 98,
+              "incorrect": 39,
+              "incorrect_rate": 0.2846715328467153,
+              "questions": 40,
+              "recall": 0.20512820512820512,
+              "records": 137,
+              "specificity": 0.8877551020408163,
+              "threshold": 0.42031728369943594
+            },
+            "MultiHopQA": {
+              "auprc": 0.7281161785938067,
+              "auroc": 0.5638990638990639,
+              "balanced_accuracy": 0.5115995115995116,
+              "correct": 108,
+              "incorrect": 182,
+              "incorrect_rate": 0.6275862068965518,
+              "questions": 60,
+              "recall": 0.9120879120879121,
+              "records": 290,
+              "specificity": 0.1111111111111111,
+              "threshold": 0.42031728369943594
+            },
+            "Science": {
+              "auprc": 0.559449425209478,
+              "auroc": 0.47593307593307593,
+              "balanced_accuracy": 0.5168597168597169,
+              "correct": 74,
+              "incorrect": 105,
+              "incorrect_rate": 0.5865921787709497,
+              "questions": 51,
+              "recall": 0.7904761904761904,
+              "records": 179,
+              "specificity": 0.24324324324324326,
+              "threshold": 0.42031728369943594
+            }
+          },
+          "features": [
+            "attention_score",
+            "cv_score",
+            "reasoning_score_mean",
+            "pcc",
+            "token_count",
+            "step_count"
+          ],
+          "overall": {
+            "auprc": 0.641200886128486,
+            "auroc": 0.617101226993865,
+            "balanced_accuracy": 0.6031003505696757,
+            "correct": 280,
+            "incorrect": 326,
+            "incorrect_rate": 0.5379537953795379,
+            "questions": 151,
+            "recall": 0.7883435582822086,
+            "records": 606,
+            "specificity": 0.41785714285714287,
+            "threshold": 0.42031728369943594
+          }
+        }
+      },
+      "schema_version": "1.0",
+      "scope": "held_out_apply_only_frozen_development_calibration",
+      "scored_records": 606,
+      "total_records": 900
+    },
+    "Qwen3-4B Beam-4": {
+      "calibration_path": "/home/kxu009/mayflower/Disseration/docs/results/rhd-frozen-protocol-v1/calibrations/qwen3-4b-beam4.json",
+      "calibration_sha256": "fef2dc8d2bc7ed1464f73930c32d4cd0474e79482eeff9306f6072cf3150ffda",
+      "diagnostic_dir": "/home/kxu009/mayflower/Disseration/diagnostics/rhd-qwen3-4b-beam4-test-v1",
+      "diagnostic_manifest_sha256": "34c45115adeefa1e0047fc16f6589f6299d1feb34490343effb2651d50ebc049",
+      "evaluation_path": "/home/kxu009/mayflower/Disseration/evaluations/qwen3-4b-heldout-decoding-v1/Beam-4/records.jsonl",
+      "evaluation_sha256": "9b3548cb8f25f00cea567ace21597189f09036a01053bcd973f8a460169aebad",
+      "evaluation_status_counts": {
+        "exact_match": 77,
+        "mismatch": 92,
+        "parse_failure": 1,
+        "truncated": 10
+      },
+      "excluded_records": 11,
+      "held_out_policy": "apply_only_no_refit_no_threshold_selection",
+      "models": {
+        "length_step_baseline": {
+          "by_domain": {
+            "MATH": {
+              "auprc": 0.44070176257780835,
+              "auroc": 0.3776,
+              "balanced_accuracy": 0.48,
+              "correct": 25,
+              "incorrect": 25,
+              "incorrect_rate": 0.5,
+              "questions": 50,
+              "recall": 0.12,
+              "records": 50,
+              "specificity": 0.84,
+              "threshold": 0.5763302517397454
+            },
+            "MultiHopQA": {
+              "auprc": 0.6951325217114497,
+              "auroc": 0.6052036199095022,
+              "balanced_accuracy": 0.6255656108597285,
+              "correct": 26,
+              "incorrect": 34,
+              "incorrect_rate": 0.5666666666666667,
+              "questions": 60,
+              "recall": 0.5588235294117647,
+              "records": 60,
+              "specificity": 0.6923076923076923,
+              "threshold": 0.5763302517397454
+            },
+            "Science": {
+              "auprc": 0.7141541678831546,
+              "auroc": 0.5745920745920746,
+              "balanced_accuracy": 0.5716783216783217,
+              "correct": 26,
+              "incorrect": 33,
+              "incorrect_rate": 0.559322033898305,
+              "questions": 59,
+              "recall": 0.18181818181818182,
+              "records": 59,
+              "specificity": 0.9615384615384616,
+              "threshold": 0.5763302517397454
+            }
+          },
+          "features": [
+            "token_count",
+            "step_count"
+          ],
+          "overall": {
+            "auprc": 0.6294510311692648,
+            "auroc": 0.5296442687747036,
+            "balanced_accuracy": 0.5677583286278939,
+            "correct": 77,
+            "incorrect": 92,
+            "incorrect_rate": 0.5443786982248521,
+            "questions": 169,
+            "recall": 0.30434782608695654,
+            "records": 169,
+            "specificity": 0.8311688311688312,
+            "threshold": 0.5763302517397454
+          }
+        },
+        "rhd_only": {
+          "by_domain": {
+            "MATH": {
+              "auprc": 0.6468552617375346,
+              "auroc": 0.664,
+              "balanced_accuracy": 0.6200000000000001,
+              "correct": 25,
+              "incorrect": 25,
+              "incorrect_rate": 0.5,
+              "questions": 50,
+              "recall": 0.56,
+              "records": 50,
+              "specificity": 0.68,
+              "threshold": 0.5174901749211716
+            },
+            "MultiHopQA": {
+              "auprc": 0.675966561473645,
+              "auroc": 0.5735294117647058,
+              "balanced_accuracy": 0.5282805429864253,
+              "correct": 26,
+              "incorrect": 34,
+              "incorrect_rate": 0.5666666666666667,
+              "questions": 60,
+              "recall": 0.4411764705882353,
+              "records": 60,
+              "specificity": 0.6153846153846154,
+              "threshold": 0.5174901749211716
+            },
+            "Science": {
+              "auprc": 0.6856034474425243,
+              "auroc": 0.5291375291375291,
+              "balanced_accuracy": 0.4568764568764569,
+              "correct": 26,
+              "incorrect": 33,
+              "incorrect_rate": 0.559322033898305,
+              "questions": 59,
+              "recall": 0.6060606060606061,
+              "records": 59,
+              "specificity": 0.3076923076923077,
+              "threshold": 0.5174901749211716
+            }
+          },
+          "features": [
+            "attention_score",
+            "cv_score",
+            "reasoning_score_mean",
+            "pcc"
+          ],
+          "overall": {
+            "auprc": 0.6554878469059682,
+            "auroc": 0.5736871823828346,
+            "balanced_accuracy": 0.5325381140598532,
+            "correct": 77,
+            "incorrect": 92,
+            "incorrect_rate": 0.5443786982248521,
+            "questions": 169,
+            "recall": 0.532608695652174,
+            "records": 169,
+            "specificity": 0.5324675324675324,
+            "threshold": 0.5174901749211716
+          }
+        },
+        "rhd_plus_length_step": {
+          "by_domain": {
+            "MATH": {
+              "auprc": 0.6238497916569058,
+              "auroc": 0.6448,
+              "balanced_accuracy": 0.5800000000000001,
+              "correct": 25,
+              "incorrect": 25,
+              "incorrect_rate": 0.5,
+              "questions": 50,
+              "recall": 0.48,
+              "records": 50,
+              "specificity": 0.68,
+              "threshold": 0.499154698802991
+            },
+            "MultiHopQA": {
+              "auprc": 0.6888923648996793,
+              "auroc": 0.5972850678733032,
+              "balanced_accuracy": 0.5475113122171946,
+              "correct": 26,
+              "incorrect": 34,
+              "incorrect_rate": 0.5666666666666667,
+              "questions": 60,
+              "recall": 0.4411764705882353,
+              "records": 60,
+              "specificity": 0.6538461538461539,
+              "threshold": 0.499154698802991
+            },
+            "Science": {
+              "auprc": 0.6972047519292719,
+              "auroc": 0.5466200466200466,
+              "balanced_accuracy": 0.4184149184149184,
+              "correct": 26,
+              "incorrect": 33,
+              "incorrect_rate": 0.559322033898305,
+              "questions": 59,
+              "recall": 0.6060606060606061,
+              "records": 59,
+              "specificity": 0.23076923076923078,
+              "threshold": 0.499154698802991
+            }
+          },
+          "features": [
+            "attention_score",
+            "cv_score",
+            "reasoning_score_mean",
+            "pcc",
+            "token_count",
+            "step_count"
+          ],
+          "overall": {
+            "auprc": 0.6591623960530519,
+            "auroc": 0.5752399774138904,
+            "balanced_accuracy": 0.5151750423489554,
+            "correct": 77,
+            "incorrect": 92,
+            "incorrect_rate": 0.5443786982248521,
+            "questions": 169,
+            "recall": 0.5108695652173914,
+            "records": 169,
+            "specificity": 0.5194805194805194,
+            "threshold": 0.499154698802991
+          }
+        }
+      },
+      "schema_version": "1.0",
+      "scope": "held_out_apply_only_frozen_development_calibration",
+      "scored_records": 169,
+      "total_records": 180
+    },
+    "Qwen3-4B Greedy": {
+      "calibration_path": "/home/kxu009/mayflower/Disseration/docs/results/rhd-frozen-protocol-v1/calibrations/qwen3-4b-greedy.json",
+      "calibration_sha256": "1cb1ec53744bed21fddcfdd5189c66932d854d63c4b1ecf7378bd22fb88664eb",
+      "diagnostic_dir": "/home/kxu009/mayflower/Disseration/diagnostics/rhd-qwen3-4b-greedy-test-v1",
+      "diagnostic_manifest_sha256": "62fa638a553cba0826ef041c0432e91c10c66db5683ee8e8de6317dc0a8c59cc",
+      "evaluation_path": "/home/kxu009/mayflower/Disseration/evaluations/qwen3-4b-heldout-decoding-v1/Greedy/records.jsonl",
+      "evaluation_sha256": "0038e2a62af9f7af4b91c425a8ca59995cb55a8f6b40cea2e9bdb3cf9765828d",
+      "evaluation_status_counts": {
+        "exact_match": 77,
+        "mismatch": 92,
+        "truncated": 11
+      },
+      "excluded_records": 11,
+      "held_out_policy": "apply_only_no_refit_no_threshold_selection",
+      "models": {
+        "length_step_baseline": {
+          "by_domain": {
+            "MATH": {
+              "auprc": 0.3742333746409384,
+              "auroc": 0.44655172413793104,
+              "balanced_accuracy": 0.4508620689655172,
+              "correct": 29,
+              "incorrect": 20,
+              "incorrect_rate": 0.40816326530612246,
+              "questions": 49,
+              "recall": 0.35,
+              "records": 49,
+              "specificity": 0.5517241379310345,
+              "threshold": 0.4726080280901666
+            },
+            "MultiHopQA": {
+              "auprc": 0.6512951258981672,
+              "auroc": 0.5858585858585859,
+              "balanced_accuracy": 0.5168350168350169,
+              "correct": 27,
+              "incorrect": 33,
+              "incorrect_rate": 0.55,
+              "questions": 60,
+              "recall": 0.8484848484848485,
+              "records": 60,
+              "specificity": 0.18518518518518517,
+              "threshold": 0.4726080280901666
+            },
+            "Science": {
+              "auprc": 0.7003432096841292,
+              "auroc": 0.5934065934065934,
+              "balanced_accuracy": 0.6446886446886446,
+              "correct": 21,
+              "incorrect": 39,
+              "incorrect_rate": 0.65,
+              "questions": 60,
+              "recall": 0.717948717948718,
+              "records": 60,
+              "specificity": 0.5714285714285714,
+              "threshold": 0.4726080280901666
+            }
+          },
+          "features": [
+            "token_count",
+            "step_count"
+          ],
+          "overall": {
+            "auprc": 0.6036915338642362,
+            "auroc": 0.5558300395256917,
+            "balanced_accuracy": 0.5566770186335404,
+            "correct": 77,
+            "incorrect": 92,
+            "incorrect_rate": 0.5443786982248521,
+            "questions": 169,
+            "recall": 0.6847826086956522,
+            "records": 169,
+            "specificity": 0.42857142857142855,
+            "threshold": 0.4726080280901666
+          }
+        },
+        "rhd_only": {
+          "by_domain": {
+            "MATH": {
+              "auprc": 0.653438367254058,
+              "auroc": 0.6793103448275862,
+              "balanced_accuracy": 0.5793103448275863,
+              "correct": 29,
+              "incorrect": 20,
+              "incorrect_rate": 0.40816326530612246,
+              "questions": 49,
+              "recall": 0.4,
+              "records": 49,
+              "specificity": 0.7586206896551724,
+              "threshold": 0.4968828714877484
+            },
+            "MultiHopQA": {
+              "auprc": 0.7097756035543282,
+              "auroc": 0.6004489337822672,
+              "balanced_accuracy": 0.6212121212121212,
+              "correct": 27,
+              "incorrect": 33,
+              "incorrect_rate": 0.55,
+              "questions": 60,
+              "recall": 0.5757575757575758,
+              "records": 60,
+              "specificity": 0.6666666666666666,
+              "threshold": 0.4968828714877484
+            },
+            "Science": {
+              "auprc": 0.7319125977942247,
+              "auroc": 0.5848595848595849,
+              "balanced_accuracy": 0.5604395604395604,
+              "correct": 21,
+              "incorrect": 39,
+              "incorrect_rate": 0.65,
+              "questions": 60,
+              "recall": 0.6923076923076923,
+              "records": 60,
+              "specificity": 0.42857142857142855,
+              "threshold": 0.4968828714877484
+            }
+          },
+          "features": [
+            "attention_score",
+            "cv_score",
+            "reasoning_score_mean",
+            "pcc"
+          ],
+          "overall": {
+            "auprc": 0.7038139644720538,
+            "auroc": 0.6418690005646528,
+            "balanced_accuracy": 0.6116600790513834,
+            "correct": 77,
+            "incorrect": 92,
+            "incorrect_rate": 0.5443786982248521,
+            "questions": 169,
+            "recall": 0.5869565217391305,
+            "records": 169,
+            "specificity": 0.6363636363636364,
+            "threshold": 0.4968828714877484
+          }
+        },
+        "rhd_plus_length_step": {
+          "by_domain": {
+            "MATH": {
+              "auprc": 0.6801557975312646,
+              "auroc": 0.6637931034482759,
+              "balanced_accuracy": 0.6586206896551725,
+              "correct": 29,
+              "incorrect": 20,
+              "incorrect_rate": 0.40816326530612246,
+              "questions": 49,
+              "recall": 0.8,
+              "records": 49,
+              "specificity": 0.5172413793103449,
+              "threshold": 0.33585266440625733
+            },
+            "MultiHopQA": {
+              "auprc": 0.7137683274127832,
+              "auroc": 0.6206509539842873,
+              "balanced_accuracy": 0.5084175084175084,
+              "correct": 27,
+              "incorrect": 33,
+              "incorrect_rate": 0.55,
+              "questions": 60,
+              "recall": 0.7575757575757576,
+              "records": 60,
+              "specificity": 0.25925925925925924,
+              "threshold": 0.33585266440625733
+            },
+            "Science": {
+              "auprc": 0.7173502827428846,
+              "auroc": 0.608058608058608,
+              "balanced_accuracy": 0.5311355311355311,
+              "correct": 21,
+              "incorrect": 39,
+              "incorrect_rate": 0.65,
+              "questions": 60,
+              "recall": 0.8717948717948718,
+              "records": 60,
+              "specificity": 0.19047619047619047,
+              "threshold": 0.33585266440625733
+            }
+          },
+          "features": [
+            "attention_score",
+            "cv_score",
+            "reasoning_score_mean",
+            "pcc",
+            "token_count",
+            "step_count"
+          ],
+          "overall": {
+            "auprc": 0.6986180933735756,
+            "auroc": 0.653020892151327,
+            "balanced_accuracy": 0.5764398644833427,
+            "correct": 77,
+            "incorrect": 92,
+            "incorrect_rate": 0.5443786982248521,
+            "questions": 169,
+            "recall": 0.8152173913043478,
+            "records": 169,
+            "specificity": 0.33766233766233766,
+            "threshold": 0.33585266440625733
+          }
+        }
+      },
+      "schema_version": "1.0",
+      "scope": "held_out_apply_only_frozen_development_calibration",
+      "scored_records": 169,
+      "total_records": 180
+    },
+    "Qwen3-4B Sampling-5": {
+      "calibration_path": "/home/kxu009/mayflower/Disseration/docs/results/rhd-frozen-protocol-v1/calibrations/qwen3-4b-sampling5.json",
+      "calibration_sha256": "cbec885179a453a6de9726923952d8a5dc2c91a4c4d705e545882a8d9759a222",
+      "diagnostic_dir": "/home/kxu009/mayflower/Disseration/diagnostics/rhd-qwen3-4b-sampling5-test-v1",
+      "diagnostic_manifest_sha256": "2478532560a1fb52a8646e7cceda7b9b077a99cb59c592b9aa3880290d0735e0",
+      "evaluation_path": "/home/kxu009/mayflower/Disseration/evaluations/qwen3-4b-heldout-decoding-v1/Sampling-5/records.jsonl",
+      "evaluation_sha256": "d9e6971ddb87f26a072fd422b20732df2a0b259e492b7e4be2dfa5541471dc0f",
+      "evaluation_status_counts": {
+        "exact_match": 378,
+        "mismatch": 471,
+        "parse_failure": 4,
+        "truncated": 47
+      },
+      "excluded_records": 51,
+      "held_out_policy": "apply_only_no_refit_no_threshold_selection",
+      "models": {
+        "length_step_baseline": {
+          "by_domain": {
+            "MATH": {
+              "auprc": 0.4448736509180462,
+              "auroc": 0.4489834219580857,
+              "balanced_accuracy": 0.500156396621833,
+              "correct": 139,
+              "incorrect": 115,
+              "incorrect_rate": 0.452755905511811,
+              "questions": 56,
+              "recall": 0.043478260869565216,
+              "records": 254,
+              "specificity": 0.9568345323741008,
+              "threshold": 0.5828435002545689
+            },
+            "MultiHopQA": {
+              "auprc": 0.6028848671574085,
+              "auroc": 0.5774199376665613,
+              "balanced_accuracy": 0.5962328921812187,
+              "correct": 131,
+              "incorrect": 169,
+              "incorrect_rate": 0.5633333333333334,
+              "questions": 60,
+              "recall": 0.5207100591715976,
+              "records": 300,
+              "specificity": 0.6717557251908397,
+              "threshold": 0.5828435002545689
+            },
+            "Science": {
+              "auprc": 0.733557495472464,
+              "auroc": 0.6074717765894236,
+              "balanced_accuracy": 0.5247821350762527,
+              "correct": 108,
+              "incorrect": 187,
+              "incorrect_rate": 0.6338983050847458,
+              "questions": 60,
+              "recall": 0.058823529411764705,
+              "records": 295,
+              "specificity": 0.9907407407407407,
+              "threshold": 0.5828435002545689
+            }
+          },
+          "features": [
+            "token_count",
+            "step_count"
+          ],
+          "overall": {
+            "auprc": 0.603877733826126,
+            "auroc": 0.5596052528111977,
+            "balanced_accuracy": 0.5442658308900347,
+            "correct": 378,
+            "incorrect": 471,
+            "incorrect_rate": 0.5547703180212014,
+            "questions": 176,
+            "recall": 0.2208067940552017,
+            "records": 849,
+            "specificity": 0.8677248677248677,
+            "threshold": 0.5828435002545689
+          }
+        },
+        "rhd_only": {
+          "by_domain": {
+            "MATH": {
+              "auprc": 0.6112655669994522,
+              "auroc": 0.6573662808883328,
+              "balanced_accuracy": 0.613543947450735,
+              "correct": 139,
+              "incorrect": 115,
+              "incorrect_rate": 0.452755905511811,
+              "questions": 56,
+              "recall": 0.5652173913043478,
+              "records": 254,
+              "specificity": 0.6618705035971223,
+              "threshold": 0.4665755927008424
+            },
+            "MultiHopQA": {
+              "auprc": 0.6691991410121857,
+              "auroc": 0.5407199963864673,
+              "balanced_accuracy": 0.5503410271466642,
+              "correct": 131,
+              "incorrect": 169,
+              "incorrect_rate": 0.5633333333333334,
+              "questions": 60,
+              "recall": 0.5739644970414202,
+              "records": 300,
+              "specificity": 0.5267175572519084,
+              "threshold": 0.4665755927008424
+            },
+            "Science": {
+              "auprc": 0.6910948781225718,
+              "auroc": 0.5889285006932066,
+              "balanced_accuracy": 0.56969201822143,
+              "correct": 108,
+              "incorrect": 187,
+              "incorrect_rate": 0.6338983050847458,
+              "questions": 60,
+              "recall": 0.7967914438502673,
+              "records": 295,
+              "specificity": 0.3425925925925926,
+              "threshold": 0.4665755927008424
+            }
+          },
+          "features": [
+            "attention_score",
+            "cv_score",
+            "reasoning_score_mean",
+            "pcc"
+          ],
+          "overall": {
+            "auprc": 0.6660068235719614,
+            "auroc": 0.609004819195902,
+            "balanced_accuracy": 0.592053381862299,
+            "correct": 378,
+            "incorrect": 471,
+            "incorrect_rate": 0.5547703180212014,
+            "questions": 176,
+            "recall": 0.6602972399150743,
+            "records": 849,
+            "specificity": 0.5238095238095238,
+            "threshold": 0.4665755927008424
+          }
+        },
+        "rhd_plus_length_step": {
+          "by_domain": {
+            "MATH": {
+              "auprc": 0.5834025190776628,
+              "auroc": 0.6150766343446982,
+              "balanced_accuracy": 0.5315295589615264,
+              "correct": 139,
+              "incorrect": 115,
+              "incorrect_rate": 0.452755905511811,
+              "questions": 56,
+              "recall": 0.3652173913043478,
+              "records": 254,
+              "specificity": 0.697841726618705,
+              "threshold": 0.50218950492798
+            },
+            "MultiHopQA": {
+              "auprc": 0.6820797172636077,
+              "auroc": 0.5582004607254167,
+              "balanced_accuracy": 0.5677085685893672,
+              "correct": 131,
+              "incorrect": 169,
+              "incorrect_rate": 0.5633333333333334,
+              "questions": 60,
+              "recall": 0.5857988165680473,
+              "records": 300,
+              "specificity": 0.549618320610687,
+              "threshold": 0.50218950492798
+            },
+            "Science": {
+              "auprc": 0.6944491636902038,
+              "auroc": 0.5743711626064567,
+              "balanced_accuracy": 0.5424341453753219,
+              "correct": 108,
+              "incorrect": 187,
+              "incorrect_rate": 0.6338983050847458,
+              "questions": 60,
+              "recall": 0.7700534759358288,
+              "records": 295,
+              "specificity": 0.3148148148148148,
+              "threshold": 0.50218950492798
+            }
+          },
+          "features": [
+            "attention_score",
+            "cv_score",
+            "reasoning_score_mean",
+            "pcc",
+            "token_count",
+            "step_count"
+          ],
+          "overall": {
+            "auprc": 0.6686863899744303,
+            "auroc": 0.6029162313663375,
+            "balanced_accuracy": 0.5710662892191555,
+            "correct": 378,
+            "incorrect": 471,
+            "incorrect_rate": 0.5547703180212014,
+            "questions": 176,
+            "recall": 0.6050955414012739,
+            "records": 849,
+            "specificity": 0.5370370370370371,
+            "threshold": 0.50218950492798
+          }
+        }
+      },
+      "schema_version": "1.0",
+      "scope": "held_out_apply_only_frozen_development_calibration",
+      "scored_records": 849,
+      "total_records": 900
+    }
+  },
+  "schema_version": "1.0",
+  "scope": "held_out_apply_only_frozen_development_calibrations"
+}

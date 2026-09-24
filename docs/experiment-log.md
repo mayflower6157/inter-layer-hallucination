@@ -463,3 +463,20 @@ Six held-out generation configs and a two-lane Slurm submission script were prep
 Each lane uses one A40 and runs Greedy → Beam-4 → Sampling-5 sequentially for one model,
 allowing at most two concurrent A40 allocations. The jobs were not submitted during
 this preparation step, so the 180-example held-out split remains unobserved.
+## 2026-09-24 — Frozen held-out RHD evaluation
+
+All six held-out generation cells and all six read-only RHD diagnostic cells completed
+successfully. The final evaluator loaded the development-only calibrations without refitting
+feature direction, centering, scaling, logistic weights, or thresholds. Truncated and unparsed
+records were excluded from correctness-based discrimination metrics and retained as separate
+generation endpoints.
+
+RHD-only held-out AUROC was 0.636, 0.617, and 0.630 for Qwen3-2B Greedy, Beam-4, and Sampling-5,
+respectively, and 0.642, 0.574, and 0.609 for the corresponding Qwen3-4B cells. Combined-model
+AUROC gains over the frozen token/step baseline were 0.111, 0.081, 0.036, 0.097, 0.046, and
+0.043 in the same order. Domain-level estimates were heterogeneous; for example, Qwen3-2B
+Greedy RHD AUROC ranged from 0.472 on Science to 0.713 on MultiHopQA.
+
+Aggregate artifacts are stored under `docs/results/rhd-heldout-final-v1/`. Complete per-trace
+scores and diagnostic sidecars remain on the NTU server. The point-estimate table is complete;
+clustered 95% confidence intervals remain to be computed with `sample_id` as the resampling unit.
