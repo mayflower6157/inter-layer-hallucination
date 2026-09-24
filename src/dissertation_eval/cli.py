@@ -11,6 +11,7 @@ from .datasets.selection import create_retruthqa_selection
 from .evaluation import (
     audit_rhd_diagnostics,
     compare_retruthqa_runs,
+    cross_validate_rhd,
     evaluate_retruthqa_generations,
     evaluate_rhd_diagnostics,
 )
@@ -98,6 +99,13 @@ def build_parser() -> argparse.ArgumentParser:
     audit_rhd.add_argument("evaluation", type=Path)
     audit_rhd.add_argument("diagnostic_dir", type=Path)
     audit_rhd.add_argument("--output-dir", type=Path, required=True)
+    cv_rhd = subparsers.add_parser(
+        "cross-validate-rhd", help="Run domain-stratified development-only RHD CV"
+    )
+    cv_rhd.add_argument("evaluation", type=Path)
+    cv_rhd.add_argument("diagnostic_dir", type=Path)
+    cv_rhd.add_argument("--output-dir", type=Path, required=True)
+    cv_rhd.add_argument("--folds", type=int, default=4)
     return parser
 
 
@@ -172,6 +180,12 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "audit-rhd":
         result = audit_rhd_diagnostics(
             args.generations, args.evaluation, args.diagnostic_dir, args.output_dir
+        )
+        print(json.dumps(result, indent=2, sort_keys=True))
+        return 0
+    if args.command == "cross-validate-rhd":
+        result = cross_validate_rhd(
+            args.evaluation, args.diagnostic_dir, args.output_dir, folds=args.folds
         )
         print(json.dumps(result, indent=2, sort_keys=True))
         return 0
