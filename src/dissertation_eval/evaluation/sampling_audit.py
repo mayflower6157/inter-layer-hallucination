@@ -8,8 +8,26 @@ from statistics import mean, median
 from typing import Any
 
 from ..io import atomic_write_json, iter_jsonl, read_json, sha256_file
-from .rhd import _auc
 from .rhd_cv import RHD_FEATURES
+
+
+def _auc(labels: list[int], scores: list[float]) -> float | None:
+    """Rank-based AUROC with average ranks for ties (O(n log n))."""
+    positives = sum(labels)
+    negatives = len(labels) - positives
+    if not positives or not negatives:
+        return None
+    ordered = sorted(zip(scores, labels), key=lambda item: item[0])
+    positive_rank_sum = 0.0
+    index = 0
+    while index < len(ordered):
+        end = index + 1
+        while end < len(ordered) and ordered[end][0] == ordered[index][0]:
+            end += 1
+        average_rank = ((index + 1) + end) / 2
+        positive_rank_sum += average_rank * sum(label for _, label in ordered[index:end])
+        index = end
+    return (positive_rank_sum - positives * (positives + 1) / 2) / (positives * negatives)
 
 
 def _describe(values: list[float]) -> dict[str, float | int | None]:
