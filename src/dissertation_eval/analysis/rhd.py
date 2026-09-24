@@ -13,7 +13,7 @@ from ..backends.transformers import TransformersBackend
 from ..io import append_jsonl, atomic_write_json, iter_jsonl, read_json, sha256_file
 
 
-RHD_DIAGNOSTIC_VERSION = "1.1.1"
+RHD_DIAGNOSTIC_VERSION = "1.1.2"
 DEFAULT_RELATIVE_LAYERS = (0.5, 0.625, 0.75, 0.875)
 
 
