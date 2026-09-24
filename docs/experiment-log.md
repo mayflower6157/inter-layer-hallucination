@@ -252,3 +252,41 @@ This smoke test establishes extraction integrity and a measurable layer- and
 token-dependent signal. It does not establish that the signal discriminates correct
 from hallucinated reasoning: that claim requires frozen step segmentation and a
 larger development-only comparison containing both correct and incorrect outputs.
+
+## 2026-09-24 — RHD step features and development layer-grid study
+
+The reasoning-step rule was frozen as `paragraph_blank_line_v1`: two or more newlines
+with optional intervening whitespace delimit non-empty steps. This rule is label-blind
+and requires no manual annotation. Diagnostic version 1.1.1 records the four released
+RHD features in the order attention score, early-step coefficient of variation, mean
+reference-compatible Reasoning Score, and correlation of first-differenced normalized
+Reasoning Score and entropy. Exact whole-sequence decoding and tokenizer offsets were
+validated after an initial token-by-token decoding attempt failed the text-identity
+audit; the corrected three-record job `168973` achieved 3/3 exact text matches.
+
+Job `168977` used one A40 and completed three 30-record Qwen3-4B Greedy layer grids
+sequentially in 00:02:04. Of the prefix, 27 completed/scored traces were usable: 11
+correct and 16 incorrect. The best univariate feature for every grid was PCC.
+
+| Grid | Qwen3-4B layers | Attention AUROC | CV AUROC | Mean-R AUROC | PCC AUROC |
+|---|---|---:|---:|---:|---:|
+| Sparse | 18, 23, 27, 32 | 0.491 | 0.341 | 0.364 | 0.705 |
+| Reference-7B relative pattern | 18, 21, 23, 26, 28, 31, 33 | 0.483 | 0.330 | 0.386 | 0.739 |
+| Reference-14B relative pattern | 24, 27, 30, 32, 33, 34 | 0.651 | 0.381 | 0.358 | 0.773 |
+
+With 20,000 fixed-seed label permutations, the one-sided PCC p-values were 0.03875,
+0.01755, and 0.00875 respectively. Because the same 30-record prefix selected the
+grid, these values are exploratory rather than confirmatory.
+
+The reference-14B relative pattern was then frozen and run over all 60 development
+records in job `168980` (00:01:02). Evaluation restricted to the previously unused
+last 30 records, containing 19 correct and 11 incorrect traces. Confirmation AUROCs
+were 0.567 attention, 0.292 CV, 0.297 mean-R, and 0.557 PCC. Thus the apparent prefix
+advantage did not replicate clearly above chance. The candidate grid is not promoted
+to held-out testing. The next development work must investigate step construction,
+score direction/calibration, and the mismatch between pre-segmented reference paths
+and free-form Qwen3 generations without inspecting the held-out test split.
+
+Job `168979` is excluded: Slurm's comma-delimited `--export` retained only the first
+requested layer. The submission scripts now translate layer lists to colon-delimited
+values before export; job `168980` verified all six intended layers.
