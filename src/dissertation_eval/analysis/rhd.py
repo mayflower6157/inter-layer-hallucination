@@ -12,7 +12,7 @@ from ..backends.transformers import TransformersBackend
 from ..io import append_jsonl, atomic_write_json, iter_jsonl, read_json, sha256_file
 
 
-RHD_DIAGNOSTIC_VERSION = "1.0.0"
+RHD_DIAGNOSTIC_VERSION = "1.1.0"
 DEFAULT_RELATIVE_LAYERS = (0.5, 0.625, 0.75, 0.875)
 
 
@@ -134,6 +134,7 @@ def _analyse_record(
     }
     for layer in layers:
         arrays[f"layer_{layer}_jsd"] = []
+        arrays[f"layer_{layer}_reference_divergence"] = []
         arrays[f"layer_{layer}_l1"] = []
         arrays[f"layer_{layer}_chosen_logprob"] = []
         arrays[f"layer_{layer}_chosen_rank"] = []
@@ -171,6 +172,16 @@ def _analyse_record(
                     (layer_p * (layer_logp - mixture_logp)).sum(-1)
                     + (final_p * (final_logp - mixture_logp)).sum(-1)
                 )
+                # Reproduce the released RHD implementation's numerical statistic in
+                # addition to standard JSD. Its torch.kl_div calls use M as the target,
+                # average over the vocabulary, and the later step score is scaled by
+                # 1e5. Keeping both metrics prevents the reference implementation's
+                # quantity from being mislabeled as mathematically standard JSD.
+                mixture_p = 0.5 * (layer_p + final_p)
+                reference_divergence = 0.5 * (
+                    (mixture_p * (mixture_logp - final_logp)).mean(-1)
+                    + (mixture_p * (mixture_logp - layer_logp)).mean(-1)
+                )
                 if not bool(torch.isfinite(jsd).all()):
                     raise RuntimeError(f"Non-finite JSD at layer {layer}")
                 if float(jsd.min()) < -1e-6 or float(jsd.max()) > log_two + 1e-5:
@@ -179,6 +190,9 @@ def _analyse_record(
                 layer_chosen = layer_logp.gather(-1, target_column).squeeze(-1)
                 prefix = f"layer_{layer}"
                 arrays[f"{prefix}_jsd"].extend(jsd.cpu().tolist())
+                arrays[f"{prefix}_reference_divergence"].extend(
+                    reference_divergence.cpu().tolist()
+                )
                 arrays[f"{prefix}_l1"].extend((layer_p - final_p).abs().sum(-1).cpu().tolist())
                 arrays[f"{prefix}_chosen_logprob"].extend(layer_chosen.cpu().tolist())
                 arrays[f"{prefix}_chosen_rank"].extend(
@@ -196,6 +210,15 @@ def _analyse_record(
         for index in range(len(token_ids))
     ]
     arrays["reasoning_score"] = reasoning_score
+    reference_reasoning_score = [
+        1e5
+        * mean(
+            float(arrays[f"layer_{layer}_reference_divergence"][index])
+            for layer in layers
+        )
+        for index in range(len(token_ids))
+    ]
+    arrays["reference_reasoning_score"] = reference_reasoning_score
     arrays["token_ids"] = token_ids
     elapsed_ms = (time.perf_counter() - started) * 1000
     summary = {
@@ -211,6 +234,8 @@ def _analyse_record(
         "reasoning_score_std": pstdev(reasoning_score),
         "reasoning_score_max": max(reasoning_score),
         "reasoning_score_min": min(reasoning_score),
+        "reference_reasoning_score_mean": mean(reference_reasoning_score),
+        "reference_reasoning_score_std": pstdev(reference_reasoning_score),
         "final_entropy_mean": mean(float(x) for x in arrays["final_entropy"]),
         "top_token_agreement_by_layer": {
             str(layer): mean(float(x) for x in arrays[f"layer_{layer}_top_agrees_final"])
