@@ -16,6 +16,10 @@
     "heldout_rhd_results.tex",
     "heldout_domain_results.tex",
     "heldout_generation_results.csv",
-    "heldout_domain_results.csv"
+    "heldout_domain_results.csv",
+    "heldout_operating_results.tex",
+    "heldout_operating_results.csv",
+    "heldout_self_consistency.tex",
+    "heldout_self_consistency.csv"
   ]
 }

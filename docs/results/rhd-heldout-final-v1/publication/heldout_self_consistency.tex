@@ -1,0 +1,16 @@
+\begin{table}[t]
+\centering
+\small
+\caption{Question-level Sampling-5 self-consistency on the held-out split. Accuracy over all questions treats uncovered questions as unanswered; predicted accuracy is conditional on a valid majority-vote prediction.}
+\label{tab:heldout-self-consistency}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lrrrrrr}
+\toprule
+Model & Questions & Coverage (\%) & Accuracy all (\%) & Accuracy predicted (\%) & Strict majority & Ties \\
+\midrule
+Qwen3-2B & 180 & 83.9 & 38.9 & 46.4 & 107 & 31 \\
+Qwen3-4B & 180 & 97.8 & 47.2 & 48.3 & 142 & 20 \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
