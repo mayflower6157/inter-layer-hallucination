@@ -10,6 +10,7 @@ from .datasets.prepare import prepare_retruthqa, validate_prepared_retruthqa
 from .datasets.selection import create_retruthqa_selection
 from .evaluation import (
     audit_rhd_diagnostics,
+    audit_sampling_truncation,
     compare_retruthqa_runs,
     cross_validate_rhd,
     evaluate_retruthqa_generations,
@@ -106,6 +107,15 @@ def build_parser() -> argparse.ArgumentParser:
     cv_rhd.add_argument("diagnostic_dir", type=Path)
     cv_rhd.add_argument("--output-dir", type=Path, required=True)
     cv_rhd.add_argument("--folds", type=int, default=4)
+    sampling_audit = subparsers.add_parser(
+        "audit-sampling-truncation",
+        help="Audit paired Sampling-5 truncation and RHD selection bias",
+    )
+    sampling_audit.add_argument(
+        "--condition", action="append", required=True, metavar="LABEL=GEN,EVAL,DIAG,CONFIG"
+    )
+    sampling_audit.add_argument("--output-dir", type=Path, required=True)
+    sampling_audit.add_argument("--bootstrap", type=int, default=2000)
     return parser
 
 
@@ -186,6 +196,21 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "cross-validate-rhd":
         result = cross_validate_rhd(
             args.evaluation, args.diagnostic_dir, args.output_dir, folds=args.folds
+        )
+        print(json.dumps(result, indent=2, sort_keys=True))
+        return 0
+    if args.command == "audit-sampling-truncation":
+        conditions = {}
+        for item in args.condition:
+            if "=" not in item:
+                raise SystemExit(f"--condition must use LABEL=GEN,EVAL,DIAG,CONFIG: {item!r}")
+            label, payload = item.split("=", 1)
+            paths = payload.split(",")
+            if not label or len(paths) != 4 or label in conditions:
+                raise SystemExit(f"Invalid or duplicate --condition: {item!r}")
+            conditions[label] = tuple(Path(path) for path in paths)
+        result = audit_sampling_truncation(
+            conditions, args.output_dir, bootstrap_iterations=args.bootstrap
         )
         print(json.dumps(result, indent=2, sort_keys=True))
         return 0
