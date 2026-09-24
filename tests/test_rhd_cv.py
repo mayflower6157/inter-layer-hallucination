@@ -1,12 +1,25 @@
+import json
 import unittest
 
 from dissertation_eval.evaluation.rhd_cv import (
     domain_stratified_folds,
+    score_frozen_calibration,
     select_training_threshold,
 )
 
 
 class RhdCrossValidationTests(unittest.TestCase):
+    def test_serialized_calibration_score_is_reproducible(self):
+        model = {
+            "features": ["a", "b"], "center": [2.0, 4.0], "scale": [2.0, 4.0],
+            "intercept": 0.1, "weights": [0.5, -0.25],
+        }
+        first = score_frozen_calibration(model, {"a": 4.0, "b": 8.0})
+        second = score_frozen_calibration(
+            json.loads(json.dumps(model)), {"a": 4.0, "b": 8.0}
+        )
+        self.assertAlmostEqual(first, second)
+
     def test_domain_label_strata_are_distributed_without_overlap(self):
         rows = [
             {"record_id": f"{domain}-{label}-{index}", "domain": domain, "label": label}

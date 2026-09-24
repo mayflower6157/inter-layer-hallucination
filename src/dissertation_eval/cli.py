@@ -15,6 +15,7 @@ from .evaluation import (
     cross_validate_rhd,
     evaluate_retruthqa_generations,
     evaluate_rhd_diagnostics,
+    freeze_rhd_calibration,
 )
 from .pipeline.runner import run_generation
 
@@ -116,6 +117,12 @@ def build_parser() -> argparse.ArgumentParser:
     )
     sampling_audit.add_argument("--output-dir", type=Path, required=True)
     sampling_audit.add_argument("--bootstrap", type=int, default=2000)
+    freeze_rhd = subparsers.add_parser(
+        "freeze-rhd-calibration", help="Fit and serialize final development-only RHD calibration"
+    )
+    freeze_rhd.add_argument("evaluation", type=Path)
+    freeze_rhd.add_argument("diagnostic_dir", type=Path)
+    freeze_rhd.add_argument("--output", type=Path, required=True)
     return parser
 
 
@@ -212,6 +219,10 @@ def main(argv: list[str] | None = None) -> int:
         result = audit_sampling_truncation(
             conditions, args.output_dir, bootstrap_iterations=args.bootstrap
         )
+        print(json.dumps(result, indent=2, sort_keys=True))
+        return 0
+    if args.command == "freeze-rhd-calibration":
+        result = freeze_rhd_calibration(args.evaluation, args.diagnostic_dir, args.output)
         print(json.dumps(result, indent=2, sort_keys=True))
         return 0
     counters = run_generation(

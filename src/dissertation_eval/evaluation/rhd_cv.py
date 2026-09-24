@@ -95,6 +95,85 @@ def _predict_logistic(x: Any, weights: Any, center: Any, scale: Any) -> Any:
     return 1.0 / (1.0 + np.exp(-logits))
 
 
+def score_frozen_calibration(model: dict[str, Any], values: dict[str, float]) -> float:
+    """Apply a serialized development calibration to one held-out feature row."""
+    import math
+
+    standardized = [
+        (float(values[name]) - float(center)) / float(scale)
+        for name, center, scale in zip(model["features"], model["center"], model["scale"])
+    ]
+    logit = float(model["intercept"]) + sum(
+        float(weight) * value for weight, value in zip(model["weights"], standardized)
+    )
+    logit = max(-30.0, min(30.0, logit))
+    return 1.0 / (1.0 + math.exp(-logit))
+
+
+def freeze_rhd_calibration(
+    evaluation_path: Path, diagnostic_dir: Path, output_path: Path
+) -> dict[str, Any]:
+    """Fit the final transform on development only and serialize it before held-out use."""
+    import numpy as np
+
+    evaluation_path = evaluation_path.resolve()
+    diagnostic_dir = diagnostic_dir.resolve()
+    output_path = output_path.resolve()
+    evaluations = {str(row["record_id"]): row for row in iter_jsonl(evaluation_path)}
+    rows = []
+    for diagnostic in iter_jsonl(diagnostic_dir / "records.jsonl"):
+        evaluation = evaluations.get(str(diagnostic["record_id"]))
+        if evaluation is None or evaluation.get("exact_match") is None:
+            continue
+        values = {name: float(diagnostic["official_features"][name]) for name in RHD_FEATURES}
+        values.update(
+            token_count=float(diagnostic["token_count"]),
+            step_count=float(diagnostic["step_count"]),
+        )
+        rows.append({
+            "record_id": str(diagnostic["record_id"]),
+            "label": 0 if evaluation["exact_match"] is True else 1,
+            "values": values,
+        })
+    labels = np.asarray([row["label"] for row in rows], dtype=float)
+    models = {}
+    for name, features in MODEL_FEATURES.items():
+        matrix = np.asarray(
+            [[row["values"][feature] for feature in features] for row in rows]
+        )
+        weights, center, scale = _fit_logistic(matrix, labels)
+        scores = _predict_logistic(matrix, weights, center, scale).tolist()
+        threshold = select_training_threshold(labels.astype(int).tolist(), scores)
+        model = {
+            "features": list(features),
+            "intercept": float(weights[0]),
+            "weights": weights[1:].tolist(),
+            "center": center.tolist(),
+            "scale": scale.tolist(),
+            "threshold": threshold,
+            "development_apparent_auroc": _auc(labels.astype(int).tolist(), scores),
+            "development_apparent_auprc": _average_precision(labels.astype(int).tolist(), scores),
+        }
+        reproduced = [score_frozen_calibration(model, row["values"]) for row in rows]
+        model["reproduction_max_abs_error"] = (
+            max(abs(left - right) for left, right in zip(scores, reproduced)) if rows else 0.0
+        )
+        models[name] = model
+    result = {
+        "schema_version": "1.0",
+        "scope": "development_only_frozen_calibration",
+        "records": len(rows),
+        "correct": sum(row["label"] == 0 for row in rows),
+        "incorrect": sum(row["label"] == 1 for row in rows),
+        "evaluation_sha256": sha256_file(evaluation_path),
+        "diagnostic_manifest": read_json(diagnostic_dir / "manifest.json"),
+        "models": models,
+        "held_out_policy": "apply_only_no_refit_no_threshold_selection",
+    }
+    atomic_write_json(output_path, result)
+    return result
+
+
 def _threshold_metrics(labels: list[int], scores: list[float], threshold: float) -> dict[str, float]:
     predictions = [int(score >= threshold) for score in scores]
     tp = sum(y == 1 and p == 1 for y, p in zip(labels, predictions))
