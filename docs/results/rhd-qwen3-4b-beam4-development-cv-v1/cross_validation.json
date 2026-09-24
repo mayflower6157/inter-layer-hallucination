@@ -1,0 +1,481 @@
+{
+  "correct": 29,
+  "diagnostic_manifest": {
+    "anchor_layer": 36,
+    "candidate_layers": [
+      24,
+      27,
+      30,
+      32,
+      33,
+      34
+    ],
+    "candidate_relative_depths": [
+      0.6666666666666666,
+      0.75,
+      0.8333333333333334,
+      0.8888888888888888,
+      0.9166666666666666,
+      0.9444444444444444
+    ],
+    "changes_generation": false,
+    "chunk_size": 16,
+    "diagnostic_version": "1.1.1",
+    "generation_path": "/home/kxu009/mayflower/Disseration/outputs/qwen3-4b-beam4-development-v1.jsonl",
+    "generation_sha256": "0d2589baa9ce74b175b4022655763567955b2beaa04be797020387237b15193d",
+    "labels_available_to_extractor": false,
+    "mode": "post_hoc_teacher_forced_read_only",
+    "model_id": "Qwen/Qwen3-4B",
+    "model_revision": "1cfa9a7208912126459214e8b04321603b3df60c",
+    "num_hidden_layers": 36,
+    "relative_layer_request": [
+      0.6666666667,
+      0.75,
+      0.8333333333,
+      0.875,
+      0.9166666667,
+      0.9583333333
+    ],
+    "schema_version": "1.0"
+  },
+  "evaluation_sha256": "cc0d02dc5b6c03c81006ec62a4f52f03e2e0e3a99d20bb6f0514d0eab030509f",
+  "fold_record_ids": [
+    [
+      "152e2d391a799d64592804acd1bf6a85c4ce610268e376fe9c0dc4fb2f44d3ee",
+      "dfcbed76d058d99003a76958b5e4e8d63fef8463a62abea5cb96d0ad452840cd",
+      "6ed2fa9a74924a87c6476f857cacf80b8e859c7168679638563cff95c479c949",
+      "54c7ca1c36cda3c506c16a0b8f3ba3c73e5e2fb307de44817b44bf4f7177d87a",
+      "c2036f0f4557634d10effa56f0493fa4d7dfe085c98097316f319f48a2300797",
+      "196552e3c3a08434907aae18234bcaba2abbf85700a9625c78274d2dea0baeb3",
+      "54f4557898e90578ce07d94ef9e11a2f6c8f0a590f240530233c60b9c6ff2276",
+      "19e5314adfb3383ff8d165d44084c03a1413344997fd9ae0026f5f9742d12e48",
+      "0f1328abc6fc130d9e87cb4059646829085b730f97f0b49be37d59b7ae5e9e44",
+      "eed924380fe26948019f1c91ca80b79bcc9b78c400662bf16bdf0f15368b2c01",
+      "8ef34aa9ea1a53f2ed9732766bd2e2cc2a12175c6605078afd8d4d048d6f5a67",
+      "16e5eb0fe310f1c70eca3c2d1850b030c6dd418132bf8ef0f6284e3067f05ba8",
+      "ace1b0824fd428d77d5c1253fc161d85a1b3b7bdff7ba44220ae65d154b7ab8c",
+      "c009b1aeb2f9509035caccd99a24ba863966d4355981e7b6444f995c7c05a1b7",
+      "5d9a55d2a4f1f88592f2a2f835f33840744041746691cf09dbea337802fdf326",
+      "f3c50b4d4504531489430e95fa04863a4463d1a49d4e097223e5b69548e1a0bb",
+      "02d3a293f50a4bb0e1eaa2f97aeb80217a4a6e8cc876c4e5233c02a9a8830de2",
+      "b3a88b7d89f6ed80b8368b6b0edc84d646e3ed2beff3804006b9362f54db3308"
+    ],
+    [
+      "c67f304d8d2fa14e179a71be3165f6c1769134d24850cb7845c1a5b02e7ccc6d",
+      "cfed8bf9e5a4bd5ad21aa83092e166e52f77b8e44b05b6f5b231d64ef287aa6e",
+      "07b408e674372c1844caa012fe8ac513d06b661979de3a5592bd10cb6c03390e",
+      "8f2c9e573540cda88fb6ce50e05959db3d5333cf8827108b28c0d0fe8bda5523",
+      "76a43e09493d8075acfd2b293e3d87d6881d93321c82d0d00606ccce611d8fbd",
+      "63003788be5b237c26561378b61de19a6ebd4cdbccc2bdbee7e956c013cc6050",
+      "c08d12840c51c7bc2e7f0efded38f26fd3a75b17b03d9aa8ac6f8842ee4eb849",
+      "275ccabba37f771b7786bd4f268497c94c9d7269dceb0168135e3d8805d6bb35",
+      "188292273b7bb701211783281a5afe333862b8171bc464bd5e67af2c69941631",
+      "8925be34e995375281dab9aaf7925cbdc723b3e8bc085fdd77558e3352593816",
+      "88597c14283542ae8d5257f1181c3c10c3c9ae3a769d310b4ec549138897a179",
+      "8943e9378ec4e09a917a50ca6f81c0c560ff02ab51f9c22101cec30f70aafa1a",
+      "4808f5694b01354734fb7091fed35e066cebbe560fd4e3b2cca52f350854c953",
+      "10b6d3929ef6c9b4eb11ed418d2dba55116e4dd603cc9756d3b916e35c819038",
+      "748ab136ff78e53dfe5a3c34deab1f20eacf28551de4f90b8c07148a3af8415d"
+    ],
+    [
+      "c375f8ddc4ccf372f49c3d1a5d3ba8a5dc35cdc3b18ede47695cdc76b0000109",
+      "0910a06e6da0df48886402c37d778779cc2f59eb7f6d9963fc6d449a647953bc",
+      "ca00eb1301114fb4644521aeb9fb829f938c95ac5adcc568fe6bfb8877637d2a",
+      "3eba0d95d78f4551da6f6b2a5bee9fdb121e74c0ee9935b38ff889113c5bc1a3",
+      "041eacde8f17cbd6f63e05ee52e7efa09f959e7c784ce990b09386ce7048102e",
+      "2b1abc86213cdeb4c08d5bdc795ee8cedf7d3600175539ff99234757e7abfbcb",
+      "ded5223dc2f043b6554f42a1cf3c9d502661c6278f671734a1a475855add0111",
+      "3fd5825a4d9b9deb3bc2171e48d6d7e64290a595bf5c4f4dd202622c6758ea61",
+      "c091bb08ec6806f21852c7d8394faa3aedccfc02330dfc4c29f0173fec6336bf",
+      "0648da63dab0b9aa5b63969632426cf1f29d565d8c015bd2c637779f33d965ce",
+      "d59b4363fd74177068d855ac1e09120dd2a679d16f9e53fee222f2daf761ad60",
+      "f18c5c34359423965e32cb00f2f98766b7b63c38b4cd1ca7adc6cf495568c873",
+      "9a6bb4f28a86b419a5e7418dceccc39ca074ef2eba1a27f2da7cd3e099736251",
+      "c1a66aa80a12414e2f22f4ee1de577b0a1a7be3799a5dab1d571bc84fd81cb47"
+    ],
+    [
+      "dce5acfca4731b85ecdfd9b29d4611e05775dcda78775851c49d14f15e3ef3bd",
+      "56adaa4ad08d142d56d28edebe86f9fd9cddbfa5be4c0c24b138fedc9a0abed3",
+      "fc1b26236786580acb870b9c8aa3c2f88e760854e55aaee7d93e511a4ddbba76",
+      "b55963211e004d926612e3e79d7c96e1ed50d44d780754cbca06348b842e2d9c",
+      "ad11a922dd0e46802e23fabc3987a64f50c0547dbe182c87cd29f0147fc67100",
+      "5e4d22e6ad251208746bd398dbd58090c16b664133db9b85abe5cd18613cefdc",
+      "4a5d37870d2874bbd054713ebeeee59749d88970ebf561ceb72763756149d32e",
+      "415d0d3a5f13ad13325809e2ac3afc5ee68021f56e681b12714115995ad99224",
+      "2c3f3eba6c88d636b666d1a4a535f8148bc1ccd33aa422e94493b44f3727d723",
+      "be715614b3372eceacc43e392ae0c655014029b804eeefd99f03b9394187b020",
+      "772777d5957d589310ea7c0c0d53c3fc552241dfda8b6b08ac52a3f220a68052",
+      "0b3c073dc416de35099dcc3318212c4c819bdc30bc95d5c3b2ee56faca8cb059"
+    ]
+  ],
+  "folds": 4,
+  "incorrect": 30,
+  "models": {
+    "length_step_baseline": {
+      "features": [
+        "token_count",
+        "step_count"
+      ],
+      "fold_mean": {
+        "auprc": 0.5852552705231276,
+        "auroc": 0.48533163265306123,
+        "balanced_accuracy": 0.49702380952380953
+      },
+      "fold_std": {
+        "auprc": 0.08136961110223945,
+        "auroc": 0.07207810100981629,
+        "balanced_accuracy": 0.1111598178391851
+      },
+      "folds": [
+        {
+          "fold": 0,
+          "standardized_weights": {
+            "step_count": 0.056404532859483034,
+            "token_count": -0.16049360147475447
+          },
+          "train_n": 41,
+          "training_threshold": 0.5089671864478413,
+          "validation": {
+            "auprc": 0.47228697228697225,
+            "auroc": 0.4444444444444444,
+            "balanced_accuracy": 0.5,
+            "recall": 0.5555555555555556,
+            "specificity": 0.4444444444444444
+          },
+          "validation_domains": {
+            "MATH": 6,
+            "MultiHopQA": 6,
+            "Science": 6
+          },
+          "validation_n": 18
+        },
+        {
+          "fold": 1,
+          "standardized_weights": {
+            "step_count": -0.5506945730454387,
+            "token_count": 0.11389589697375238
+          },
+          "train_n": 44,
+          "training_threshold": 0.5473064323262495,
+          "validation": {
+            "auprc": 0.6412518037518037,
+            "auroc": 0.5535714285714286,
+            "balanced_accuracy": 0.4642857142857143,
+            "recall": 0.5,
+            "specificity": 0.42857142857142855
+          },
+          "validation_domains": {
+            "MATH": 5,
+            "MultiHopQA": 5,
+            "Science": 5
+          },
+          "validation_n": 15
+        },
+        {
+          "fold": 2,
+          "standardized_weights": {
+            "step_count": -1.0059255906406832,
+            "token_count": 0.30359419997564363
+          },
+          "train_n": 45,
+          "training_threshold": 0.4750822364367024,
+          "validation": {
+            "auprc": 0.546794475365904,
+            "auroc": 0.3877551020408163,
+            "balanced_accuracy": 0.3571428571428571,
+            "recall": 0.5714285714285714,
+            "specificity": 0.14285714285714285
+          },
+          "validation_domains": {
+            "MATH": 5,
+            "MultiHopQA": 5,
+            "Science": 4
+          },
+          "validation_n": 14
+        },
+        {
+          "fold": 3,
+          "standardized_weights": {
+            "step_count": -0.5235770460799644,
+            "token_count": 0.2744438617004723
+          },
+          "train_n": 47,
+          "training_threshold": 0.5532010534020374,
+          "validation": {
+            "auprc": 0.6806878306878307,
+            "auroc": 0.5555555555555556,
+            "balanced_accuracy": 0.6666666666666666,
+            "recall": 0.3333333333333333,
+            "specificity": 1.0
+          },
+          "validation_domains": {
+            "MATH": 4,
+            "MultiHopQA": 4,
+            "Science": 4
+          },
+          "validation_n": 12
+        }
+      ],
+      "oof": {
+        "auprc": 0.5222683203226515,
+        "auroc": 0.47586206896551725,
+        "balanced_accuracy": 0.4913793103448276
+      }
+    },
+    "rhd_only": {
+      "features": [
+        "attention_score",
+        "cv_score",
+        "reasoning_score_mean",
+        "pcc"
+      ],
+      "fold_mean": {
+        "auprc": 0.8004298735325521,
+        "auroc": 0.7836986646510455,
+        "balanced_accuracy": 0.6870039682539683
+      },
+      "fold_std": {
+        "auprc": 0.12094932525388614,
+        "auroc": 0.11694226987376133,
+        "balanced_accuracy": 0.0863309018406667
+      },
+      "folds": [
+        {
+          "fold": 0,
+          "standardized_weights": {
+            "attention_score": 0.7118256739857617,
+            "cv_score": -0.6473623140924011,
+            "pcc": -0.5370677611261111,
+            "reasoning_score_mean": -0.8202792946087091
+          },
+          "train_n": 41,
+          "training_threshold": 0.3277592636048841,
+          "validation": {
+            "auprc": 0.8368945868945868,
+            "auroc": 0.7901234567901234,
+            "balanced_accuracy": 0.6111111111111112,
+            "recall": 0.6666666666666666,
+            "specificity": 0.5555555555555556
+          },
+          "validation_domains": {
+            "MATH": 6,
+            "MultiHopQA": 6,
+            "Science": 6
+          },
+          "validation_n": 18
+        },
+        {
+          "fold": 1,
+          "standardized_weights": {
+            "attention_score": 0.5054438838578357,
+            "cv_score": -1.0149377576136376,
+            "pcc": -0.5348043088675967,
+            "reasoning_score_mean": -1.0410039919988394
+          },
+          "train_n": 44,
+          "training_threshold": 0.5194499502957066,
+          "validation": {
+            "auprc": 0.650879329004329,
+            "auroc": 0.6785714285714286,
+            "balanced_accuracy": 0.6607142857142857,
+            "recall": 0.75,
+            "specificity": 0.5714285714285714
+          },
+          "validation_domains": {
+            "MATH": 5,
+            "MultiHopQA": 5,
+            "Science": 5
+          },
+          "validation_n": 15
+        },
+        {
+          "fold": 2,
+          "standardized_weights": {
+            "attention_score": 0.6725488978990907,
+            "cv_score": -0.805081315098966,
+            "pcc": 0.00019177664810388713,
+            "reasoning_score_mean": -0.8760149923219459
+          },
+          "train_n": 45,
+          "training_threshold": 0.5247431062193192,
+          "validation": {
+            "auprc": 0.7377551020408163,
+            "auroc": 0.6938775510204082,
+            "balanced_accuracy": 0.6428571428571428,
+            "recall": 0.5714285714285714,
+            "specificity": 0.7142857142857143
+          },
+          "validation_domains": {
+            "MATH": 5,
+            "MultiHopQA": 5,
+            "Science": 4
+          },
+          "validation_n": 14
+        },
+        {
+          "fold": 3,
+          "standardized_weights": {
+            "attention_score": 0.2687802558326773,
+            "cv_score": -0.6414708176612027,
+            "pcc": -0.11434274126491852,
+            "reasoning_score_mean": -0.7904240180806754
+          },
+          "train_n": 47,
+          "training_threshold": 0.5089396328131099,
+          "validation": {
+            "auprc": 0.9761904761904762,
+            "auroc": 0.9722222222222222,
+            "balanced_accuracy": 0.8333333333333334,
+            "recall": 0.8333333333333334,
+            "specificity": 0.8333333333333334
+          },
+          "validation_domains": {
+            "MATH": 4,
+            "MultiHopQA": 4,
+            "Science": 4
+          },
+          "validation_n": 12
+        }
+      ],
+      "oof": {
+        "auprc": 0.7130720427400276,
+        "auroc": 0.7586206896551724,
+        "balanced_accuracy": 0.6775862068965517
+      }
+    },
+    "rhd_plus_length_step": {
+      "features": [
+        "attention_score",
+        "cv_score",
+        "reasoning_score_mean",
+        "pcc",
+        "token_count",
+        "step_count"
+      ],
+      "fold_mean": {
+        "auprc": 0.7830584057146557,
+        "auroc": 0.7509448223733938,
+        "balanced_accuracy": 0.714781746031746
+      },
+      "fold_std": {
+        "auprc": 0.12378453658896249,
+        "auroc": 0.1355944210953626,
+        "balanced_accuracy": 0.07450885575666698
+      },
+      "folds": [
+        {
+          "fold": 0,
+          "standardized_weights": {
+            "attention_score": 0.7070333960505948,
+            "cv_score": -0.6948717127496106,
+            "pcc": -0.5236161709209184,
+            "reasoning_score_mean": -0.8153433913732296,
+            "step_count": 0.17184141301922043,
+            "token_count": -0.10062332206974858
+          },
+          "train_n": 41,
+          "training_threshold": 0.3520386409531321,
+          "validation": {
+            "auprc": 0.8008597883597882,
+            "auroc": 0.7407407407407407,
+            "balanced_accuracy": 0.7222222222222222,
+            "recall": 0.6666666666666666,
+            "specificity": 0.7777777777777778
+          },
+          "validation_domains": {
+            "MATH": 6,
+            "MultiHopQA": 6,
+            "Science": 6
+          },
+          "validation_n": 18
+        },
+        {
+          "fold": 1,
+          "standardized_weights": {
+            "attention_score": 0.4794983142250702,
+            "cv_score": -0.8974098261547135,
+            "pcc": -0.5527975524165499,
+            "reasoning_score_mean": -1.063726535044827,
+            "step_count": -0.34469194312064294,
+            "token_count": 0.19706048724354244
+          },
+          "train_n": 44,
+          "training_threshold": 0.5132735000862277,
+          "validation": {
+            "auprc": 0.650879329004329,
+            "auroc": 0.6785714285714286,
+            "balanced_accuracy": 0.6607142857142857,
+            "recall": 0.75,
+            "specificity": 0.5714285714285714
+          },
+          "validation_domains": {
+            "MATH": 5,
+            "MultiHopQA": 5,
+            "Science": 5
+          },
+          "validation_n": 15
+        },
+        {
+          "fold": 2,
+          "standardized_weights": {
+            "attention_score": 0.6788716120669784,
+            "cv_score": -0.5597391315727414,
+            "pcc": -0.0666050964387519,
+            "reasoning_score_mean": -0.8928050388849392,
+            "step_count": -0.7947556130290361,
+            "token_count": 0.5076241457137803
+          },
+          "train_n": 45,
+          "training_threshold": 0.33113256420090637,
+          "validation": {
+            "auprc": 0.7043040293040292,
+            "auroc": 0.6122448979591837,
+            "balanced_accuracy": 0.6428571428571428,
+            "recall": 0.7142857142857143,
+            "specificity": 0.5714285714285714
+          },
+          "validation_domains": {
+            "MATH": 5,
+            "MultiHopQA": 5,
+            "Science": 4
+          },
+          "validation_n": 14
+        },
+        {
+          "fold": 3,
+          "standardized_weights": {
+            "attention_score": 0.26035571332291174,
+            "cv_score": -0.5323611320207119,
+            "pcc": -0.1269799360232157,
+            "reasoning_score_mean": -0.8061262520229535,
+            "step_count": -0.3585971885852925,
+            "token_count": 0.23507584296411255
+          },
+          "train_n": 47,
+          "training_threshold": 0.5550317700748872,
+          "validation": {
+            "auprc": 0.9761904761904762,
+            "auroc": 0.9722222222222222,
+            "balanced_accuracy": 0.8333333333333334,
+            "recall": 0.8333333333333334,
+            "specificity": 0.8333333333333334
+          },
+          "validation_domains": {
+            "MATH": 4,
+            "MultiHopQA": 4,
+            "Science": 4
+          },
+          "validation_n": 12
+        }
+      ],
+      "oof": {
+        "auprc": 0.6948367374459411,
+        "auroc": 0.7218390804597701,
+        "balanced_accuracy": 0.7114942528735633
+      }
+    }
+  },
+  "records": 59,
+  "schema_version": "1.0",
+  "scope": "development_only_domain_stratified_cross_validation"
+}

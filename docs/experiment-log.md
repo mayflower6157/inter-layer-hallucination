@@ -344,3 +344,35 @@ some folds, matching the earlier domain heterogeneity. These development results
 yet justify a held-out claim. The machine-readable fold assignments, training-only
 thresholds, weights, and metrics are committed in
 `docs/results/rhd-qwen3-4b-development-cv-v1`.
+
+## 2026-09-24 — Frozen RHD decoding and model-scale comparison
+
+The frozen six-layer relative-depth configuration was applied without retuning to
+Qwen3-4B Beam-4, Qwen3-4B Sampling-5, and Qwen3-2B Greedy development generations.
+For the 36-layer 4B model this selected layers 24, 27, 30, 32, 33, and 34; for the
+24-layer 2B model it selected layers 16, 18, 20, 21, 22, and 23. The same automatic
+answer labels, paragraph step rule, four RHD features, and training-fold-only
+cross-validation procedure were used throughout.
+
+Job `168995` completed the 4B Beam-4 and Sampling-5 diagnostics, then stopped on the
+first 2B trace because the tokenizer's legal decode/re-encode sequence was not
+bijective. The incomplete 2B artifact from this job was excluded. Diagnostic version
+1.1.2 added a cumulative-prefix offset fallback, preserving exact full-text validation.
+Job `169000` then completed the clean 2B diagnostic in 00:01:44 with exit code zero.
+
+| Condition | Scored traces | Length/step AUROC | RHD AUROC | Difference | Combined AUROC | RHD balanced accuracy |
+|---|---:|---:|---:|---:|---:|---:|
+| Qwen3-4B Greedy | 57 | 0.620 | 0.665 | +0.045 | 0.642 | 0.619 |
+| Qwen3-4B Beam-4 | 59 | 0.476 | 0.759 | +0.283 | 0.722 | 0.678 |
+| Qwen3-4B Sampling-5 | 294 | 0.576 | 0.685 | +0.109 | 0.677 | 0.613 |
+| Qwen3-2B Greedy | 47 | 0.641 | 0.665 | +0.024 | 0.683 | 0.660 |
+
+Sampling-5's five traces for each question were kept in the same fold, preventing the
+same prompt and reference answer from appearing in both training and validation.
+Beam-4 produced the clearest RHD gain beyond token and step count. Sampling-5 retained
+a smaller gain, while the 2B Greedy incremental gain was modest and benefited from the
+combined nuisance-plus-RHD model. The development evidence therefore indicates that
+RHD behavior is sensitive to decoding strategy and model scale; it does not support a
+claim of stable universal generalization. Full fold metrics and provenance are archived
+under `docs/results/rhd-cross-model-decoding-comparison-v1.md` and its linked condition
+directories.
