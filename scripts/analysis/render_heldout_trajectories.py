@@ -116,8 +116,11 @@ def render(condition: str, selected: list[dict[str, Any]], output: Path) -> None
         for boundary in np.flatnonzero(np.diff(step_index) != 0) + 1:
             x = x_map(boundary)
             parts.append(f'<line x1="{x}" y1="{plot_top}" x2="{x}" y2="{plot_top + plot_h}" stroke="#aeb5bd" stroke-dasharray="4 4"/>')
-        points = " ".join(f"{x_map(x):.2f},{y_map(y):.2f}" for x, y in zip(x_values, y_values))
-        parts.append(f'<polyline points="{points}" fill="none" stroke="{colour}" stroke-width="2.5"/>')
+        path = " ".join(
+            ("M" if index == 0 else "L") + f" {x_map(x):.2f} {y_map(y):.2f}"
+            for index, (x, y) in enumerate(zip(x_values, y_values))
+        )
+        parts.append(f'<path d="{path}" fill="none" stroke="{colour}" stroke-width="2.5"/>')
         for step in sorted(set(step_index.tolist())):
             mask = step_index == step
             midpoint = np.flatnonzero(mask).mean()
