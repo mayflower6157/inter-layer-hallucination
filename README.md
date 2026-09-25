@@ -77,23 +77,28 @@ provenance records is under
 
 ```text
 code/
-├── configs/                 Run configurations
-├── diagnostics/             RHD extraction outputs and sidecars (large files ignored)
-├── evaluations/             Derived evaluation records and summaries (ignored)
+├── configs/                 Development and held-out generation configurations
+├── diagnostics/             RHD sidecars produced on the GPU (large files ignored)
+├── evaluations/             Per-trace answer and RHD evaluations (ignored)
 ├── data/
 │   ├── fixtures/            Committed synthetic test data
 │   ├── manifests/           Versioned raw dataset manifests
+│   ├── selections/          Frozen development/held-out sample IDs
 │   ├── raw/                 Downloaded source data (ignored)
 │   └── processed/           Reproducible derived data (ignored)
 ├── outputs/                 Append-only JSONL generations (ignored)
-├── docs/results/            Frozen summaries and publication artifacts
+├── docs/results/
+│   ├── rhd-frozen-protocol-v1/  Pre-held-out calibrations and protocol
+│   └── rhd-heldout-final-v1/    Final summaries, figures, tables, and provenance
 ├── schemas/                 Language-independent JSON Schema contracts
 ├── scripts/
-│   ├── cpu/                 Dependency-light local validation and mock smoke tests
-│   └── slurm/               Cluster preflight, submission, and small GPU baseline
+│   ├── analysis/            Deterministic publication and appendix renderers
+│   ├── cpu/                 Dependency-light validation and smoke tests
+│   └── slurm/               Cluster generation and RHD extraction jobs
 ├── src/dissertation_eval/
 │   ├── backends/            Mock and optional Hugging Face backends
 │   ├── datasets/            Manifest validation and normalized loading
+│   ├── evaluation/          Answer scoring, CV, calibration, and held-out analysis
 │   ├── pipeline/            Resumable generation runner
 │   ├── schema.py            Canonical manifest and generation schemas
 │   └── cli.py               Command-line interface
@@ -102,7 +107,8 @@ code/
 
 ## Conda environment and installation
 
-The recommended setup uses a dedicated Conda environment with Python 3.11. From this directory, create and activate it with:
+The recommended setup uses a dedicated Conda environment with Python 3.11. From this
+directory, create and activate it with:
 
 ```bash
 conda create --name dissertation-eval python=3.11 pip -y
@@ -111,13 +117,16 @@ python -m pip install --upgrade pip
 pip install -e '.[dev]'
 ```
 
-For local Hugging Face text and vision-language generation, install the optional model dependencies instead:
+For Hugging Face text generation and read-only RHD extraction, install the optional
+model dependencies instead:
 
 ```bash
 pip install -e '.[hf,dev]'
 ```
 
-On a CUDA machine, install the PyTorch build appropriate for the machine's CUDA driver before the editable project installation. Use the command provided by the official PyTorch installation selector rather than hard-coding a CUDA version in this project.
+On a CUDA machine, install the PyTorch build appropriate for the machine's CUDA driver
+before the editable project installation. Use the command provided by the official
+PyTorch installation selector rather than hard-coding a CUDA version in this project.
 
 Verify that the environment and command-line entry point are available:
 
@@ -142,19 +151,15 @@ conda env remove --name dissertation-eval
 
 ## Dataset setup and manifests
 
-A manifest records the dataset source, immutable revision, licence, modality, field
-mapping, splits, expected row counts, and SHA-256 checksums. Paths are relative to the
-manifest file. Raw and processed datasets are intentionally excluded from version
-control; never commit downloaded benchmark data or generated outputs.
+A manifest records the dataset source, immutable revision, licence, field mapping,
+splits, expected row counts, and SHA-256 checksums. Paths are relative to the manifest
+file. Raw and processed datasets are intentionally excluded from version control;
+never commit downloaded benchmark data or generated outputs.
 
 Expected local layout:
 
 ```text
 data/raw/
-├── hallusionbench/
-│   ├── HallusionBench.json
-│   ├── VD/
-│   └── VS/
 └── retruthqa/
     ├── R1-7B/hallucination/*.jsonl
     └── R1-14B/hallucination/*.jsonl
@@ -162,16 +167,14 @@ data/raw/
 
 Obtain ReTruthQA from the data link in the official
 [Reasoning Hallucination repository](https://github.com/Jeryi-Sun/Reasoning_Hallucination).
-Obtain `HallusionBench.json` from the official
-[HallusionBench repository](https://github.com/tianyi-lab/HallusionBench) and place the
-corresponding `VD/` and `VS/` assets beside it. The committed manifests pin the exact
-JSON checksums and will reject a different or incomplete release.
+The committed manifest pins the source checksums and rejects a different or incomplete
+release. Earlier multimodal scaffolding remains in the repository history but is not
+part of the dissertation's frozen experimental scope.
 
 Validate the immutable raw inputs:
 
 ```bash
 dissertation-eval validate-manifest data/manifests/retruthqa.json
-dissertation-eval validate-manifest data/manifests/hallusionbench.json
 ```
 
 The ReTruthQA raw release has an unusual mixed format: R1-7B files are JSONL, while
@@ -225,15 +228,18 @@ the committed ID manifest is sufficient to reproduce them from the prepared data
 
 ## Generation records
 
-Every attempted generation produces one JSONL record, including failures. Important fields include:
+Every attempted generation produces one JSONL record, including failures. Important
+fields include:
 
 - stable `record_id`, `run_id`, dataset/split/sample IDs and group ID;
 - exact model revision, backend, decoding configuration, prompt and seed;
-- image path and reference answer where applicable;
+- reference answer and domain metadata;
 - response, token IDs, finish reason, latency and peak memory;
 - dataset metadata and a structured error with traceback.
 
-The adjacent `*.run.json` file fingerprints the run configuration and environment. A run can resume only when that fingerprint is unchanged. This prevents results from two configurations being silently mixed.
+The adjacent `*.run.json` file fingerprints the run configuration and environment. A
+run can resume only when that fingerprint is unchanged. This prevents results from two
+configurations being silently mixed.
 
 ## Local CPU validation
 
@@ -246,17 +252,6 @@ RESET_SMOKE_OUTPUT=1 bash scripts/cpu/smoke_mock.sh
 
 The committed synthetic fixture contains three small examples and is used only to validate infrastructure. Running `smoke_mock.sh` again without `RESET_SMOKE_OUTPUT=1` verifies resume behaviour: all three completed records should be skipped.
 
-After downloading HallusionBench into `data/raw/hallusionbench/`, validate all 1,129
-records and run an eight-record real-data smoke test with the mock backend:
-
-```bash
-RESET_SMOKE_OUTPUT=1 bash scripts/cpu/smoke_hallusionbench.sh
-```
-
-The real-data smoke sample deliberately includes both text-only control questions and
-image-conditioned questions. It validates composite sample IDs and local image paths
-without loading a model.
-
 Validate all 12 ReTruthQA splits, prepare/reuse the derived dataset, and smoke-test
 eight real questions with:
 
@@ -267,158 +262,157 @@ RESET_SMOKE_OUTPUT=1 bash scripts/cpu/smoke_retruthqa.sh
 The smoke scripts write ignored records under `outputs/`. Re-running without
 `RESET_SMOKE_OUTPUT=1` must report the records as skipped, confirming resumability.
 
-### Small baseline on a Slurm GPU cluster
+## Reproducing the frozen experiment
 
-Complete CPU/mock validation before submitting a GPU job. On the cluster:
+The final matrix contains Qwen3-2B and Qwen3-4B crossed with Greedy, Beam-4, and
+Sampling-5. Each condition has a development and held-out configuration under
+`configs/`. Configuration files pin the model revision, prompt, token budget, stopping
+rules, decoding parameters, selection role, output path, and run ID.
 
-1. Clone the repository and create the Conda environment described above.
-2. Install the `hf` dependencies and the cluster-compatible PyTorch build.
-3. Use the committed, revision-pinned Qwen3-4B smoke configuration. It limits
-   greedy generation to 256 new tokens so the first allocation verifies the pipeline
-   without spending unnecessary GPU time:
-
-```bash
-sed -n '1,240p' configs/run.qwen3-4b.smoke.json
-```
-
-4. Copy the raw dataset directories through the university-approved storage mechanism;
-   do not use Git for benchmark data.
-5. Validate the raw manifests and prepare ReTruthQA on the cluster:
+Run one condition directly on a configured GPU with, for example:
 
 ```bash
-dissertation-eval validate-manifest data/manifests/retruthqa.json
-dissertation-eval prepare-retruthqa data/manifests/retruthqa.json \
-  --output-dir data/processed/retruthqa/v1
-dissertation-eval validate-prepared data/processed/retruthqa/v1
+dissertation-eval generate configs/run.qwen3-2b.greedy-development.json
 ```
 
-6. Confirm that the Hugging Face dependencies are installed. The Slurm job will fail
-   early if the active PyTorch installation cannot access CUDA. Then cache the pinned
-   model revision on the login node so model download time is not charged as GPU time:
+On Slurm, `submit_baseline.sh` requests one A40 for one condition. The held-out matrix
+submission script creates two model lanes, with Greedy → Beam-4 → Sampling-5 dependencies
+inside each lane and at most two concurrent A40 allocations:
 
 ```bash
-pip install -e '.[hf]'
-bash scripts/slurm/cache_qwen_model.sh
+bash scripts/slurm/submit_heldout_text_matrix.sh
 ```
 
-7. Submit an eight-example baseline smoke test. The supplied script follows the NTU
-   Cluster02 requirement to name an exact GPU model and requests one A40:
+The held-out command is recorded for reproducibility; do not rerun or alter the sealed
+test merely to optimise a reported result. Running the same generation command again
+skips completed `(sample_id, generation_index)` pairs. Use a new `run_id` and output path
+whenever any experimental input changes.
 
-```bash
-CONFIG_PATH=configs/run.qwen3-4b.smoke.json \
-MODULE_NAME=Miniforge3/24.11.3-1 \
-CONDA_ENV_NAME=dissertation-eval \
-SMOKE_LIMIT=8 \
-bash scripts/slurm/submit_baseline.sh
-```
+### Answer extraction and decoding summaries
 
-The batch job loads `Miniforge3/24.11.3-1`, activates `dissertation-eval`, checks
-CUDA availability, and then runs generation. Do not increase `SMOKE_LIMIT` until the
-JSONL records, GPU memory, parser output, and Slurm logs have been inspected. If NTU
-requires an account or partition for your allocation, add the corresponding `#SBATCH`
-directive before submission.
-
-If the 256-token smoke run succeeds but reaches the limit on every record, run the
-separate three-example 1024-token pilot without modifying or mixing the smoke output:
-
-```bash
-CONFIG_PATH=configs/run.qwen3-4b.pilot.json \
-SMOKE_LIMIT=3 \
-bash scripts/slurm/submit_baseline.sh
-```
-
-Generation records report `finish_reason: "length"` when the model reaches
-`max_new_tokens`, and `finish_reason: "stop"` when an EOS token ends generation.
-If all three pilot records still end with `length`, probe one example at 2048 tokens
-before choosing a budget for a larger run:
-
-```bash
-CONFIG_PATH=configs/run.qwen3-4b.probe-2048.json \
-SMOKE_LIMIT=1 \
-bash scripts/slurm/submit_baseline.sh
-```
-
-If the same example is still truncated at 2048 tokens, compare Qwen3's non-thinking
-mode on that exact example rather than increasing the budget again. This is a separate
-experimental condition with its own run ID and output:
-
-```bash
-CONFIG_PATH=configs/run.qwen3-4b.no-thinking-probe.json \
-SMOKE_LIMIT=1 \
-bash scripts/slurm/submit_baseline.sh
-```
-
-If that response reaches its 512-token limit, repeat the same controlled condition at
-1024 tokens. The prompt and all other settings remain identical:
-
-```bash
-CONFIG_PATH=configs/run.qwen3-4b.no-thinking-1024-probe.json \
-SMOKE_LIMIT=1 \
-bash scripts/slurm/submit_baseline.sh
-```
-
-Do not infer dataset-wide behaviour from the first record. The generation CLI supports
-a deterministic shuffle before applying the limit. A larger limit with the same seed
-preserves the existing sampled prefix. Run the five-example representative pilot with:
-
-```bash
-CONFIG_PATH=configs/run.qwen3-4b.representative-pilot.json \
-SMOKE_LIMIT=5 \
-SAMPLE_SEED=2026 \
-bash scripts/slurm/submit_baseline.sh
-```
-
-The sample-order strategy and seed are stored in the adjacent run manifest. Resuming
-an output with a different seed is rejected.
-
-### ReTruthQA answer extraction and evaluation
-
-Evaluate a generation JSONL on CPU after the run completes:
+After generation, evaluate each JSONL on CPU:
 
 ```bash
 dissertation-eval evaluate-retruthqa \
-  outputs/retruthqa-qwen3-4b-representative-pilot-v1.jsonl \
-  --output-dir evaluations/retruthqa-qwen3-4b-representative-pilot-v1
+  outputs/qwen3-2b-greedy-development-v1.jsonl \
+  --output-dir evaluations/qwen3-2b-greedy-development-v1
 ```
 
 The evaluator uses the last complete balanced `\\boxed{...}` answer first and falls
-back to common `FINAL`/`Final answer` markers. It normalizes answers using the prepared
-record's domain. Truncated generations and parse failures are not silently scored as
-wrong; mismatches remain flagged for manual review. The output directory contains
-auditable `records.jsonl` and `summary.json` files with the input checksum and evaluator
-version.
+back to common final-answer markers. It normalises answers by domain. Truncated and
+unparseable generations remain explicit endpoints rather than being assigned invented
+correctness labels. Each evaluation directory contains auditable `records.jsonl` and
+`summary.json` files with the input checksum and evaluator version.
 
-For a non-Slurm local GPU baseline, use the same run configuration directly:
-
-```bash
-dissertation-eval generate configs/run.qwen3.json
-```
-
-Running the same command again skips completed `(sample_id, generation_index)` pairs. Use a new `run_id` and output path whenever the model, prompt, data, or decoding parameters change.
-
-## Implementation rules for later decoders
-
-1. Do not read benchmark labels inside a generation backend.
-2. Do not change prompts, token limits, parsing, or stopping rules between decoder comparisons.
-3. Store method-specific signals in `backend_metrics`; large tensors should use immutable sidecar files referenced by checksum rather than being embedded in JSONL.
-4. Record unsuccessful and truncated generations instead of selectively retrying them.
-5. Tune layers, thresholds, and intervention strength only on the development split.
-
-## Read-only RHD diagnostics
-
-The primary RHD method is a detector, not a decoding intervention. Its frozen v1
-definition, layer policy, threshold policy, formulas, and pseudocode are documented in
-`docs/rhd-method-v1.md`. Run a three-record, label-blind GPU diagnostic over an existing
-generation file with:
+Use `compare-retruthqa` to aggregate decoding conditions and compute Sampling-5
+self-consistency. For example:
 
 ```bash
-GENERATIONS_PATH=outputs/qwen3-4b-greedy-development-v1.jsonl \
-OUTPUT_DIR=diagnostics/qwen3-4b-greedy-development-rhd-smoke-v1 \
-DIAGNOSTIC_LIMIT=3 \
-bash scripts/slurm/submit_rhd_diagnostic.sh
+dissertation-eval compare-retruthqa \
+  --run greedy=outputs/qwen3-2b-greedy-test-v1.jsonl \
+  --run beam4=outputs/qwen3-2b-beam4-test-v1.jsonl \
+  --run sampling5=outputs/qwen3-2b-sampling5-test-v1.jsonl \
+  --self-consistency sampling5 \
+  --output-dir evaluations/qwen3-2b-test-decoding-v1
 ```
 
-The job reconstructs the exact recorded token sequence and performs a teacher-forced
-forward pass. It writes per-record compressed sidecars containing token-level
-inter-layer distribution summaries, plus SHA-256 checksums and a run manifest. It does
-not call generation, use benchmark labels, or alter any response.
+### Read-only RHD extraction
+
+RHD is a detector, not a decoding intervention. Its layer policy, step segmentation,
+four feature definitions, and pseudocode are documented in
+[`docs/rhd-method-v1.md`](docs/rhd-method-v1.md). Extraction reconstructs each recorded
+token sequence and performs a label-blind, teacher-forced forward pass:
+
+```bash
+python -m dissertation_eval diagnose-rhd \
+  outputs/qwen3-2b-greedy-development-v1.jsonl \
+  --output-dir diagnostics/rhd-qwen3-2b-greedy-development-v1 \
+  --relative-layer 0.6666666667 \
+  --relative-layer 0.75 \
+  --relative-layer 0.8333333333 \
+  --relative-layer 0.875 \
+  --relative-layer 0.9166666667 \
+  --relative-layer 0.9583333333
+```
+
+The command writes compressed token-level sidecars, checksums, and a run manifest. It
+does not generate new responses, read benchmark labels, or modify token selection. The
+same six relative layer positions are used for all conditions and mapped to absolute
+layers within each model.
+
+### Development fitting and sealed held-out evaluation
+
+Development-only, four-fold domain-stratified cross-validation is available through:
+
+```bash
+python -m dissertation_eval cross-validate-rhd \
+  evaluations/qwen3-2b-greedy-development-v1/records.jsonl \
+  diagnostics/rhd-qwen3-2b-greedy-development-v1 \
+  --folds 4 \
+  --output-dir evaluations/rhd-qwen3-2b-greedy-development-cv-v1
+```
+
+The six final calibrations are committed under
+[`docs/results/rhd-frozen-protocol-v1/calibrations/`](docs/results/rhd-frozen-protocol-v1/calibrations/).
+They contain the development-fitted feature directions, means, standard deviations,
+weights, and decision thresholds. The protocol was frozen before held-out inspection;
+the historical pre-held-out specification and provenance are preserved in
+[`rhd-frozen-protocol-v1`](docs/results/rhd-frozen-protocol-v1/).
+
+Apply those calibrations to the six held-out evaluation/diagnostic pairs with
+`evaluate-heldout-rhd`. Repeat `--condition` once per model × decoding cell:
+
+```bash
+python -m dissertation_eval evaluate-heldout-rhd \
+  --condition qwen3-2b-greedy=EVAL_RECORDS,DIAGNOSTIC_DIR,CALIBRATION_JSON \
+  --condition qwen3-2b-beam4=EVAL_RECORDS,DIAGNOSTIC_DIR,CALIBRATION_JSON \
+  --condition qwen3-2b-sampling5=EVAL_RECORDS,DIAGNOSTIC_DIR,CALIBRATION_JSON \
+  --condition qwen3-4b-greedy=EVAL_RECORDS,DIAGNOSTIC_DIR,CALIBRATION_JSON \
+  --condition qwen3-4b-beam4=EVAL_RECORDS,DIAGNOSTIC_DIR,CALIBRATION_JSON \
+  --condition qwen3-4b-sampling5=EVAL_RECORDS,DIAGNOSTIC_DIR,CALIBRATION_JSON \
+  --bootstrap 2000 \
+  --bootstrap-seed 20260924 \
+  --output-dir evaluations/rhd-heldout-final-v1
+```
+
+`EVAL_RECORDS` denotes the corresponding `records.jsonl`. Sampling-5 bootstrap draws
+are clustered by `sample_id`; all traces from a question move together. The command
+reports AUROC, AUPRC, prevalence, balanced accuracy, domain breakdown, and paired gain
+over the length/step-count baseline. No fitting or threshold selection occurs here.
+
+### Publication artifacts
+
+The committed summary was copied from the immutable server results and rendered with:
+
+```bash
+python scripts/analysis/render_heldout_publication.py \
+  --heldout-results evaluations/rhd-heldout-final-v1/heldout_results.json \
+  --development-matrix docs/results/rhd-frozen-protocol-v1/auroc_matrix.csv \
+  --comparison-2b evaluations/qwen3-2b-heldout-decoding-v1/comparison.json \
+  --comparison-4b evaluations/qwen3-4b-heldout-decoding-v1/comparison.json \
+  --output-dir docs/results/rhd-heldout-final-v1/publication
+```
+
+The renderer deterministically produces the CSV, LaTeX, and SVG artifacts linked at
+the top of this README. Detailed held-out evaluation inputs remain on the controlled
+server because they contain benchmark-derived per-trace records; the aggregate result
+JSON and every publication artifact are committed here. Exact source paths and output
+filenames are recorded in
+[`publication_manifest.json`](docs/results/rhd-heldout-final-v1/publication/publication_manifest.json),
+while software/hardware versions, Slurm jobs, server-only large artifacts, and commit
+identifiers are recorded in
+[`provenance.md`](docs/results/rhd-heldout-final-v1/provenance.md) and
+[`docs/experiment-log.md`](docs/experiment-log.md).
+
+## Protocol invariants
+
+1. Generation backends never read benchmark labels.
+2. Prompts, token limits, parsing, and stopping rules remain matched across decoder
+   comparisons unless the condition explicitly defines the difference.
+3. Large RHD tensors live in immutable sidecars referenced by checksum, not in JSONL.
+4. Failed and truncated generations are retained and reported; they are not selectively
+   retried or assigned fabricated labels.
+5. Layer choices, feature directions, normalisation, weights, and thresholds are fitted
+   on development data only.
+6. Held-out results are evaluated once under the frozen protocol and are not used for
+   parameter selection or protocol revision.
