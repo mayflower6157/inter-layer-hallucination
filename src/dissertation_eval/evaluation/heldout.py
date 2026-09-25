@@ -429,7 +429,7 @@ def evaluate_heldout_matrix(
         r"\begin{tabular}{lrrrrrr}",
         r"\toprule",
         r"Condition & Scored & Base AUC & RHD AUC [95\% CI] & Comb. AUC & "
-        r"$\Delta$ [95\% CI] & RHD BA \\",
+        r"$\Delta_{\mathrm{inc}}$ [95\% CI] & RHD BA \\",
         r"\midrule",
     ]
     for row in paper_rows:

@@ -329,7 +329,7 @@ def write_tables(
         r"\caption{Held-out RHD discrimination under frozen development calibration. Confidence intervals use 2,000 domain-stratified, sample-clustered bootstrap replicates.}",
         r"\label{tab:heldout-rhd}", r"\resizebox{\textwidth}{!}{%",
         r"\begin{tabular}{llrrrrrr}", r"\toprule",
-        r"Model & Decoding & Scored & Base AUC & RHD AUC [95\% CI] & Combined AUC & $\Delta$ [95\% CI] & RHD BA \\",
+        r"Model & Decoding & Scored & Base AUC & RHD AUC [95\% CI] & Combined AUC & $\Delta_{\mathrm{inc}}$ [95\% CI] & RHD BA \\",
         r"\midrule",
     ]
     for row in condition_data:

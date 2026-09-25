@@ -50,7 +50,7 @@ def auroc_matrix(results_root: Path, output: Path) -> list[dict[str, object]]:
         f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}">',
         '<rect width="100%" height="100%" fill="white"/>',
         '<text x="28" y="38" font-family="sans-serif" font-size="25" font-weight="bold">Frozen development RHD AUROC matrix</text>',
-        '<text x="28" y="66" font-family="sans-serif" font-size="14" fill="#444">Cell: RHD-only AUROC; parenthesis: Δ versus token/step-count baseline</text>',
+        '<text x="28" y="66" font-family="sans-serif" font-size="14" fill="#444">Cell: RHD-only AUROC; Δstand = RHD-only minus token/step baseline</text>',
     ]
     strategies = ["Greedy", "Beam-4", "Sampling-5"]
     models = ["2B", "4B"]
@@ -67,7 +67,7 @@ def auroc_matrix(results_root: Path, output: Path) -> list[dict[str, object]]:
             parts.extend([
                 f'<rect x="{x}" y="{y}" width="{cell_w - 12}" height="{cell_h - 12}" rx="8" fill="{colour(rhd)}" stroke="#ccd2dc"/>',
                 f'<text x="{x + (cell_w - 12) / 2}" y="{y + 52}" text-anchor="middle" font-family="sans-serif" font-size="31" font-weight="bold">{rhd:.3f}</text>',
-                f'<text x="{x + (cell_w - 12) / 2}" y="{y + 82}" text-anchor="middle" font-family="sans-serif" font-size="17">Δ {delta:+.3f}</text>',
+                f'<text x="{x + (cell_w - 12) / 2}" y="{y + 82}" text-anchor="middle" font-family="sans-serif" font-size="17">Δstand {delta:+.3f}</text>',
                 f'<text x="{x + (cell_w - 12) / 2}" y="{y + 104}" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#333">n={item["scored_traces"]}</text>',
             ])
     parts.append('</svg>')
