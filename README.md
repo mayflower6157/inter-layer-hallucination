@@ -1,17 +1,84 @@
-# Dissertation evaluation pipeline
+# Inter-layer reasoning-hallucination evaluation
 
-This directory contains the reproducible input and generation layer for the dissertation experiments. It deliberately separates dataset identity, normalized examples, generation backends, and append-only outputs. Future DoLa, DeCo, RHD, and inter-layer-guided decoders should implement the same `GenerationBackend` interface.
+This repository contains the reproducible generation, Reasoning Hallucination Detection
+(RHD), and evaluation pipeline used in the dissertation. The confirmatory study compares
+Qwen3-2B and Qwen3-4B under Greedy, Beam-4, and Sampling-5 decoding on a frozen
+60-question development split and a sealed 180-question ReTruthQA held-out split. RHD is
+applied after generation as a label-blind, teacher-forced diagnostic; it never changes
+token selection.
+
+Dataset identity, normalised examples, generation backends, append-only outputs,
+diagnostic sidecars, frozen calibrations, and publication artifacts are kept separate so
+that every reported aggregate can be traced to an immutable input and protocol version.
 
 Run-level decisions, Slurm job identifiers, timings, failures, and result follow-ups are
 recorded in [`docs/experiment-log.md`](docs/experiment-log.md). Update that log before
 using a run in the dissertation so reported settings can be traced to a configuration,
 code commit, and immutable output.
 
+## Final held-out results
+
+The pre-held-out protocol was frozen at commit [`33d155b`](https://github.com/mayflower6157/inter-layer-hallucination/commit/33d155b).
+All transforms, feature directions, logistic weights, and thresholds were fitted on the
+development split and then applied without refitting. Confidence intervals use 2,000
+domain-stratified bootstrap replicates clustered by `sample_id`, so all five Sampling-5
+traces for a question are resampled together.
+
+| Condition | Scored | Length/step AUROC | RHD AUROC [95% CI] | Combined AUROC | Combined − baseline [95% CI] |
+|---|---:|---:|---:|---:|---:|
+| Qwen3-2B Greedy | 122 | 0.508 | 0.636 [0.535, 0.741] | 0.620 | **0.111 [0.016, 0.208]** |
+| Qwen3-2B Beam-4 | 126 | 0.547 | 0.617 [0.516, 0.709] | 0.628 | 0.081 [−0.069, 0.229] |
+| Qwen3-2B Sampling-5 | 606 | 0.582 | 0.630 [0.556, 0.698] | 0.617 | 0.036 [−0.033, 0.100] |
+| Qwen3-4B Greedy | 169 | 0.556 | 0.642 [0.557, 0.721] | 0.653 | **0.097 [0.027, 0.174]** |
+| Qwen3-4B Beam-4 | 169 | 0.530 | 0.574 [0.487, 0.657] | 0.575 | 0.046 [−0.047, 0.139] |
+| Qwen3-4B Sampling-5 | 849 | 0.560 | 0.609 [0.550, 0.668] | 0.603 | 0.043 [−0.018, 0.104] |
+
+The central result is conditional: development-fitted RHD features provide modest
+held-out discrimination, but incremental value beyond response length and step count is
+established only for Greedy decoding. The evidence does not support a decoding-invariant
+or universally calibrated detector. The complete statistical statement is frozen in
+[`conclusion_freeze.md`](docs/results/rhd-heldout-final-v1/conclusion_freeze.md), and the
+full AUROC, AUPRC, prevalence, balanced-accuracy, and confidence-interval table is in
+[`heldout_summary.md`](docs/results/rhd-heldout-final-v1/heldout_summary.md).
+
+<p align="center">
+  <img src="docs/results/rhd-heldout-final-v1/publication/heldout_auroc_ci.svg" width="92%" alt="Held-out RHD AUROC with clustered confidence intervals">
+</p>
+
+### Generation, completion, and self-consistency
+
+| Condition | Completed | Truncated | Accuracy on scored traces | Peak GPU memory (GiB) |
+|---|---:|---:|---:|---:|
+| Qwen3-2B Greedy | 67.8% | 32.2% | 44.3% | 3.65 |
+| Qwen3-2B Beam-4 | 70.0% | 30.0% | 50.8% | 4.06 |
+| Qwen3-2B Sampling-5 | 67.3% | 32.7% | 46.2% | 3.65 |
+| Qwen3-4B Greedy | 93.9% | 6.1% | 45.6% | 7.70 |
+| Qwen3-4B Beam-4 | 94.4% | 5.6% | 45.6% | 8.23 |
+| Qwen3-4B Sampling-5 | 94.8% | 5.2% | 44.5% | 7.76 |
+
+Sampling-5 self-consistency produced a valid majority-vote answer for 83.9% of Qwen3-2B
+questions and 97.8% of Qwen3-4B questions. Accuracy over all 180 questions was 38.9% and
+47.2%, respectively. Detailed publication tables are available as both CSV and LaTeX:
+
+- [generation results](docs/results/rhd-heldout-final-v1/publication/heldout_generation_results.csv)
+- [RHD operating results](docs/results/rhd-heldout-final-v1/publication/heldout_operating_results.csv)
+- [domain breakdown](docs/results/rhd-heldout-final-v1/publication/heldout_domain_results.csv)
+- [Sampling-5 self-consistency](docs/results/rhd-heldout-final-v1/publication/heldout_self_consistency.csv)
+
+<p align="center">
+  <img src="docs/results/rhd-heldout-final-v1/publication/heldout_truncation.svg" width="78%" alt="Held-out truncation rate by model and decoding strategy">
+</p>
+
+The full set of paper-ready figures, tables, trajectory-selection manifests, and
+provenance records is under
+[`docs/results/rhd-heldout-final-v1/`](docs/results/rhd-heldout-final-v1/).
+
 ## Layout
 
 ```text
 code/
 ├── configs/                 Run configurations
+├── diagnostics/             RHD extraction outputs and sidecars (large files ignored)
 ├── evaluations/             Derived evaluation records and summaries (ignored)
 ├── data/
 │   ├── fixtures/            Committed synthetic test data
@@ -19,6 +86,7 @@ code/
 │   ├── raw/                 Downloaded source data (ignored)
 │   └── processed/           Reproducible derived data (ignored)
 ├── outputs/                 Append-only JSONL generations (ignored)
+├── docs/results/            Frozen summaries and publication artifacts
 ├── schemas/                 Language-independent JSON Schema contracts
 ├── scripts/
 │   ├── cpu/                 Dependency-light local validation and mock smoke tests
